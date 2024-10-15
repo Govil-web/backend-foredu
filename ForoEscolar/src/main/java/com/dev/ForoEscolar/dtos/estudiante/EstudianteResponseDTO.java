@@ -12,23 +12,21 @@ public record EstudianteResponseDTO(
 
 
         Long id,
-        @NotNull(message = "Debe ingresar el nombre del usuario")
-        @NotEmpty(message = "Debe ingresar el nombre del usuario")
-        @NotBlank(message = "El nombre no debe poseer caracteres en blanco")
+
+        @NotBlank(message = " Debe ingresar el nombre del usuario")
         String nombre,
-        @NotNull(message = "Debe ingresar el apellido del usuario")
-        @NotEmpty(message = "Debe ingresar el apellido del usuario")
-        @NotBlank(message = "El apellido no debe poseer caracteres en blanco")
+
+        @NotBlank(message = "Debe ingresar el apellido del usuario")
         String apellido,
-        @NotNull(message = "Debe ingresar el DNI del usuario")
-        @NotBlank(message = "El DNI no debe poseer caracteres en Blanco")
+
+        @NotBlank(message = "Debe ingresar el DNI del usuario")
+        @Pattern(regexp = "\\d+", message = "El DNI solo debe contener números")
         String dni,
         GeneroEnum genero,
-        @NotNull(message = "La fecha de nacimiento no puede estar vacia")
+        @NotBlank(message = "Debe ingresar la fecha de nacimiento")
         LocalDate fechaNacimiento,
-        @NotNull(message = "Debe ingresar el tipo de documento")
-        @NotEmpty(message = "Debe ingresar el tipo de documento")
-        @NotBlank(message = "El tipo de documento no debe poseer caracteres en blanco")
+
+        @NotBlank(message = "Debe ingresar el tipo de documento")
        TipoDocumentoEnum tipoDocumento,
         Boolean activo,
         Long tutor,
