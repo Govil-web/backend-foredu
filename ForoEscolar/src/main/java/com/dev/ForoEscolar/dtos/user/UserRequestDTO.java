@@ -1,21 +1,27 @@
 package com.dev.ForoEscolar.dtos.user;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record UserRequestDTO(
 
         @NotNull(message = "El email no puede estar vacio")
         @Email(message = "Debe ingresar una dirección de correo electrónico válida")
         String email,
+
         @NotNull(message = "Debe ingresar el nombre del usuario")
+        @NotEmpty(message = "Debe ingresar el nombre del usuario")
+        @NotBlank(message = "El nombre no debe poseer caracteres en blanco")
         String nombre,
         @NotNull(message = "Debe ingresar el apellido del usuario")
+        @NotEmpty(message = "Debe ingresar el apellido del usuario")
+        @NotBlank(message = "El apellido no debe poseer caracteres en blanco")
         String apellido,
         @NotNull(message = "Debe ingresar el DNI del usuario")
+        @NotBlank(message = "El DNI no debe poseer caracteres en Blanco")
         String dni,
         @NotNull(message = "Debe ingresar el tipo de documento")
+        @NotEmpty(message = "Debe ingresar el tipo de documento")
+        @NotBlank(message = "El tipo de documento no debe poseer caracteres en blanco")
         String tipoDocumento,
         @NotNull(message = "Debe agregar un número de teléfono")
         String telefono,
