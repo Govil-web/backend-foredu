@@ -1,11 +1,12 @@
 package com.dev.ForoEscolar.services.impl;
 
+import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
 import com.dev.ForoEscolar.dtos.estudiante.EstudianteResponseDTO;
-import com.dev.ForoEscolar.enums.AulaEnum;
-import com.dev.ForoEscolar.enums.CursoEnum;
 import com.dev.ForoEscolar.enums.RoleEnum;
 import com.dev.ForoEscolar.exceptions.ApplicationException;
+import com.dev.ForoEscolar.mapper.asistencia.AsistenciaMapper;
 import com.dev.ForoEscolar.mapper.estudiante.EstudianteMapper;
+import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.Estudiante;
 import com.dev.ForoEscolar.repository.EstudianteRepository;
 import com.dev.ForoEscolar.services.EstudianteService;
@@ -23,11 +24,13 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     private final EstudianteRepository estudianteRepository;
     private final EstudianteMapper estudianteMapper;
+    private final AsistenciaMapper asistenciaMapper;
 
     @Autowired
-    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper estudianteMapper) {
+    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper estudianteMapper, AsistenciaMapper asistenciaMapper) {
         this.estudianteRepository = estudianteRepository;
         this.estudianteMapper = estudianteMapper;
+        this.asistenciaMapper = asistenciaMapper;
     }
 
     @Transactional
@@ -73,24 +76,6 @@ public class EstudianteServiceImpl implements EstudianteService {
         }
     }
 
-//    @Override
-//
-//    public List<EstudianteResponseDTO> findByAula(AulaEnum aulaEnum) {
-//        List<Estudiante> estudiantes = estudianteRepository.findByAula(aulaEnum);
-//        return estudiantes.stream().map(estudianteMapper::toResponseDTO).collect(Collectors.toList());
-//    }
-
-//    @Override
-//    public List<EstudianteResponseDTO> findByCurso(CursoEnum cursoEnum) {
-//        List<Estudiante> estudiantes= estudianteRepository.findByCurso(cursoEnum);
-//        return estudiantes.stream().map(estudianteMapper::toResponseDTO).collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    public List<EstudianteResponseDTO> findByCursoAndAula(CursoEnum curso, AulaEnum aula) {
-//        List<Estudiante> estudiantes= estudianteRepository.findByCursoAndAula(curso,aula);
-//        return estudiantes.stream().map(estudianteMapper::toResponseDTO).collect(Collectors.toList());
-//    }
 
     @Override
     public List<EstudianteResponseDTO> findByGradoId(Long gradoId) {
@@ -98,6 +83,13 @@ public class EstudianteServiceImpl implements EstudianteService {
         return estudiantes.stream().map(estudianteMapper::toResponseDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public List<AsistenciaDTO> findByEstudianteId(Long id) {
+        List<Asistencia> asistencias= estudianteRepository.findByEstudianteId(id);
+        return asistencias.stream()
+                .map(asistenciaMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
 
     //Auxiliar para obtener el ID de la entidad
     protected Long getEntityId(Estudiante estudiante) {
