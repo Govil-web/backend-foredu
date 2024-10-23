@@ -14,10 +14,11 @@ HELP.md
 
 ### IntelliJ IDEA ###
 .idea
+.idea/*
 *.iws
 *.iml
 *.ipr
-target
+
 
 ### NetBeans ###
 /nbproject/private/
