@@ -40,6 +40,10 @@ public class Asistencia {
     @JoinColumn(name = "estudiante_id")
     private Estudiante estudiante;
 
+    @ManyToOne
+    @JoinColumn(name = "grado_id")
+    private Grado grado;
+
     // Dias que hubo clases y si el alumno asistio
     @PrePersist
     private void diasDeClasesTranscurridos(){

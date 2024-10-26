@@ -1,12 +1,15 @@
 package com.dev.ForoEscolar.services.impl;
 
+import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
 import com.dev.ForoEscolar.dtos.tutorlegal.TutorLegalRequestDTO;
 import com.dev.ForoEscolar.dtos.tutorlegal.TutorLegalResponseDTO;
 import com.dev.ForoEscolar.enums.RoleEnum;
 import com.dev.ForoEscolar.exceptions.ApplicationException;
 import com.dev.ForoEscolar.mapper.tutorlegal.TutorLegalMapper;
+import com.dev.ForoEscolar.model.Estudiante;
 import com.dev.ForoEscolar.model.TutorLegal;
 import com.dev.ForoEscolar.repository.TutorLegalRepository;
+import com.dev.ForoEscolar.services.AsistenciaService;
 import com.dev.ForoEscolar.services.TutorLegalService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,19 +28,22 @@ public class TutorLegalServiceImpl implements TutorLegalService {
     private final TutorLegalRepository tutorLegalRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TutorLegalMapper tutorLegalMapper;
+    private final AsistenciaService asistenciaService;
 
     @Autowired
-    public TutorLegalServiceImpl(TutorLegalRepository tutorLegalRepository, PasswordEncoder passwordEncoder, TutorLegalMapper tutorLegalMapper) {
+    public TutorLegalServiceImpl(TutorLegalRepository tutorLegalRepository, PasswordEncoder passwordEncoder,
+                                 AsistenciaService asistenciaService, TutorLegalMapper tutorLegalMapper) {
         this.tutorLegalRepository = tutorLegalRepository;
         this.passwordEncoder = (BCryptPasswordEncoder) passwordEncoder;
         this.tutorLegalMapper = tutorLegalMapper;
+        this.asistenciaService = asistenciaService;
     }
 
     @Transactional
     @Override
     public TutorLegalResponseDTO save(TutorLegalRequestDTO tutorLegalRequestDTO) {
-        try{
-            if(tutorLegalRepository.findByEmail(tutorLegalRequestDTO.email()).isPresent()){
+        try {
+            if (tutorLegalRepository.findByEmail(tutorLegalRequestDTO.email()).isPresent()) {
                 throw new ApplicationException("Tutor legal con email ya existente: " + tutorLegalRequestDTO.email());
             }
             TutorLegal newTutorLegal = tutorLegalMapper.toEntity(tutorLegalRequestDTO);
@@ -45,7 +52,7 @@ public class TutorLegalServiceImpl implements TutorLegalService {
             newTutorLegal.setActivo(true);
             newTutorLegal = tutorLegalRepository.save(newTutorLegal);
             return tutorLegalMapper.toResponseDTO(newTutorLegal);
-        }catch (ApplicationException e){
+        } catch (ApplicationException e) {
             throw new ApplicationException("Error al guardar el usuario: " + e.getMessage());
         }
     }
@@ -60,10 +67,10 @@ public class TutorLegalServiceImpl implements TutorLegalService {
     public TutorLegalResponseDTO update(TutorLegalRequestDTO tutorLegalRequestDTO) {
         TutorLegal tutorLegal = tutorLegalMapper.toEntity(tutorLegalRequestDTO);
         Optional<TutorLegal> existEntity = tutorLegalRepository.findById(tutorLegal.getId());
-        if(existEntity.isPresent()){
+        if (existEntity.isPresent()) {
             TutorLegal updateTutorLegal = tutorLegalRepository.save(tutorLegal);
             return tutorLegalMapper.toResponseDTO(updateTutorLegal);
-        }else{
+        } else {
             throw new RuntimeException("Tutor legal no encontrado");
         }
     }
@@ -78,7 +85,20 @@ public class TutorLegalServiceImpl implements TutorLegalService {
     @Override
     public void deleteById(Long aLong) {
         TutorLegal tutorLegal = tutorLegalRepository.findById(aLong)
-                .orElseThrow(()-> new ApplicationException("Tutor legal no encontrado"));
+                .orElseThrow(() -> new ApplicationException("Tutor legal no encontrado"));
         tutorLegalRepository.delete(tutorLegal);
     }
+
+
+    @Override
+    public Iterable<AsistenciaDTO> findAsistenciasByEstudianteId(Long idTutor, Long gradoId) {
+        Optional<TutorLegal> response = tutorLegalRepository.findById(idTutor);
+        if (response.isEmpty()) {
+            throw new ApplicationException("Tutor legal no encontrado");
+        }
+        return asistenciaService.getAsistenciasByGradoAndEstudiante(idTutor,gradoId);
+
+    }
+
+
 }

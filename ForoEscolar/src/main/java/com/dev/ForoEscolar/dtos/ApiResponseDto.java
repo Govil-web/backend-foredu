@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,6 +16,7 @@ public class ApiResponseDto<T>  implements Serializable {
     String message;
     T data;
     Iterable<T> dataIterable;
+    List<Iterable<T>> dataListIterable;
 
 
     public ApiResponseDto (boolean estado,String message, T data){
@@ -27,6 +29,12 @@ public class ApiResponseDto<T>  implements Serializable {
         this.estado=estado;
         this.message=message;
         this.dataIterable=dataIterable;
+    }
+
+    public ApiResponseDto (boolean estado,String message, List<Iterable<T>> dataListIterable){
+        this.estado=estado;
+        this.message=message;
+        this.dataListIterable=dataListIterable;
     }
 
 }

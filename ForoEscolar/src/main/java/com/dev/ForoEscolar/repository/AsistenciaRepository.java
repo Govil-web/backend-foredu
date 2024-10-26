@@ -1,5 +1,6 @@
 package com.dev.ForoEscolar.repository;
 
+import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
 import com.dev.ForoEscolar.model.Asistencia;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,10 @@ public interface AsistenciaRepository extends GenericRepository<Asistencia, Long
 
     int countByContadorClases(boolean contadorClases);
 
-  //  long countByEstudianteIdAndContadorClasesTrue(Long estudianteId);
+    List<Asistencia> findByGradoId(Long gradoId);
+    List<Asistencia> findByEstudianteIdAndGradoId(Long estudianteId, Long gradoId);
+
+    List<Asistencia> findByEstudianteId(Long estudianteId);
 
     int countByEstudianteIdAndAsistioTrue(Long estudianteId);
 

@@ -19,4 +19,6 @@ public interface EstudianteRepository extends GenericRepository<Estudiante, Long
     List<Asistencia> findByEstudianteId(Long id);
 //    List<Asistencia> findAsistenciasByEstudianteId(Long id);
 
+    List<Estudiante> findByTutorId(Long idTutor);
+
 }

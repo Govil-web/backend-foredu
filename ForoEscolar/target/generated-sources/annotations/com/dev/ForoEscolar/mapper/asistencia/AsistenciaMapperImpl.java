@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-26T09:21:29-0300",
+    date = "2024-10-26T16:23:47-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -24,6 +24,7 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
 
         asistencia.setProfesor( longToProfesor( asistenciaDTO.getProfesor() ) );
         asistencia.setEstudiante( longToEstudiante( asistenciaDTO.getEstudiante() ) );
+        asistencia.setGrado( longToGrado( asistenciaDTO.getGrado() ) );
         asistencia.setId( asistenciaDTO.getId() );
         asistencia.setAsistio( asistenciaDTO.isAsistio() );
         asistencia.setContadorClases( asistenciaDTO.isContadorClases() );
@@ -46,6 +47,7 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
         asistenciaDTO.porcentajeAsistencia( calcular( asistenciaEstudianteId( asistencia ) ) );
         asistenciaDTO.profesor( profesorToLong( asistencia.getProfesor() ) );
         asistenciaDTO.estudiante( estudianteToLong( asistencia.getEstudiante() ) );
+        asistenciaDTO.grado( gradoToLong( asistencia.getGrado() ) );
         asistenciaDTO.id( asistencia.getId() );
         asistenciaDTO.asistio( asistencia.isAsistio() );
         asistenciaDTO.contadorClases( asistencia.isContadorClases() );

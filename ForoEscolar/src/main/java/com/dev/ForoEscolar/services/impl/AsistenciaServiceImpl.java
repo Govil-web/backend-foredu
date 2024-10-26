@@ -4,12 +4,17 @@ import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
 import com.dev.ForoEscolar.exceptions.ApplicationException;
 import com.dev.ForoEscolar.mapper.asistencia.AsistenciaMapper;
 import com.dev.ForoEscolar.model.Asistencia;
+import com.dev.ForoEscolar.model.Estudiante;
+import com.dev.ForoEscolar.model.Grado;
 import com.dev.ForoEscolar.repository.AsistenciaRepository;
+import com.dev.ForoEscolar.repository.EstudianteRepository;
+import com.dev.ForoEscolar.repository.GradoRepository;
 import com.dev.ForoEscolar.services.AsistenciaService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -17,13 +22,17 @@ import java.util.stream.Collectors;
 public class AsistenciaServiceImpl implements AsistenciaService {
 
     private final AsistenciaRepository asistenciaRepository;
-
+    private final GradoRepository gradoRepository;
+    private EstudianteRepository estudianteRepository;
     private final AsistenciaMapper asistenciaMapper;
 
     @Autowired
-    public AsistenciaServiceImpl(AsistenciaRepository asistenciaRepository, AsistenciaMapper asistenciaMapper) {
+    public AsistenciaServiceImpl(AsistenciaRepository asistenciaRepository, AsistenciaMapper asistenciaMapper,
+                                 GradoRepository gradoRepository, EstudianteRepository estudianteRepository) {
         this.asistenciaRepository = asistenciaRepository;
         this.asistenciaMapper = asistenciaMapper;
+        this.gradoRepository= gradoRepository;
+        this.estudianteRepository=estudianteRepository;
     }
 
 
@@ -62,7 +71,6 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Override
     public Iterable<AsistenciaDTO> findAll() {
-        System.out.println("Estoy en el listar service");
         return asistenciaRepository.findAll().stream()
                 .map(asistenciaMapper::toResponseDto)
                 .collect(Collectors.toList());
@@ -71,6 +79,47 @@ public class AsistenciaServiceImpl implements AsistenciaService {
     @Override
     public void deleteById(Long aLong) {
 
+    }
+
+    @Override
+    public Iterable<AsistenciaDTO> getAsistenciasByEstudianteID(Long estudianteId){
+        List<Asistencia> asistencias= asistenciaRepository.findByEstudianteId(estudianteId);
+        return asistencias.stream().map(asistenciaMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+//    @Override
+//    public List<AsistenciaDTO> getAsistenciasByGradoAndEstudiante(Long estudianteId, Long gradoId){
+//
+//        List<Asistencia> asistencias= asistenciaRepository.findByEstudianteIdAndGradoId(estudianteId,gradoId);
+//        return asistencias.stream().map(asistenciaMapper::toResponseDto)
+//                .collect(Collectors.toList());
+//    }
+
+        @Override
+    public Iterable<AsistenciaDTO> getAsistenciasByGradoAndEstudiante(Long tutorId, Long gradoId){
+
+            Optional<Grado>grado= gradoRepository.findById(gradoId);
+            if (grado.isEmpty()){
+                throw new ApplicationException("Grado no encontrado");
+            }
+            List<Estudiante> estudiantes= estudianteRepository.findByTutorId(tutorId);
+            return estudiantes.stream().
+                    flatMap(estudiante -> asistenciaRepository.findByEstudianteIdAndGradoId(estudiante.getId(),gradoId).stream())
+                    .map(asistenciaMapper::toResponseDto)
+                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public Iterable<AsistenciaDTO> getAsistenciasByGrado(Long gradoId){
+
+        Optional<Grado>grado= gradoRepository.findById(gradoId);
+        if(grado.isPresent()){
+            List<Asistencia> asistencias= asistenciaRepository.findByGradoId(gradoId);
+            return asistencias.stream()
+                    .map(asistenciaMapper::toResponseDto).collect(Collectors.toList());
+        }
+   throw new ApplicationException("Grado no encontrado");
     }
 
 

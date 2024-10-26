@@ -53,14 +53,24 @@ public class AsistenciaController {
 
     }
 
+    @GetMapping("/grado/{id}")
+    @Operation(summary = "Get asistencia by grado")
+    public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciaBygrado(@PathVariable Long id) {
+        try {
+            Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.getAsistenciasByGrado(id);
+            return ResponseEntity.ok(new ApiResponseDto<>(true, "Success", listarAsistencias));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, e.getMessage(), null));
+        }
+    }
+
+
     @GetMapping("/getAll")
     @Operation(summary = "List all asistencias")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> asistenciasList() {
 
         try {
-            System.out.println("estoy en listar las asistencias controller");
             Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.findAll();
-            System.out.println("pasamos la prueba de listar");
             return ResponseEntity.ok(new ApiResponseDto<>(true, "Success", listarAsistencias));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, "An error occurred", null));

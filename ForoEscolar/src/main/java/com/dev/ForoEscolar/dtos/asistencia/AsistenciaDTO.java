@@ -20,6 +20,7 @@ public class AsistenciaDTO implements Serializable {
     double porcentajeAsistencia;
     Long profesor;
     Long estudiante;
+    Long grado;
 
 }
 

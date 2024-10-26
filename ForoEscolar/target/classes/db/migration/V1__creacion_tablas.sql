@@ -77,9 +77,11 @@ CREATE TABLE asistencia (
                             asistencia_alumno int,
                             fecha DATE,
                             profesor_id BIGINT,
+							grado_id BIGINT,
                             observaciones VARCHAR(255),
                             FOREIGN KEY (estudiante_id) REFERENCES estudiantes(id),
-                            FOREIGN KEY (profesor_id) REFERENCES profesores(user_id)
+                            FOREIGN KEY (profesor_id) REFERENCES profesores(user_id),
+							FOREIGN KEY (grado_id) REFERENCES grado(id)
 );
 
 CREATE TABLE notificaciones (

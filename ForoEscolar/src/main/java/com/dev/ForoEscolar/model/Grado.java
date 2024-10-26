@@ -37,4 +37,7 @@ public class Grado {
     @OneToMany(mappedBy = "grado",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Estudiante> estudiantes;
 
+//    @OneToMany(mappedBy = "asistencia",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
+//    private List<Asistencia> asistencia;
+
 }
