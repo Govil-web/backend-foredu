@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class AsistenciaServiceImpl implements AsistenciaService {
 
@@ -33,31 +35,24 @@ public class AsistenciaServiceImpl implements AsistenciaService {
     @Override
     @Transactional
     public AsistenciaDTO save(AsistenciaDTO requestDTO) {
-        double anioEscolar= 198.0;
         Asistencia newAsistencia = asistenciaMapper.toEntity(requestDTO);
-        newAsistencia.setDiasAnioEscolar(anioEscolar);
+
+        newAsistencia.setContadorTotal(asistenciaRepository.countByContadorClases(true));
+        newAsistencia.setAsistenciaAlumno(asistenciaRepository.countByEstudianteIdAndAsistioTrue(requestDTO.getEstudiante()));
+
         asistenciaRepository.save(newAsistencia);
 
-        //double porcentajeAsistencia= calcularPorcentajeAsistencia(anioEscolar);
-        double porcentajeAsistencia= calcularPorcentajeAsistenciaTrimestral(anioEscolar);
-
+        double porcentajeAsistencia= porcentajeAsistencia(newAsistencia.getEstudiante().getId());
         AsistenciaDTO responseDTO = asistenciaMapper.toResponseDto(newAsistencia);
-        responseDTO = new AsistenciaDTO(
-                responseDTO.id(),
-                responseDTO.asistio(),
-                //anioEscolar,
-                responseDTO.fecha(),
-                responseDTO.observaciones(),
-                porcentajeAsistencia,
-                responseDTO.profesor(),
-                responseDTO.estudiante()
-        );
+
+        responseDTO.setPorcentajeAsistencia(porcentajeAsistencia);
         return responseDTO;
     }
 
     @Override
     public Optional<AsistenciaDTO> findById(Long id) {
         Optional<Asistencia> asistenciaDTO = asistenciaRepository.findById(id);
+
         if(asistenciaDTO.isPresent()){
             return asistenciaDTO.map(asistenciaMapper::toResponseDto);
         }else{
@@ -67,9 +62,10 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Override
     public Iterable<AsistenciaDTO> findAll() {
+        System.out.println("Estoy en el listar service");
         return asistenciaRepository.findAll().stream()
                 .map(asistenciaMapper::toResponseDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -77,9 +73,12 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     }
 
-    private double calcularPorcentajeAsistenciaTrimestral(double diasAnio) {
-        double var= diasAnio/3;
-        long totalAsistencias = asistenciaRepository.countByAsistio(true);
-        return  (totalAsistencias*100) / var;
+
+    private double porcentajeAsistencia(long idEstudiante) {
+
+        long diasAsistidos= asistenciaRepository.countByEstudianteIdAndAsistioTrue(idEstudiante);
+        long diasDeClases= asistenciaRepository.countByContadorClases(true);
+        return (diasAsistidos*100) / diasDeClases;
     }
+
 }

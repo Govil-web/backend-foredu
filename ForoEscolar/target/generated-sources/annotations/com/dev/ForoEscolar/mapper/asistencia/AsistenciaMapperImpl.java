@@ -2,14 +2,14 @@ package com.dev.ForoEscolar.mapper.asistencia;
 
 import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
 import com.dev.ForoEscolar.model.Asistencia;
-import java.time.LocalDate;
+import com.dev.ForoEscolar.model.Estudiante;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-21T22:32:07-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.2 (Oracle Corporation)"
+    date = "2024-10-26T09:21:29-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
 public class AsistenciaMapperImpl extends AsistenciaMapper {
@@ -22,12 +22,15 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
 
         Asistencia asistencia = new Asistencia();
 
-        asistencia.setProfesor( longToProfesor( asistenciaDTO.profesor() ) );
-        asistencia.setEstudiante( longToEstudiante( asistenciaDTO.estudiante() ) );
-        asistencia.setId( asistenciaDTO.id() );
-        asistencia.setAsistio( asistenciaDTO.asistio() );
-        asistencia.setFecha( asistenciaDTO.fecha() );
-        asistencia.setObservaciones( asistenciaDTO.observaciones() );
+        asistencia.setProfesor( longToProfesor( asistenciaDTO.getProfesor() ) );
+        asistencia.setEstudiante( longToEstudiante( asistenciaDTO.getEstudiante() ) );
+        asistencia.setId( asistenciaDTO.getId() );
+        asistencia.setAsistio( asistenciaDTO.isAsistio() );
+        asistencia.setContadorClases( asistenciaDTO.isContadorClases() );
+        asistencia.setContadorTotal( asistenciaDTO.getContadorTotal() );
+        asistencia.setAsistenciaAlumno( asistenciaDTO.getAsistenciaAlumno() );
+        asistencia.setFecha( asistenciaDTO.getFecha() );
+        asistencia.setObservaciones( asistenciaDTO.getObservaciones() );
 
         return asistencia;
     }
@@ -38,24 +41,34 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
             return null;
         }
 
-        Long profesor = null;
-        Long estudiante = null;
-        Long id = null;
-        boolean asistio = false;
-        LocalDate fecha = null;
-        String observaciones = null;
+        AsistenciaDTO.AsistenciaDTOBuilder asistenciaDTO = AsistenciaDTO.builder();
 
-        profesor = profesorToLong( asistencia.getProfesor() );
-        estudiante = estudianteToLong( asistencia.getEstudiante() );
-        id = asistencia.getId();
-        asistio = asistencia.isAsistio();
-        fecha = asistencia.getFecha();
-        observaciones = asistencia.getObservaciones();
+        asistenciaDTO.porcentajeAsistencia( calcular( asistenciaEstudianteId( asistencia ) ) );
+        asistenciaDTO.profesor( profesorToLong( asistencia.getProfesor() ) );
+        asistenciaDTO.estudiante( estudianteToLong( asistencia.getEstudiante() ) );
+        asistenciaDTO.id( asistencia.getId() );
+        asistenciaDTO.asistio( asistencia.isAsistio() );
+        asistenciaDTO.contadorClases( asistencia.isContadorClases() );
+        asistenciaDTO.contadorTotal( asistencia.getContadorTotal() );
+        asistenciaDTO.asistenciaAlumno( asistencia.getAsistenciaAlumno() );
+        asistenciaDTO.fecha( asistencia.getFecha() );
+        asistenciaDTO.observaciones( asistencia.getObservaciones() );
 
-        double porcentajeAsistencia = 0.0d;
+        return asistenciaDTO.build();
+    }
 
-        AsistenciaDTO asistenciaDTO = new AsistenciaDTO( id, asistio, fecha, observaciones, porcentajeAsistencia, profesor, estudiante );
-
-        return asistenciaDTO;
+    private Long asistenciaEstudianteId(Asistencia asistencia) {
+        if ( asistencia == null ) {
+            return null;
+        }
+        Estudiante estudiante = asistencia.getEstudiante();
+        if ( estudiante == null ) {
+            return null;
+        }
+        Long id = estudiante.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
     }
 }

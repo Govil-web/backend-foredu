@@ -17,6 +17,6 @@ public interface EstudianteRepository extends GenericRepository<Estudiante, Long
 
     @Query("SELECT a FROM Asistencia a WHERE a.estudiante.id = :id")
     List<Asistencia> findByEstudianteId(Long id);
-
+//    List<Asistencia> findAsistenciasByEstudianteId(Long id);
 
 }

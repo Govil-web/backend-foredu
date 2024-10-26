@@ -71,8 +71,10 @@ CREATE TABLE profesor_estudiante (
 CREATE TABLE asistencia (
                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
                             estudiante_id BIGINT,
-                            dias_anio_escolar DOUBLE,
                             asistio TINYINT(1),
+							contador_clases TINYINT(1),
+                            contador_total int,
+                            asistencia_alumno int,
                             fecha DATE,
                             profesor_id BIGINT,
                             observaciones VARCHAR(255),
