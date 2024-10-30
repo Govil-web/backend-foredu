@@ -8,6 +8,7 @@ import com.dev.ForoEscolar.mapper.asistencia.AsistenciaMapper;
 import com.dev.ForoEscolar.mapper.estudiante.EstudianteMapper;
 import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.Estudiante;
+import com.dev.ForoEscolar.repository.AsistenciaRepository;
 import com.dev.ForoEscolar.repository.EstudianteRepository;
 import com.dev.ForoEscolar.services.EstudianteService;
 import jakarta.transaction.Transactional;
@@ -23,14 +24,16 @@ public class EstudianteServiceImpl implements EstudianteService {
 
 
     private final EstudianteRepository estudianteRepository;
+    private final AsistenciaRepository asistenciaRepository;
     private final EstudianteMapper estudianteMapper;
     private final AsistenciaMapper asistenciaMapper;
 
     @Autowired
-    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper estudianteMapper, AsistenciaMapper asistenciaMapper) {
+    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper estudianteMapper, AsistenciaMapper asistenciaMapper, AsistenciaRepository asistenciaRepository) {
         this.estudianteRepository = estudianteRepository;
         this.estudianteMapper = estudianteMapper;
         this.asistenciaMapper = asistenciaMapper;
+        this.asistenciaRepository = asistenciaRepository;
     }
 
     @Transactional
@@ -85,7 +88,7 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     @Override
     public List<AsistenciaDTO> findByEstudianteId(Long id) {
-        List<Asistencia> asistencias= estudianteRepository.findByEstudianteId(id);
+       List<Asistencia> asistencias= estudianteRepository.findByEstudianteId(id);
         return asistencias.stream()
                 .map(asistenciaMapper::toResponseDto)
                 .collect(Collectors.toList());

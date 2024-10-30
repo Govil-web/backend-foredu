@@ -15,13 +15,17 @@ public class Asistencia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(name = "asistio")
-    private boolean asistio;
+    private boolean asistio= false;
 
-    @Column(name = "dias_anio_escolar")
-    private double diasAnioEscolar;
+    private boolean contadorClases= false;
+
+    private int contadorTotal;
+
+    private int asistenciaAlumno;
+
 
     @Column(name = "fecha")
     private LocalDate fecha;
@@ -35,5 +39,20 @@ public class Asistencia {
     @ManyToOne
     @JoinColumn(name = "estudiante_id")
     private Estudiante estudiante;
+
+    @ManyToOne
+    @JoinColumn(name = "grado_id")
+    private Grado grado;
+
+    // Dias que hubo clases y si el alumno asistio
+    @PrePersist
+    private void diasDeClasesTranscurridos(){
+        if(this.contadorClases){
+            this.contadorTotal ++;
+        }
+        if(asistio){
+            this.asistenciaAlumno ++;
+        }
+    }
 
 }

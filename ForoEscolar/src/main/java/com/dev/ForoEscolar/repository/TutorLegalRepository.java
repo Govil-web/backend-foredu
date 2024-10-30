@@ -12,4 +12,5 @@ public interface TutorLegalRepository extends GenericRepository<TutorLegal, Long
     Optional<TutorLegal> findByEmail(String email);
 
 
+
 }

@@ -71,13 +71,17 @@ CREATE TABLE profesor_estudiante (
 CREATE TABLE asistencia (
                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
                             estudiante_id BIGINT,
-                            dias_anio_escolar DOUBLE,
                             asistio TINYINT(1),
+							contador_clases TINYINT(1),
+                            contador_total int,
+                            asistencia_alumno int,
                             fecha DATE,
                             profesor_id BIGINT,
+							grado_id BIGINT,
                             observaciones VARCHAR(255),
                             FOREIGN KEY (estudiante_id) REFERENCES estudiantes(id),
-                            FOREIGN KEY (profesor_id) REFERENCES profesores(user_id)
+                            FOREIGN KEY (profesor_id) REFERENCES profesores(user_id),
+							FOREIGN KEY (grado_id) REFERENCES grado(id)
 );
 
 CREATE TABLE notificaciones (
