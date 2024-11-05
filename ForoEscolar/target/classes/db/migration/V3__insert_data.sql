@@ -38,10 +38,11 @@ VALUES (1, 1, 'MATEMATICAS'),
        (3, 1, 'CIENCIAS');
 
 -- Insertar asistencia
-INSERT INTO asistencia (estudiante_id, asistio, contador_clases, fecha, profesor_id, observaciones)
-VALUES (1, 1, 1, '2024-09-14', 1, 'Ninguna'),
-       (2, 0, 1, '2024-09-15', 2, 'Ninguna'),
-       (1, 1, 1, '2024-09-16', 3, 'Ninguna');
+INSERT INTO asistencia (estudiante_id, asistio, contador_clases,contador_total, asistencia_alumno, fecha, profesor_id, grado_id, observaciones)
+VALUES (1, 1, 1,3,2, '2024-09-14', 1,1, 'Ninguna'),
+       (1, 1, 1,4,3, '2024-09-14', 1,1, 'Ninguna'),
+       (2, 0, 1,4,1, '2024-09-14', 1,2, 'Ninguna'),
+       (2, 1, 1,5,2, '2024-09-16', 3,2, 'Ninguna');
 
 -- Insertar notificaciones
 INSERT INTO notificaciones (administrador_escolar_id, fecha_envio, tutor_legal_id, mensaje, tipo_notificacion, titulo)
