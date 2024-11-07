@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-26T16:23:47-0300",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
+    date = "2024-10-29T19:56:57-0500",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.2 (Oracle Corporation)"
 )
 @Component
 public class AsistenciaMapperImpl extends AsistenciaMapper {
