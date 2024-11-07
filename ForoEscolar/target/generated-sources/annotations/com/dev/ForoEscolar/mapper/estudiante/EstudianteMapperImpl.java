@@ -4,16 +4,14 @@ import com.dev.ForoEscolar.dtos.estudiante.EstudianteResponseDTO;
 import com.dev.ForoEscolar.enums.GeneroEnum;
 import com.dev.ForoEscolar.enums.TipoDocumentoEnum;
 import com.dev.ForoEscolar.model.Estudiante;
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-26T16:23:47-0300",
+    date = "2024-11-06T22:36:17-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -37,7 +35,7 @@ public class EstudianteMapperImpl extends EstudianteMapper {
         String dni = null;
         GeneroEnum genero = null;
         LocalDate fechaNacimiento = null;
-        TipoDocumentoEnum tipoDocumento = null;
+        String tipoDocumento = null;
         Boolean activo = null;
 
         tutor = tutorToLong( estudiante.getTutor() );
@@ -51,10 +49,10 @@ public class EstudianteMapperImpl extends EstudianteMapper {
         apellido = estudiante.getApellido();
         dni = estudiante.getDni();
         genero = estudiante.getGenero();
-        if ( estudiante.getFechaNacimiento() != null ) {
-            fechaNacimiento = estudiante.getFechaNacimiento().toLocalDate();
+        fechaNacimiento = estudiante.getFechaNacimiento();
+        if ( estudiante.getTipoDocumento() != null ) {
+            tipoDocumento = estudiante.getTipoDocumento().name();
         }
-        tipoDocumento = estudiante.getTipoDocumento();
         activo = estudiante.getActivo();
 
         EstudianteResponseDTO estudianteResponseDTO = new EstudianteResponseDTO( id, nombre, apellido, dni, genero, fechaNacimiento, tipoDocumento, activo, tutor, grado, asistencia, boletin, tarea, calificaciones );
@@ -82,10 +80,10 @@ public class EstudianteMapperImpl extends EstudianteMapper {
         estudiante.dni( estudianteResponseDTO.dni() );
         estudiante.genero( estudianteResponseDTO.genero() );
         estudiante.activo( estudianteResponseDTO.activo() );
-        if ( estudianteResponseDTO.fechaNacimiento() != null ) {
-            estudiante.fechaNacimiento( new Date( estudianteResponseDTO.fechaNacimiento().atStartOfDay( ZoneOffset.UTC ).toInstant().toEpochMilli() ) );
+        estudiante.fechaNacimiento( estudianteResponseDTO.fechaNacimiento() );
+        if ( estudianteResponseDTO.tipoDocumento() != null ) {
+            estudiante.tipoDocumento( Enum.valueOf( TipoDocumentoEnum.class, estudianteResponseDTO.tipoDocumento() ) );
         }
-        estudiante.tipoDocumento( estudianteResponseDTO.tipoDocumento() );
 
         return estudiante.build();
     }
