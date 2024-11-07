@@ -55,9 +55,14 @@ public class ProfesorController {
     @PostMapping("/add")
     @Operation(summary = "Se agrega un profesor")
     public ResponseEntity<ApiResponseDto<ProfesorResponseDTO>> save(@RequestBody @Valid ProfesorRequestDTO dto) {
-        ProfesorResponseDTO profesor = profesorService.save(dto);
-        String message = "Profesor Registrado";
-        return new ResponseEntity<>(new ApiResponseDto<>(true, message, profesor), HttpStatus.CREATED);
+        try{
+            ProfesorResponseDTO profesor = profesorService.save(dto);
+            String message = "Profesor Registrado";
+            return new ResponseEntity<>(new ApiResponseDto<>(true, message, profesor), HttpStatus.CREATED);
+        } catch (ApplicationException e) {
+            throw new ApplicationException(" Ha ocurrido un error " + e.getMessage());
+        }
+
     }
 
     @PutMapping("/update")
