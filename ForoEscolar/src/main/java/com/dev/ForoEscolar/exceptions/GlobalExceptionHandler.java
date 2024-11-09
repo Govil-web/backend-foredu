@@ -7,12 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,6 +79,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
         return new ResponseEntity<>(errorResponse, errorResponse.status());
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, "Invalid format, Try: YYYY-MM-DD");
+        return new ResponseEntity<>(errorResponse, errorResponse.status());
+
     }
 
 
