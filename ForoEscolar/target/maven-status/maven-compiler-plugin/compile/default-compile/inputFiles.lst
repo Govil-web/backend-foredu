@@ -87,6 +87,7 @@ C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\exceptions\Appli
 C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\services\AutenticacionService.java
 C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\repository\GradoRepository.java
 C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\controllers\boletin\BoletinController.java
+C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\model\UpdatedEntities.java
 C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\model\Boletin.java
 C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\enums\TipoDocumentoEnum.java
 C:\ForEdu\backend\ForoEscolar\src\main\java\com\dev\ForoEscolar\enums\MateriaEnum.java

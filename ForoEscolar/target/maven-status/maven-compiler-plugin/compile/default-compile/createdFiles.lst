@@ -32,6 +32,7 @@ com\dev\ForoEscolar\exceptions\GlobalExceptionHandler$ErrorResponse.class
 com\dev\ForoEscolar\repository\UserRepository.class
 com\dev\ForoEscolar\controllers\boletin\BoletinController.class
 com\dev\ForoEscolar\mapper\asistencia\AsistenciaMapper.class
+com\dev\ForoEscolar\model\UpdatedEntities.class
 com\dev\ForoEscolar\controllers\tarea\TareaController.class
 com\dev\ForoEscolar\controllers\estudiante\EstudianteController.class
 com\dev\ForoEscolar\dtos\tutorlegal\TutorLegalResponseDTO.class
