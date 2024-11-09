@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -122,6 +123,24 @@ public class AsistenciaServiceImpl implements AsistenciaService {
    throw new ApplicationException("Grado no encontrado");
     }
 
+    @Override
+    public List<AsistenciaDTO> getByFechaBeetweenAndGrado(Long gradoId, LocalDate fechaDesde, LocalDate fechaHasta) {
+
+        Optional<Grado> grado= gradoRepository.findById(gradoId);
+        if(grado.isEmpty()){
+            throw new ApplicationException("Grado no encontrado");
+        }
+        List<Asistencia> asistencias= asistenciaRepository.findByFechaBetweenAndGradoId(fechaDesde, fechaHasta, gradoId);
+
+        if (asistencias.isEmpty()) {
+            throw new ApplicationException("No se encontraron asistencias en el rango de fechas");
+        }
+        return asistencias.stream().map(asistenciaMapper::toResponseDto)
+                .toList();
+    }
+
+
+
 
     private double porcentajeAsistencia(long idEstudiante) {
 
@@ -129,5 +148,6 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         long diasDeClases= asistenciaRepository.countByContadorClases(true);
         return (diasAsistidos*100) / diasDeClases;
     }
+
 
 }
