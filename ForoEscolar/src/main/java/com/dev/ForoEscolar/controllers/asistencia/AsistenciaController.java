@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("api/asistencia")
 public class AsistenciaController {
@@ -76,4 +78,22 @@ public class AsistenciaController {
             return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, "An error occurred", null));
         }
     }
+
+    @GetMapping("/fechaYgrado/{id}")
+    @Operation(summary = "List all asistencias for a specific date and grade")
+    public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciasByDateAndGrado(
+            @PathVariable Long id,
+            @RequestParam LocalDate fechaInicio,
+            @RequestParam LocalDate fechaFin)
+    {
+        try {
+            Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.getByFechaBeetweenAndGrado(id, fechaInicio, fechaFin);
+
+            return ResponseEntity.ok(new ApiResponseDto<>(true, "Success", listarAsistencias));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, e.getMessage(), null));
+        }
+
+    }
+
 }
