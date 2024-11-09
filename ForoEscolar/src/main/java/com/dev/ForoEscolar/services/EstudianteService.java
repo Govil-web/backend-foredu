@@ -14,4 +14,5 @@ public interface EstudianteService extends GenericServiceDto<Long, EstudianteRes
     List<EstudianteResponseDTO> findByGradoId(Long gradoId);
 
     List<AsistenciaDTO> findByEstudianteId(Long id);
+
 }

@@ -6,8 +6,8 @@ import com.dev.ForoEscolar.dtos.tutorlegal.TutorLegalResponseDTO;
 import com.dev.ForoEscolar.enums.RoleEnum;
 import com.dev.ForoEscolar.exceptions.ApplicationException;
 import com.dev.ForoEscolar.mapper.tutorlegal.TutorLegalMapper;
-import com.dev.ForoEscolar.model.Estudiante;
 import com.dev.ForoEscolar.model.TutorLegal;
+import com.dev.ForoEscolar.model.UpdatedEntities;
 import com.dev.ForoEscolar.repository.TutorLegalRepository;
 import com.dev.ForoEscolar.services.AsistenciaService;
 import com.dev.ForoEscolar.services.TutorLegalService;
@@ -16,11 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class TutorLegalServiceImpl implements TutorLegalService {
@@ -64,22 +61,30 @@ public class TutorLegalServiceImpl implements TutorLegalService {
     }
 
     @Override
+    @Transactional
     public TutorLegalResponseDTO update(TutorLegalRequestDTO tutorLegalRequestDTO) {
-        TutorLegal tutorLegal = tutorLegalMapper.toEntity(tutorLegalRequestDTO);
-        Optional<TutorLegal> existEntity = tutorLegalRepository.findById(tutorLegal.getId());
-        if (existEntity.isPresent()) {
-            TutorLegal updateTutorLegal = tutorLegalRepository.save(tutorLegal);
-            return tutorLegalMapper.toResponseDTO(updateTutorLegal);
-        } else {
-            throw new RuntimeException("Tutor legal no encontrado");
+
+        Optional<TutorLegal> tutorLegal = tutorLegalRepository.findById(tutorLegalRequestDTO.id());
+
+        if (tutorLegal.isPresent()) {
+            TutorLegal tutorLegalUpdated = (TutorLegal) UpdatedEntities.update(tutorLegal.get(), tutorLegalRequestDTO);
+            if(tutorLegalRequestDTO.contrasena() != null){
+                validarPassword(tutorLegalRequestDTO.contrasena());
+                tutorLegalUpdated.setContrasena(passwordEncoder.encode(tutorLegalRequestDTO.contrasena()));
+            }
+            return tutorLegalMapper.toResponseDTO(tutorLegalRepository.save(tutorLegalUpdated));
+        } else
+        {
+            throw new ApplicationException("Tutor legal no encontrado");
         }
-    }
+}
+
 
     @Override
     public Iterable<TutorLegalResponseDTO> findAll() {
         List<TutorLegal> tutorLegal = tutorLegalRepository.findAll();
         return tutorLegal.stream().map(tutorLegalMapper::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -98,6 +103,12 @@ public class TutorLegalServiceImpl implements TutorLegalService {
         }
         return asistenciaService.getAsistenciasByGradoAndEstudiante(idTutor,gradoId);
 
+    }
+
+    protected void validarPassword(String contrasena) {
+        if (contrasena!=null && contrasena.length() < 8) {
+            throw new ApplicationException("La contraseña debe tener al menos 8 caracteres");
+        }
     }
 
 

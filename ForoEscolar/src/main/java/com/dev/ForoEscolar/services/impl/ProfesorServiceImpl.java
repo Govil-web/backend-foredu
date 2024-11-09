@@ -7,6 +7,7 @@ import com.dev.ForoEscolar.enums.RoleEnum;
 import com.dev.ForoEscolar.exceptions.ApplicationException;
 import com.dev.ForoEscolar.mapper.profesor.ProfesorMapper;
 import com.dev.ForoEscolar.model.Profesor;
+import com.dev.ForoEscolar.model.UpdatedEntities;
 import com.dev.ForoEscolar.repository.ProfesorRepository;
 import com.dev.ForoEscolar.services.ProfesorService;
 import jakarta.transaction.Transactional;
@@ -71,11 +72,15 @@ public class ProfesorServiceImpl extends GenericServiceImpl<Profesor, Long, Prof
     @Transactional
     @Override
     public ProfesorResponseDTO update(ProfesorRequestDTO profesorRequestDTO) {
-        Profesor profesor = profesorMapper.toEntity(profesorRequestDTO);
-        Optional<Profesor> existingEntity = profesorRepository.findById(getEntityId(profesor));
+
+        Optional<Profesor> existingEntity = profesorRepository.findById(profesorRequestDTO.id());
         if (existingEntity.isPresent()) {
-            Profesor updatedEntity = profesorRepository.save(profesor);
-            return profesorMapper.toResponseDTO(updatedEntity);
+            Profesor updateProfesor= (Profesor) UpdatedEntities.update(existingEntity.get(), profesorRequestDTO);
+            if(profesorRequestDTO.contrasena() != null){
+                validarPassword(profesorRequestDTO.contrasena());
+                updateProfesor.setContrasena(passwordEncoder.encode(profesorRequestDTO.contrasena()));
+            }
+            return profesorMapper.toResponseDTO(profesorRepository.save(updateProfesor));
         } else {
             throw new ApplicationException("La entidad con ese ID no fue encontrado");
         }
@@ -101,4 +106,11 @@ public class ProfesorServiceImpl extends GenericServiceImpl<Profesor, Long, Prof
     protected Long getEntityId(Profesor profesor) {
         return profesor.getId();
     }
+
+    protected void validarPassword(String contrasena) {
+        if (contrasena!=null && contrasena.length() < 8) {
+            throw new ApplicationException("La contraseña debe tener al menos 8 caracteres");
+        }
+    }
+
 }

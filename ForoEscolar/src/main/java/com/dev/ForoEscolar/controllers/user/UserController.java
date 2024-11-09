@@ -64,4 +64,15 @@ public class UserController {
         }
     }
 
+    @PutMapping("/update")
+    @Operation(summary = "Actualiza un usuario")
+    public ResponseEntity<ApiResponseDto<UserResponseDTO>> updateUser(@RequestBody @Valid UserRequestDTO userRegisterDataDTO) {
+        try {
+            UserResponseDTO user = userService.update(userRegisterDataDTO);
+            return new ResponseEntity<>(new ApiResponseDto<>(true, "Usuario actualizado", user), HttpStatus.CREATED);
+        } catch (ApplicationException e) {
+            return new ResponseEntity<>(new ApiResponseDto<>(false, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

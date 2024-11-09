@@ -5,6 +5,7 @@ import com.dev.ForoEscolar.dtos.user.UserResponseDTO;
 import com.dev.ForoEscolar.enums.RoleEnum;
 import com.dev.ForoEscolar.exceptions.ApplicationException;
 import com.dev.ForoEscolar.mapper.user.UserMapper;
+import com.dev.ForoEscolar.model.UpdatedEntities;
 import com.dev.ForoEscolar.model.User;
 import com.dev.ForoEscolar.repository.UserRepository;
 import com.dev.ForoEscolar.services.UserService;
@@ -80,5 +81,29 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO findByEmail(String username){
        User user= userRepository.findByEmail(username).orElse(null);
        return  UserMapper.INSTANCE.toResponseDTO(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDTO update(UserRequestDTO user) {
+
+        Optional<User> existingUser = userRepository.findById(user.id());
+
+        if (existingUser.isPresent()) {
+            User updatedUser = (User) UpdatedEntities.update(existingUser.get(), user);
+            if(user.contrasena() != null){
+                validarPassword(user.contrasena());
+                updatedUser.setContrasena(passwordEncoder.encode(user.contrasena()));
+            }
+            return UserMapper.INSTANCE.toResponseDTO(userRepository.save(updatedUser));
+        }else {
+            throw new ApplicationException("La entidad con ese ID no fue encontrado");
+        }
+    }
+
+    protected void validarPassword(String contrasena) {
+        if (contrasena!=null && contrasena.length() < 8) {
+            throw new ApplicationException("La contraseña debe tener al menos 8 caracteres");
+        }
     }
 }

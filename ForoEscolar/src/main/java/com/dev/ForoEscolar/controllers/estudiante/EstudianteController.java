@@ -60,7 +60,7 @@ public class EstudianteController {
 
     @PutMapping("/update")
     @Operation(summary = "Se actualiza un estudiante en particular")
-    public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> update(@RequestBody @Valid EstudianteResponseDTO dto) {
+    public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> update(@RequestBody EstudianteResponseDTO dto) {
         EstudianteResponseDTO estudiante = estudianteService.update(dto);
         String message = "Estudiante Actualizado";
         return new ResponseEntity<>(new ApiResponseDto<>(true, message, estudiante), HttpStatus.CREATED);
