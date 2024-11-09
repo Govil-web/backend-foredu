@@ -67,10 +67,15 @@ public class ProfesorController {
 
     @PutMapping("/update")
     @Operation(summary = "Se actualiza un profesor en particular")
-    public ResponseEntity<ApiResponseDto<ProfesorResponseDTO>> update(@RequestBody @Valid ProfesorRequestDTO dto) {
-        ProfesorResponseDTO profesor = profesorService.update(dto);
-        String message = "Profesor Actualizado";
-        return new ResponseEntity<>(new ApiResponseDto<>(true, message, profesor), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponseDto<ProfesorResponseDTO>> update(@RequestBody ProfesorRequestDTO dto) {
+        try{
+            ProfesorResponseDTO profesor = profesorService.update(dto);
+            String message = "Profesor Actualizado";
+            return new ResponseEntity<>(new ApiResponseDto<>(true, message, profesor), HttpStatus.CREATED);
+        } catch (ApplicationException e) {
+            return new ResponseEntity<>(new ApiResponseDto<>(false, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @DeleteMapping("/{id}")

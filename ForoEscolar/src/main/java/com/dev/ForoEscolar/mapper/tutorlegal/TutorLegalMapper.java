@@ -2,21 +2,48 @@ package com.dev.ForoEscolar.mapper.tutorlegal;
 
 import com.dev.ForoEscolar.dtos.tutorlegal.TutorLegalRequestDTO;
 import com.dev.ForoEscolar.dtos.tutorlegal.TutorLegalResponseDTO;
+import com.dev.ForoEscolar.model.Estudiante;
 import com.dev.ForoEscolar.model.TutorLegal;
+import com.dev.ForoEscolar.repository.EstudianteRepository;
+import com.dev.ForoEscolar.repository.TutorLegalRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring")
-public interface TutorLegalMapper {
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "rol", ignore = true)
-    @Mapping(target = "activo", ignore = true)
-    @Mapping(target = "estudiantes", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
-    TutorLegal toEntity(TutorLegalRequestDTO tutorLegalRequestDTO);
+@Mapper(componentModel = "spring", uses = {TutorLegalRepository.class, EstudianteRepository.class})
+public abstract class TutorLegalMapper {
 
-    TutorLegalResponseDTO toResponseDTO(TutorLegal tutorLegal);
+    @Autowired
+    private EstudianteRepository estudianteRepository;
 
-    TutorLegalRequestDTO toRequestDTO(TutorLegal tutorLegal);
+
+
+
+    @Mapping(source = "estudiante", target = "estudiantes", qualifiedByName = "longListToEstudiantes")
+   public abstract TutorLegal toEntity(TutorLegalRequestDTO tutorLegalRequestDTO);
+
+    @Mapping(source = "estudiantes", target = "estudiante", qualifiedByName = "estudiantesToLongList")
+   public abstract TutorLegalResponseDTO toResponseDTO(TutorLegal tutorLegal);
+
+
+     @Named("estudiantesToLongList")
+     protected List<Long> estudiantesToLongList(List<Estudiante> estudiantes) {
+
+         if (estudiantes == null) {
+             return Collections.emptyList();
+         }
+         return estudiantes.stream().map(estudiante -> estudiante.getId()).toList();
+
+
+     }
+
+     @Named("longListToEstudiantes")
+    protected List<Estudiante> longListToEstudiantes(List<Long> ids) {
+        return ids != null ? ids.stream().map(id -> estudianteRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
+    }
 }

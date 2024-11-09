@@ -8,6 +8,7 @@ import com.dev.ForoEscolar.mapper.asistencia.AsistenciaMapper;
 import com.dev.ForoEscolar.mapper.estudiante.EstudianteMapper;
 import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.Estudiante;
+import com.dev.ForoEscolar.model.UpdatedEntities;
 import com.dev.ForoEscolar.repository.AsistenciaRepository;
 import com.dev.ForoEscolar.repository.EstudianteRepository;
 import com.dev.ForoEscolar.services.EstudianteService;
@@ -68,12 +69,13 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Transactional
+    @Override
     public EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO) {
-        Estudiante estudiante = estudianteMapper.toEntity(estudianteRequestDTO);
-        Optional<Estudiante> existingEntity = estudianteRepository.findById(getEntityId(estudiante));
-        if (existingEntity.isPresent()) {
-            Estudiante updatedEntity = estudianteRepository.save(estudiante);
-            return estudianteMapper.toResponseDTO(updatedEntity);
+     Optional<Estudiante> estudiante= estudianteRepository.findById(estudianteRequestDTO.id());
+     if(estudiante.isPresent()){
+        Estudiante estudianteRequest=estudianteMapper.toEntity(estudianteRequestDTO);
+         Estudiante updateEstudiante= (Estudiante) UpdatedEntities.update(estudiante.get(),estudianteRequest);
+         return estudianteMapper.toResponseDTO(estudianteRepository.save(updateEstudiante));
         } else {
             throw new ApplicationException("La entidad con ese ID no fue encontrado");
         }

@@ -82,10 +82,15 @@ public class TutorLegalController {
 
     @PutMapping("/update")
     @Operation(summary = "actualiza un tutor legal específico")
-    public ResponseEntity<TutorLegalResponseDTO> update(TutorLegalRequestDTO tutorLegalRequestDTO) {
-        TutorLegalResponseDTO Tutor = tutorLegalService.update(tutorLegalRequestDTO);
-        return new ResponseEntity<>(Tutor, HttpStatus.OK);
-    }
+    public ResponseEntity<ApiResponseDto<TutorLegalResponseDTO>> update(@RequestBody TutorLegalRequestDTO tutorLegalRequestDTO) {
+
+      try   {
+          TutorLegalResponseDTO Tutor = tutorLegalService.update(tutorLegalRequestDTO);
+          return new ResponseEntity<>(new ApiResponseDto<>(true, "Tutor Actualizado", Tutor), HttpStatus.CREATED);
+      } catch (ApplicationException e) {
+         return new ResponseEntity<>(new ApiResponseDto<>(false, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+      }
+      }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "elimina un tutor legal dando como parametro el id correspondiente")
