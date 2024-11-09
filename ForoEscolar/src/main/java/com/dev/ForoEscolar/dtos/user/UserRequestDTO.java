@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 
 public record UserRequestDTO(
 
+        Long id,
+
         @NotBlank(message = "El email no puede estar vacio")
         @Email(message = "Debe ingresar una dirección de correo electrónico válida")
         String email,

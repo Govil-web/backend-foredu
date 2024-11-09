@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TutorLegal extends User{
 
-    @OneToMany(mappedBy = "tutor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Estudiante> estudiantes;
 
 }

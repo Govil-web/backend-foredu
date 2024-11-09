@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-11-06T22:36:17-0300",
+    date = "2024-11-09T13:26:24-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
-public class TutorLegalMapperImpl implements TutorLegalMapper {
+public class TutorLegalMapperImpl extends TutorLegalMapper {
 
     @Override
     public TutorLegal toEntity(TutorLegalRequestDTO tutorLegalRequestDTO) {
@@ -24,6 +24,8 @@ public class TutorLegalMapperImpl implements TutorLegalMapper {
 
         TutorLegal tutorLegal = new TutorLegal();
 
+        tutorLegal.setEstudiantes( longListToEstudiantes( tutorLegalRequestDTO.estudiante() ) );
+        tutorLegal.setId( tutorLegalRequestDTO.id() );
         tutorLegal.setNombre( tutorLegalRequestDTO.nombre() );
         tutorLegal.setApellido( tutorLegalRequestDTO.apellido() );
         tutorLegal.setDni( tutorLegalRequestDTO.dni() );
@@ -44,6 +46,7 @@ public class TutorLegalMapperImpl implements TutorLegalMapper {
             return null;
         }
 
+        List<Long> estudiante = null;
         Long id = null;
         String email = null;
         String nombre = null;
@@ -55,6 +58,7 @@ public class TutorLegalMapperImpl implements TutorLegalMapper {
         String rol = null;
         boolean activo = false;
 
+        estudiante = estudiantesToLongList( tutorLegal.getEstudiantes() );
         id = tutorLegal.getId();
         email = tutorLegal.getEmail();
         nombre = tutorLegal.getNombre();
@@ -70,45 +74,8 @@ public class TutorLegalMapperImpl implements TutorLegalMapper {
         }
         activo = tutorLegal.isActivo();
 
-        List<Long> estudiante = null;
-
         TutorLegalResponseDTO tutorLegalResponseDTO = new TutorLegalResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucion, rol, activo, estudiante );
 
         return tutorLegalResponseDTO;
-    }
-
-    @Override
-    public TutorLegalRequestDTO toRequestDTO(TutorLegal tutorLegal) {
-        if ( tutorLegal == null ) {
-            return null;
-        }
-
-        Long id = null;
-        String email = null;
-        String nombre = null;
-        String apellido = null;
-        String dni = null;
-        String tipoDocumento = null;
-        String telefono = null;
-        String contrasena = null;
-        String institucion = null;
-
-        id = tutorLegal.getId();
-        email = tutorLegal.getEmail();
-        nombre = tutorLegal.getNombre();
-        apellido = tutorLegal.getApellido();
-        dni = tutorLegal.getDni();
-        if ( tutorLegal.getTipoDocumento() != null ) {
-            tipoDocumento = tutorLegal.getTipoDocumento().name();
-        }
-        telefono = tutorLegal.getTelefono();
-        contrasena = tutorLegal.getContrasena();
-        institucion = tutorLegal.getInstitucion();
-
-        List<Long> estudiante = null;
-
-        TutorLegalRequestDTO tutorLegalRequestDTO = new TutorLegalRequestDTO( id, email, nombre, apellido, dni, tipoDocumento, telefono, contrasena, institucion, estudiante );
-
-        return tutorLegalRequestDTO;
     }
 }
