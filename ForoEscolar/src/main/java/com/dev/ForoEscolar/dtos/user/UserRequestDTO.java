@@ -21,12 +21,12 @@ public record UserRequestDTO(
         String dni,
         @NotBlank(message = "Debe ingresar el tipo de documento")
         String tipoDocumento,
-        @NotNull(message = "Debe agregar un número de teléfono")
+        @NotBlank(message = "Debe agregar un número de teléfono")
         String telefono,
         @NotNull(message = "La contraseña no puede estar vacía")
         @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
         String contrasena,
-        @NotNull(message = "Debe ingresar el nombre de la institucion educativa")
+        @NotBlank(message = "Debe ingresar el nombre de la institucion educativa")
         String institucion
 
 ) {
