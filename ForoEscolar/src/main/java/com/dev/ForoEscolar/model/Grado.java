@@ -37,6 +37,12 @@ public class Grado {
     @OneToMany(mappedBy = "grado",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Estudiante> estudiantes;
 
+    private int contador= 0;
+
+    public void incrementarContador(){
+        this.contador++;
+    }
+
 //    @OneToMany(mappedBy = "asistencia",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
 //    private List<Asistencia> asistencia;
 
