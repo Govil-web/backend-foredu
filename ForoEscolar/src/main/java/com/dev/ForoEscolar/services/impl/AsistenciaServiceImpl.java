@@ -46,8 +46,10 @@ public class AsistenciaServiceImpl implements AsistenciaService {
     @Transactional
     public AsistenciaDTO save(AsistenciaDTO requestDTO) {
         Asistencia newAsistencia = asistenciaMapper.toEntity(requestDTO);
+       Grado grado= gradoRepository.findById(newAsistencia.getGrado().getId()).orElse(null);
 
-        newAsistencia.setContadorTotal(asistenciaRepository.countByContadorClases(true));
+        newAsistencia.setContadorTotal(grado.getContador());
+        newAsistencia.setContadorClases(true);
         newAsistencia.setAsistenciaAlumno(asistenciaRepository.countByEstudianteIdAndAsistioTrue(requestDTO.getEstudiante()));
 
         asistenciaRepository.save(newAsistencia);

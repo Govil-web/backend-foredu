@@ -20,10 +20,10 @@ VALUES (4);
 INSERT INTO administrador_escolar (user_id)
 VALUES (5);
 -- Insertar grados
-INSERT INTO grado (aula, curso, turno, materia, profesor_id)
-VALUES ('A', 'PRIMERO', 'MAÑANA', 'MATEMATICAS', 1),
-       ('B', 'SEGUNDO', 'TARDE', 'LENGUAJE', 2),
-       ('C', 'TERCERO', 'NOCHE', 'CIENCIAS', 3);
+INSERT INTO grado (aula, curso, turno, materia,contador, profesor_id)
+VALUES ('A', 'PRIMERO', 'MAÑANA', 'MATEMATICAS',0, 1),
+       ('B', 'SEGUNDO', 'TARDE', 'LENGUAJE',0, 2),
+       ('C', 'TERCERO', 'NOCHE', 'CIENCIAS',0, 3);
 
 
 -- Insertar estudiantes

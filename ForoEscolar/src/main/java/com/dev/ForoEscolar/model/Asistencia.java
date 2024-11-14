@@ -22,7 +22,7 @@ public class Asistencia {
 
     private boolean contadorClases= false;
 
-    private int contadorTotal;
+    private int contadorTotal=0;
 
     private int asistenciaAlumno;
 
@@ -44,15 +44,22 @@ public class Asistencia {
     @JoinColumn(name = "grado_id")
     private Grado grado;
 
+    public void actualizarContadorGrado(){
+        if(this.grado!=null){
+            this.grado.incrementarContador();
+        }
+    }
+
     // Dias que hubo clases y si el alumno asistio
     @PrePersist
     private void diasDeClasesTranscurridos(){
-        if(this.contadorClases){
-            this.contadorTotal ++;
-        }
+//        if(this.contadorClases){
+//            this.contadorTotal ++;
+//        }
         if(asistio){
             this.asistenciaAlumno ++;
         }
+       this.actualizarContadorGrado();
     }
 
 }
