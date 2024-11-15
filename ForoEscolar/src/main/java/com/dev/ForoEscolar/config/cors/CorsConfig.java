@@ -15,6 +15,7 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOriginPattern("https://test.zilibro.com/");
+        corsConfiguration.addAllowedOriginPattern("https://globalia-tech.com/");
         corsConfiguration.addAllowedOriginPattern("http://localhost:4200");
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         corsConfiguration.setAllowCredentials(true);
