@@ -22,7 +22,7 @@ public class Asistencia {
 
     private boolean contadorClases= false;
 
-    private int contadorTotal=0;
+    private int contadorTotal;
 
     private int asistenciaAlumno;
 
@@ -52,14 +52,10 @@ public class Asistencia {
 
     // Dias que hubo clases y si el alumno asistio
     @PrePersist
-    private void diasDeClasesTranscurridos(){
-//        if(this.contadorClases){
-//            this.contadorTotal ++;
-//        }
-        if(asistio){
-            this.asistenciaAlumno ++;
+    private void diasDeClasesTranscurridos() {
+        if (asistio) {
+            this.asistenciaAlumno++;
         }
-       this.actualizarContadorGrado();
     }
 
 }

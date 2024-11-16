@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AsistenciaRepository extends GenericRepository<Asistencia, Long> {
@@ -22,5 +23,8 @@ public interface AsistenciaRepository extends GenericRepository<Asistencia, Long
 
     int countByEstudianteIdAndAsistioTrue(Long estudianteId);
     List<Asistencia> findByFechaBetweenAndGradoId(LocalDate startDate, LocalDate endDate, Long gradoId);
+
+    boolean existsByFechaAndGradoId(LocalDate fecha, Long gradoId);
+
 
 }

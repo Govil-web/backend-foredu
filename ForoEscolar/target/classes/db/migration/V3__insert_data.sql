@@ -21,28 +21,31 @@ INSERT INTO administrador_escolar (user_id)
 VALUES (5);
 -- Insertar grados
 INSERT INTO grado (aula, curso, turno, materia,contador, profesor_id)
-VALUES ('A', 'PRIMERO', 'MAÑANA', 'MATEMATICAS',0, 1),
-       ('B', 'SEGUNDO', 'TARDE', 'LENGUAJE',0, 2),
-       ('C', 'TERCERO', 'NOCHE', 'CIENCIAS',0, 3);
+VALUES ('A', 'PRIMERO', 'MAÑANA', 'MATEMATICAS',2, 1),
+       ('B', 'SEGUNDO', 'TARDE', 'LENGUAJE',2, 2),
+       ('C', 'TERCERO', 'NOCHE', 'CIENCIAS',2, 3);
 
 
 -- Insertar estudiantes
 INSERT INTO estudiantes (nombre, apellido, dni, genero, rol, fecha_nacimiento, activo, tipo_documento, grado_id ,tutor_legal_id)
 VALUES ('Carlos', 'Sánchez', '45678901D', 'MASCULINO', 'ESTUDIANTE', '2010-04-15', 1,  'DNI',1 ,4),
-       ('Carlos2', 'Sánchez2', '45678901F', 'MASCULINO', 'ESTUDIANTE', '2010-04-15', 1,  'DNI',1 ,4);
+       ('Carlos2', 'Sánchez2', '45678901F', 'MASCULINO', 'ESTUDIANTE', '2010-04-15', 1,  'DNI',1 ,4),
+       ('Mario', 'Rodriguez', '751558', 'MASCULINO', 'ESTUDIANTE', '2012-12-20', 1,  'DNI',3 ,4);
 
 -- Insertar relación entre profesores y estudiantes
 INSERT INTO profesor_estudiante (profesor_id, estudiante_id, materia)
 VALUES (1, 1, 'MATEMATICAS'),
-       (2, 1, 'LENGUAJE'),
-       (3, 1, 'CIENCIAS');
+       (2, 1,'LENGUAJE'),
+       (3, 1,'CIENCIAS');
 
 -- Insertar asistencia
 INSERT INTO asistencia (estudiante_id, asistio, contador_clases,contador_total, asistencia_alumno, fecha, profesor_id, grado_id, observaciones)
-VALUES (1, 1, 1,3,2, '2024-09-14', 1,1, 'Ninguna'),
-       (1, 1, 1,4,3, '2024-09-14', 1,1, 'Ninguna'),
-       (2, 0, 1,4,1, '2024-09-14', 1,2, 'Ninguna'),
-       (2, 1, 1,5,2, '2024-09-16', 3,2, 'Ninguna');
+VALUES (1, 1, 1,1,1, '2024-09-14', 1,1, 'Ninguna'),
+       (1, 0, 1,2,1, '2024-09-15', 1,1, 'Ninguna'),
+       (2, 1, 1,1,1, '2024-09-14', 2,2, 'Ninguna'),
+       (2, 0, 1,2,1, '2024-09-15', 2,2, 'Ninguna'),
+		(3, 1, 1,1,1, '2024-09-14', 3,3, 'Ninguna'),
+       (3, 1, 1,2,2, '2024-09-15', 3,3, 'Ninguna');
 
 -- Insertar notificaciones
 INSERT INTO notificaciones (administrador_escolar_id, fecha_envio, tutor_legal_id, mensaje, tipo_notificacion, titulo)
