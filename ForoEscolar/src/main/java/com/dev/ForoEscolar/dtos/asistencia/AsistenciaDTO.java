@@ -1,5 +1,6 @@
 package com.dev.ForoEscolar.dtos.asistencia;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.io.Serializable;
@@ -8,16 +9,17 @@ import java.time.LocalDate;
 
 @Builder
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AsistenciaDTO implements Serializable {
 
     Long id;
     boolean asistio;
-    boolean contadorClases;
-    int contadorTotal;
+   // int contadorTotal;
     int asistenciaAlumno;
     LocalDate fecha;
-    String observaciones;
+    String justificativos;
     double porcentajeAsistencia;
+    String nombreEstudiante;
     Long profesor;
     Long estudiante;
     Long grado;

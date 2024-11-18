@@ -1,6 +1,7 @@
 package com.dev.ForoEscolar.mapper.asistencia;
 
 import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
+import com.dev.ForoEscolar.dtos.asistencia.AsistenciaRequestDto;
 import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.Estudiante;
 import javax.annotation.processing.Generated;
@@ -8,30 +9,27 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-11-13T22:20:44-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2024-11-16T13:06:42-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
 public class AsistenciaMapperImpl extends AsistenciaMapper {
 
     @Override
-    public Asistencia toEntity(AsistenciaDTO asistenciaDTO) {
-        if ( asistenciaDTO == null ) {
+    public Asistencia toEntity(AsistenciaRequestDto asistenciaRquestDto) {
+        if ( asistenciaRquestDto == null ) {
             return null;
         }
 
         Asistencia asistencia = new Asistencia();
 
-        asistencia.setProfesor( longToProfesor( asistenciaDTO.getProfesor() ) );
-        asistencia.setEstudiante( longToEstudiante( asistenciaDTO.getEstudiante() ) );
-        asistencia.setGrado( longToGrado( asistenciaDTO.getGrado() ) );
-        asistencia.setId( asistenciaDTO.getId() );
-        asistencia.setAsistio( asistenciaDTO.isAsistio() );
-        asistencia.setContadorClases( asistenciaDTO.isContadorClases() );
-        asistencia.setContadorTotal( asistenciaDTO.getContadorTotal() );
-        asistencia.setAsistenciaAlumno( asistenciaDTO.getAsistenciaAlumno() );
-        asistencia.setFecha( asistenciaDTO.getFecha() );
-        asistencia.setObservaciones( asistenciaDTO.getObservaciones() );
+        asistencia.setProfesor( longToProfesor( asistenciaRquestDto.getProfesor() ) );
+        asistencia.setEstudiante( longToEstudiante( asistenciaRquestDto.getEstudiante() ) );
+        asistencia.setGrado( longToGrado( asistenciaRquestDto.getGrado() ) );
+        asistencia.setObservaciones( asistenciaRquestDto.getJustificativos() );
+        asistencia.setId( asistenciaRquestDto.getId() );
+        asistencia.setAsistio( asistenciaRquestDto.isAsistio() );
+        asistencia.setFecha( asistenciaRquestDto.getFecha() );
 
         return asistencia;
     }
@@ -44,17 +42,15 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
 
         AsistenciaDTO.AsistenciaDTOBuilder asistenciaDTO = AsistenciaDTO.builder();
 
-        asistenciaDTO.porcentajeAsistencia( calcular( asistenciaEstudianteId( asistencia ) ) );
-        asistenciaDTO.profesor( profesorToLong( asistencia.getProfesor() ) );
+        asistenciaDTO.id( asistencia.getId() );
+        asistenciaDTO.porcentajeAsistencia( calcularPorcentaje( asistenciaEstudianteId( asistencia ) ) );
+        asistenciaDTO.justificativos( asistencia.getObservaciones() );
+        asistenciaDTO.nombreEstudiante( estudianteName( asistencia.getEstudiante() ) );
         asistenciaDTO.estudiante( estudianteToLong( asistencia.getEstudiante() ) );
         asistenciaDTO.grado( gradoToLong( asistencia.getGrado() ) );
-        asistenciaDTO.id( asistencia.getId() );
-        asistenciaDTO.asistio( asistencia.isAsistio() );
-        asistenciaDTO.contadorClases( asistencia.isContadorClases() );
-        asistenciaDTO.contadorTotal( asistencia.getContadorTotal() );
-        asistenciaDTO.asistenciaAlumno( asistencia.getAsistenciaAlumno() );
         asistenciaDTO.fecha( asistencia.getFecha() );
-        asistenciaDTO.observaciones( asistencia.getObservaciones() );
+        asistenciaDTO.asistio( asistencia.isAsistio() );
+        asistenciaDTO.asistenciaAlumno( asistencia.getAsistenciaAlumno() );
 
         return asistenciaDTO.build();
     }

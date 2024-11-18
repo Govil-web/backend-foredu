@@ -6,6 +6,7 @@ com\dev\ForoEscolar\services\BoletinService.class
 com\dev\ForoEscolar\services\impl\GradoServiceImp.class
 com\dev\ForoEscolar\mapper\tutorlegal\TutorLegalMapperImpl.class
 com\dev\ForoEscolar\model\Asistencia.class
+com\dev\ForoEscolar\dtos\asistencia\AsistenciaRequestDto.class
 com\dev\ForoEscolar\enums\RoleEnum.class
 com\dev\ForoEscolar\dtos\boletin\BoletinDto.class
 com\dev\ForoEscolar\services\impl\UserDetailsServiceImpl.class
