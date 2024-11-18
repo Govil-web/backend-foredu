@@ -44,14 +44,17 @@ public class Asistencia {
     @JoinColumn(name = "grado_id")
     private Grado grado;
 
+    public void actualizarContadorGrado(){
+        if(this.grado!=null){
+            this.grado.incrementarContador();
+        }
+    }
+
     // Dias que hubo clases y si el alumno asistio
     @PrePersist
-    private void diasDeClasesTranscurridos(){
-        if(this.contadorClases){
-            this.contadorTotal ++;
-        }
-        if(asistio){
-            this.asistenciaAlumno ++;
+    private void diasDeClasesTranscurridos() {
+        if (asistio) {
+            this.asistenciaAlumno++;
         }
     }
 

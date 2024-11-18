@@ -1,12 +1,11 @@
 package com.dev.ForoEscolar.repository;
 
-import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
 import com.dev.ForoEscolar.model.Asistencia;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AsistenciaRepository extends GenericRepository<Asistencia, Long> {
@@ -24,6 +23,8 @@ public interface AsistenciaRepository extends GenericRepository<Asistencia, Long
 
     int countByEstudianteIdAndAsistioTrue(Long estudianteId);
     List<Asistencia> findByFechaBetweenAndGradoId(LocalDate startDate, LocalDate endDate, Long gradoId);
+
+    boolean existsByFechaAndGradoId(LocalDate fecha, Long gradoId);
 
 
 }

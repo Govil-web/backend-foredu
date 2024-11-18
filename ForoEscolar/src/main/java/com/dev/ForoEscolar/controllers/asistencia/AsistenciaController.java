@@ -3,7 +3,9 @@ package com.dev.ForoEscolar.controllers.asistencia;
 
 import com.dev.ForoEscolar.dtos.ApiResponseDto;
 import com.dev.ForoEscolar.dtos.asistencia.AsistenciaDTO;
+import com.dev.ForoEscolar.dtos.asistencia.AsistenciaRequestDto;
 import com.dev.ForoEscolar.dtos.user.UserResponseDTO;
+import com.dev.ForoEscolar.exceptions.ApplicationException;
 import com.dev.ForoEscolar.services.AsistenciaService;
 import com.dev.ForoEscolar.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +33,7 @@ public class AsistenciaController {
 
     @PostMapping("/add")
     @Operation(summary = "Register a new asistencia")
-    public ResponseEntity<ApiResponseDto<AsistenciaDTO>> registerAsistencia(@RequestBody AsistenciaDTO asistenciaDTO) {
+    public ResponseEntity<ApiResponseDto<AsistenciaDTO>> registerAsistencia(@RequestBody AsistenciaRequestDto asistenciaDTO) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
         if (user.rol().equals("PROFESOR")) {
@@ -45,7 +47,6 @@ public class AsistenciaController {
         }
 
     }
-
     @GetMapping("/{id}")
     @Operation(summary = "Get asistencia by id")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciaById(@PathVariable Long id) {
@@ -54,7 +55,6 @@ public class AsistenciaController {
                 .orElseGet(() -> ResponseEntity.badRequest().body(new ApiResponseDto<>(false, "Asistencia not found", null)));
 
     }
-
     @GetMapping("/grado/{id}")
     @Operation(summary = "Get asistencia by grado")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciaBygrado(@PathVariable Long id) {
@@ -65,7 +65,6 @@ public class AsistenciaController {
             return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, e.getMessage(), null));
         }
     }
-
 
     @GetMapping("/getAll")
     @Operation(summary = "List all asistencias")
@@ -78,7 +77,6 @@ public class AsistenciaController {
             return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, "An error occurred", null));
         }
     }
-
     @GetMapping("/fechaYgrado/{id}")
     @Operation(summary = "List all asistencias for a specific date and grade")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciasByDateAndGrado(
@@ -90,10 +88,20 @@ public class AsistenciaController {
             Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.getByFechaBeetweenAndGrado(id, fechaInicio, fechaFin);
 
             return ResponseEntity.ok(new ApiResponseDto<>(true, "Success", listarAsistencias));
-        } catch (Exception e) {
+        } catch (ApplicationException e) {
             return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, e.getMessage(), null));
         }
 
+    }
+    @PutMapping("/update/{id}")
+    @Operation(summary = "Update asistencia")
+    public ResponseEntity<ApiResponseDto<AsistenciaDTO>> updateAsistencia(@PathVariable Long id, @RequestBody AsistenciaRequestDto asistenciaDTO) {
+        try {
+             asistenciaService.update(asistenciaDTO);
+            return ResponseEntity.ok(new ApiResponseDto<>(true, "Success Updated", null));
+        } catch (ApplicationException e) {
+            return ResponseEntity.badRequest().body(new ApiResponseDto<>(false, e.getMessage(), null));
+        }
     }
 
 }

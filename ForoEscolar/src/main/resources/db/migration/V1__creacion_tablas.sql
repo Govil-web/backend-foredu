@@ -38,6 +38,7 @@ CREATE TABLE grado (
                        curso ENUM('PRIMERO', 'SEGUNDO', 'TERCERO', 'CUARTO', 'QUINTO', 'SEXTO'),
                        turno ENUM('MAÑANA', 'TARDE', 'NOCHE'),
                        materia ENUM('MATEMATICAS', 'CIENCIAS', 'LENGUAJE', 'HISTORIA'),
+                       contador int,
                        profesor_id BIGINT,
                        FOREIGN KEY (profesor_id) REFERENCES profesores(user_id) ON DELETE SET NULL
 );
