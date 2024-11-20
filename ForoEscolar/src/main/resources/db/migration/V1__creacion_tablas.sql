@@ -10,7 +10,7 @@ CREATE TABLE users (
                        email VARCHAR(255) UNIQUE,
                        institucion VARCHAR(255),
                        telefono VARCHAR(20),
-                       rol ENUM('ADMINISTRADOR', 'PROFESOR', 'TUTOR'),
+                       rol ENUM('ROLE_ADMINISTRADOR', 'ROLE_PROFESOR', 'ROLE_TUTOR'),
                        user_type VARCHAR(50)
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE estudiantes (
                              apellido VARCHAR(100),
                              dni VARCHAR(50) UNIQUE,
                              genero ENUM('MASCULINO', 'FEMENINO'),
-                             rol ENUM('ADMINISTRADOR', 'PROFESOR', 'TUTOR', 'ESTUDIANTE'),
+                             rol ENUM('ROLE_ADMINISTRADOR', 'ROLE_PROFESOR', 'ROLE_TUTOR', 'ROLE_ESTUDIANTE'),
                              fecha_nacimiento DATE,
                              activo TINYINT(1),
                              grado_id BIGINT,

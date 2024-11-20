@@ -45,7 +45,7 @@ public class TutorLegalServiceImpl implements TutorLegalService {
             }
             TutorLegal newTutorLegal = tutorLegalMapper.toEntity(tutorLegalRequestDTO);
             newTutorLegal.setContrasena(passwordEncoder.encode(tutorLegalRequestDTO.contrasena()));
-            newTutorLegal.setRol(RoleEnum.valueOf("TUTOR"));
+            newTutorLegal.setRol(RoleEnum.valueOf("ROLE_TUTOR"));
             newTutorLegal.setActivo(true);
             newTutorLegal = tutorLegalRepository.save(newTutorLegal);
             return tutorLegalMapper.toResponseDTO(newTutorLegal);

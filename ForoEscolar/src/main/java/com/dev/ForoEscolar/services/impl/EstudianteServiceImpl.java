@@ -9,7 +9,6 @@ import com.dev.ForoEscolar.mapper.estudiante.EstudianteMapper;
 import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.Estudiante;
 import com.dev.ForoEscolar.model.UpdatedEntities;
-import com.dev.ForoEscolar.repository.AsistenciaRepository;
 import com.dev.ForoEscolar.repository.EstudianteRepository;
 import com.dev.ForoEscolar.services.EstudianteService;
 import jakarta.transaction.Transactional;
@@ -25,23 +24,21 @@ public class EstudianteServiceImpl implements EstudianteService {
 
 
     private final EstudianteRepository estudianteRepository;
-    private final AsistenciaRepository asistenciaRepository;
     private final EstudianteMapper estudianteMapper;
     private final AsistenciaMapper asistenciaMapper;
 
     @Autowired
-    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper estudianteMapper, AsistenciaMapper asistenciaMapper, AsistenciaRepository asistenciaRepository) {
+    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper estudianteMapper, AsistenciaMapper asistenciaMapper) {
         this.estudianteRepository = estudianteRepository;
         this.estudianteMapper = estudianteMapper;
         this.asistenciaMapper = asistenciaMapper;
-        this.asistenciaRepository = asistenciaRepository;
     }
 
     @Transactional
     @Override
     public EstudianteResponseDTO save(EstudianteResponseDTO estudianteRequestDTO) {
         Estudiante estudiante = estudianteMapper.toEntity(estudianteRequestDTO);
-        estudiante.setRol(RoleEnum.valueOf("ESTUDIANTE"));
+        estudiante.setRol(RoleEnum.valueOf("ROLE_ESTUDIANTE"));
         estudiante.setActivo(true);
         estudiante = estudianteRepository.save(estudiante);
         return estudianteMapper.toResponseDTO(estudiante);
@@ -74,7 +71,7 @@ public class EstudianteServiceImpl implements EstudianteService {
      Optional<Estudiante> estudiante= estudianteRepository.findById(estudianteRequestDTO.id());
      if(estudiante.isPresent()){
         Estudiante estudianteRequest=estudianteMapper.toEntity(estudianteRequestDTO);
-         Estudiante updateEstudiante= (Estudiante) UpdatedEntities.update(estudiante.get(),estudianteRequest);
+         Estudiante updateEstudiante= UpdatedEntities.update(estudiante.get(),estudianteRequest);
          return estudianteMapper.toResponseDTO(estudianteRepository.save(updateEstudiante));
         } else {
             throw new ApplicationException("La entidad con ese ID no fue encontrado");
@@ -96,9 +93,6 @@ public class EstudianteServiceImpl implements EstudianteService {
                 .collect(Collectors.toList());
     }
 
-    //Auxiliar para obtener el ID de la entidad
-    protected Long getEntityId(Estudiante estudiante) {
-        return estudiante.getId();
-    }
+
 
 }

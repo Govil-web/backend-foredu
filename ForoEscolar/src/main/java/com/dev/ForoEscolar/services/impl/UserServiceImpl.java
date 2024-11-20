@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             }
             User newUser = UserMapper.INSTANCE.toEntity(user);
             newUser.setContrasena(passwordEncoder.encode(user.contrasena()));
-            newUser.setRol(RoleEnum.valueOf("ADMINISTRADOR"));
+            newUser.setRol(RoleEnum.valueOf("ROLE_ADMINISTRADOR"));
             newUser.setActivo(true);
             newUser = userRepository.save(newUser);
             return UserMapper.INSTANCE.toResponseDTO(newUser);
