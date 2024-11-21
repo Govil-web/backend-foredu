@@ -44,7 +44,7 @@ public class ProfesorServiceImpl extends GenericServiceImpl<Profesor, Long, Prof
             }
             Profesor newProfesor = profesorMapper.toEntity(profesorRequestDTO);
             newProfesor.setContrasena(passwordEncoder.encode(profesorRequestDTO.contrasena()));
-            newProfesor.setRol(RoleEnum.valueOf("PROFESOR"));
+            newProfesor.setRol(RoleEnum.valueOf("ROLE_PROFESOR"));
             newProfesor.setActivo(true);
             newProfesor = profesorRepository.save(newProfesor);
             return profesorMapper.toResponseDTO(newProfesor);

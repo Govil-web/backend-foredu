@@ -43,6 +43,7 @@ C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\se
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\dtos\profesor\ProfesorResponseDTO.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\services\impl\ProfesorServiceImpl.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\services\TutorLegalService.java
+C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\config\security\SecurityService.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\services\GenericServiceDto.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\dtos\user\UserRequestDTO.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\controllers\calificacion\CalificacionController.java

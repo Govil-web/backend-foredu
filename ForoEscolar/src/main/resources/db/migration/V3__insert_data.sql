@@ -1,10 +1,10 @@
 -- Insertar usuarios
 INSERT INTO users (dni, tipo_documento, activo, nombre, apellido, contraseña, email, institucion, telefono, rol, user_type)
-VALUES ('12345678A', 'DNI', 1, 'Juan', 'Pérez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor@gmail.com', 'Instituto ABC', '123456789', 'PROFESOR', 'PROFESOR'),
-       ('12345678D', 'DNI', 1, 'Juan2', 'Pérez2', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor2@gmail.com', 'Instituto ABC', '123456789', 'PROFESOR', 'PROFESOR'),
-       ('12345678E', 'DNI', 1, 'Juan3', 'Pérez3', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor3@gmail.com', 'Instituto ABC', '123456789', 'PROFESOR', 'PROFESOR'),
-       ('23456789B', 'DNI', 1, 'Ana', 'Gómez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'tutor@gmail.com', 'Instituto ABC', '987654321', 'TUTOR', 'TUTOR_LEGAL'),
-       ('34567890C', 'DNI', 1, 'Luis', 'Martínez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'admin@gmail.com', 'Instituto XYZ', '456789123', 'ADMINISTRADOR', 'User');
+VALUES ('12345678A', 'DNI', 1, 'Juan', 'Pérez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor@gmail.com', 'Instituto ABC', '123456789', 'ROLE_PROFESOR', 'PROFESOR'),
+       ('12345678D', 'DNI', 1, 'Juan2', 'Pérez2', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor2@gmail.com', 'Instituto ABC', '123456789', 'ROLE_PROFESOR', 'PROFESOR'),
+       ('12345678E', 'DNI', 1, 'Juan3', 'Pérez3', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor3@gmail.com', 'Instituto ABC', '123456789', 'ROLE_PROFESOR', 'PROFESOR'),
+       ('23456789B', 'DNI', 1, 'Ana', 'Gómez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'tutor@gmail.com', 'Instituto ABC', '987654321', 'ROLE_TUTOR', 'TUTOR_LEGAL'),
+       ('34567890C', 'DNI', 1, 'Luis', 'Martínez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'admin@gmail.com', 'Instituto XYZ', '456789123', 'ROLE_ADMINISTRADOR', 'User');
 
 -- Insertar profesores
 INSERT INTO profesores (user_id, materia)
@@ -28,9 +28,9 @@ VALUES ('A', 'PRIMERO', 'MAÑANA', 'MATEMATICAS',2, 1),
 
 -- Insertar estudiantes
 INSERT INTO estudiantes (nombre, apellido, dni, genero, rol, fecha_nacimiento, activo, tipo_documento, grado_id ,tutor_legal_id)
-VALUES ('Carlos', 'Sánchez', '45678901D', 'MASCULINO', 'ESTUDIANTE', '2010-04-15', 1,  'DNI',1 ,4),
-       ('Carlos2', 'Sánchez2', '45678901F', 'MASCULINO', 'ESTUDIANTE', '2010-04-15', 1,  'DNI',1 ,4),
-       ('Mario', 'Rodriguez', '751558', 'MASCULINO', 'ESTUDIANTE', '2012-12-20', 1,  'DNI',3 ,4);
+VALUES ('Carlos', 'Sánchez', '45678901D', 'MASCULINO', 'ROLE_ESTUDIANTE', '2010-04-15', 1,  'DNI',1 ,4),
+       ('Carlos2', 'Sánchez2', '45678901F', 'MASCULINO', 'ROLE_ESTUDIANTE', '2010-04-15', 1,  'DNI',1 ,4),
+       ('Mario', 'Rodriguez', '751558', 'MASCULINO', 'ROLE_ESTUDIANTE', '2012-12-20', 1,  'DNI',3 ,4);
 
 -- Insertar relación entre profesores y estudiantes
 INSERT INTO profesor_estudiante (profesor_id, estudiante_id, materia)
@@ -54,7 +54,7 @@ VALUES (5, NOW(), 4, 'Reunión de seguimiento', 'EVENTO', 'Reunión de seguimien
 -- Insertar tareas
 INSERT INTO tarea (profesor_id, estudiante_id, titulo, descripcion, estado_de_entrega, fecha_entrega, activo)
 VALUES (1, 1, 'Tarea de Matemáticas', 'Resolver problemas del capítulo 3', 'PENDIENTE', '2024-09-30', 1),
-       (2, 1, 'Tarea de lENGUAJE', 'Resolver cuestionario del capítulo 4', 'PENDIENTE', '2024-09-30', 1);
+       (2, 1, 'Tarea de lenguaje', 'Resolver cuestionario del capítulo 4', 'PENDIENTE', '2024-09-30', 1);
 
 -- Insertar boletines
 INSERT INTO boletin (estudiante_id, profesor_id, periodo, promedio, fecha, curso, observaciones)
