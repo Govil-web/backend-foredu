@@ -145,4 +145,8 @@ public class SecurityService {
             default -> false;
         };
     }
+
+    public boolean canViewGrade(Long id, Long id1) {
+        return false;
+    }
 }

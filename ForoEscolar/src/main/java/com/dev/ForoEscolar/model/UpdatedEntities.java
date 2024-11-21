@@ -3,13 +3,9 @@ package com.dev.ForoEscolar.model;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.data.repository.Repository;
+
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Locale.filter;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 public class UpdatedEntities {
 
