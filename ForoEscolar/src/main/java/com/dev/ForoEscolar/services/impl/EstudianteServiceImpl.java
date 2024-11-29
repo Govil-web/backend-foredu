@@ -68,15 +68,63 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Transactional
     @Override
     public EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO) {
-     Optional<Estudiante> estudiante= estudianteRepository.findById(estudianteRequestDTO.id());
-     if(estudiante.isPresent()){
-        Estudiante estudianteRequest=estudianteMapper.toEntity(estudianteRequestDTO);
-         Estudiante updateEstudiante= UpdatedEntities.update(estudiante.get(),estudianteRequest);
-         return estudianteMapper.toResponseDTO(estudianteRepository.save(updateEstudiante));
-        } else {
-            throw new ApplicationException("La entidad con ese ID no fue encontrado");
-        }
+        // Buscamos el estudiante por ID
+        Estudiante estudianteExistente = estudianteRepository.findById(estudianteRequestDTO.id())
+                .orElseThrow(() -> new ApplicationException("La entidad con ese ID " + estudianteRequestDTO.id() + " no fue encontrada"));
+
+        // Mapeamos el DTO recibido a una entidad Estudiante
+        Estudiante estudianteRequest = estudianteMapper.toEntity(estudianteRequestDTO);
+
+        // Actualizamos solo los campos que son modificados (como el nombre)
+        actualizarCampos(estudianteExistente, estudianteRequest);
+
+        // Guardamos la entidad actualizada y la convertimos en DTO de respuesta
+        Estudiante estudianteActualizado = estudianteRepository.save(estudianteExistente);
+        return estudianteMapper.toResponseDTO(estudianteActualizado);
     }
+
+    /**
+     * Método que actualiza solo los campos no coleccionados del estudiante.
+     */
+    private void actualizarCampos(Estudiante estudianteExistente, Estudiante estudianteRequest) {
+        // Actualizamos solo los campos que necesitan ser modificados, como el nombre
+        if (estudianteRequest.getNombre() != null) {
+            estudianteExistente.setNombre(estudianteRequest.getNombre());
+        }
+        if (estudianteRequest.getApellido() != null) {
+            estudianteExistente.setApellido(estudianteRequest.getApellido());
+        }
+        if (estudianteRequest.getDni() != null) {
+            estudianteExistente.setDni(estudianteRequest.getDni());
+        }
+        if (estudianteRequest.getGenero() != null) {
+            estudianteExistente.setGenero(estudianteRequest.getGenero());
+        }
+        if (estudianteRequest.getFechaNacimiento() != null) {
+            estudianteExistente.setFechaNacimiento(estudianteRequest.getFechaNacimiento());
+        }
+        if (estudianteRequest.getActivo() != null) {
+            estudianteExistente.setActivo(estudianteRequest.getActivo());
+        }
+        if (estudianteRequest.getTipoDocumento() != null) {
+            estudianteExistente.setTipoDocumento(estudianteRequest.getTipoDocumento());
+        }
+
+
+    }
+
+//    @Transactional
+//    @Override
+//    public EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO) {
+//     Optional<Estudiante> estudiante= estudianteRepository.findById(estudianteRequestDTO.id());
+//     if(estudiante.isPresent()){
+//        Estudiante estudianteRequest=estudianteMapper.toEntity(estudianteRequestDTO);
+//         Estudiante updateEstudiante= UpdatedEntities.update(estudiante.get(),estudianteRequest);
+//         return estudianteMapper.toResponseDTO(estudianteRepository.save(updateEstudiante));
+//        } else {
+//            throw new ApplicationException("La entidad con ese ID "+ estudianteRequestDTO.id() +"  no fue encontrado");
+//        }
+//    }
 
 
     @Override

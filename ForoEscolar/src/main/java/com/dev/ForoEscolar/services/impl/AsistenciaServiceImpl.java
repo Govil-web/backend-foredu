@@ -7,7 +7,7 @@ import com.dev.ForoEscolar.mapper.asistencia.AsistenciaMapper;
 import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.Estudiante;
 import com.dev.ForoEscolar.model.Grado;
-import com.dev.ForoEscolar.model.UpdatedEntities;
+
 import com.dev.ForoEscolar.repository.AsistenciaRepository;
 import com.dev.ForoEscolar.repository.EstudianteRepository;
 import com.dev.ForoEscolar.repository.GradoRepository;
@@ -19,14 +19,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class AsistenciaServiceImpl implements AsistenciaService {
 
     private final AsistenciaRepository asistenciaRepository;
     private final GradoRepository gradoRepository;
-    private EstudianteRepository estudianteRepository;
+    private final EstudianteRepository estudianteRepository;
     private final AsistenciaMapper asistenciaMapper;
 
     @Autowired

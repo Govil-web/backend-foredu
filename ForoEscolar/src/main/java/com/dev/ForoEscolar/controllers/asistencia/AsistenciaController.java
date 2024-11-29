@@ -45,7 +45,7 @@ public class AsistenciaController {
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
             // Verificar si el profesor tiene permiso para registrar asistencia en este grado
-            if (!securityService.canManageGradeAttendance(user.id(), asistenciaDTO.getGrado())) {
+            if (securityService.canManageGradeAttendance(user.id(), asistenciaDTO.getGrado())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ApiResponseDto<>(false, "No tienes permiso para registrar asistencia en este grado", null));
             }
@@ -134,7 +134,7 @@ public class AsistenciaController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
-            // Verificar si tiene permiso para ver asistencias del grado en un rango de fechas
+
             if (securityService.canViewGradeAttendance(user.id(), id)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ApiResponseDto<>(false, "No tienes permiso para ver las asistencias de este grado", null));

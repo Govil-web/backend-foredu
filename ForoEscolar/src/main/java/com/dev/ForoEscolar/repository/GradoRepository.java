@@ -43,6 +43,16 @@ public interface GradoRepository extends JpaRepository<Grado,Long> {
             @Param("turno") TurnoEnum turno,
             @Param("id") Long id
     );
+    /**
+     * Verifica si existe un grado con el ID especificado y tiene al estudiante
+     */
+    @Query("SELECT CASE WHEN COUNT(g) > 0 THEN true ELSE false END FROM Grado g " +
+            "JOIN g.estudiantes e " +
+            "WHERE g.id = :gradoId AND e.id = :estudianteId")
+    boolean existsByIdAndEstudiantesId(
+            @Param("gradoId") Long gradoId,
+            @Param("estudianteId") Long estudianteId
+    );
 
     // Contar cuántos grados tiene asignados un profesor
     int countByProfesorId(Long profesorId);

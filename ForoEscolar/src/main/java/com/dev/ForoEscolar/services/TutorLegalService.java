@@ -12,4 +12,6 @@ public interface TutorLegalService extends GenericService<TutorLegal, Long, Tuto
     TutorLegalResponseDTO update(TutorLegalRequestDTO tutorLegalRequestDTO);
 
    Iterable<AsistenciaDTO> findAsistenciasByEstudianteId(Long idEstudiante, Long idGrado);
+
+    boolean hasActiveStudents(Long id);
 }

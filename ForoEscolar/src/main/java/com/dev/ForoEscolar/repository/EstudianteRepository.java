@@ -31,4 +31,23 @@ public interface EstudianteRepository extends GenericRepository<Estudiante, Long
             "WHERE e.id = :estudianteId AND p.id = :profesorId")
     boolean existsByIdAndProfesores(@Param("estudianteId") Long estudianteId,
                                     @Param("profesorId") Long profesorId);
+
+
+    /**
+     * Verifica si un estudiante ya tiene un tutor asignado
+     */
+    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Estudiante e " +
+            "WHERE e.id = :estudianteId AND e.tutor IS NOT NULL")
+    boolean existsByIdAndTutorIsNotNull(@Param("estudianteId") Long estudianteId);
+
+    @Query("SELECT e FROM Estudiante e LEFT JOIN FETCH e.tutor WHERE e.id IN :ids")
+    List<Estudiante> findAllByIdWithTutor(@Param("ids") List<Long> ids);
+
+    @Query("SELECT e FROM Estudiante e WHERE e.tutor.id = :tutorUserId")
+    List<Estudiante> findByTutorUserId(@Param("tutorUserId") Long tutorUserId);
+
+    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Estudiante e " +
+            "WHERE e.id = :estudianteId AND e.tutor.id = :tutorUserId")
+    boolean existsByIdAndTutorUserId(@Param("estudianteId") Long estudianteId,
+                                     @Param("tutorUserId") Long tutorUserId);
 }

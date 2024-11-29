@@ -1,6 +1,7 @@
 package com.dev.ForoEscolar.config.security;
 
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 
 import jakarta.servlet.ServletException;
@@ -67,9 +68,16 @@ public class SecurityFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"mensaje\": \"El token ha expirado. Por favor, inicie sesión nuevamente.\", \"código\": 401}");
         } catch (Exception e) {
-            // Log the error but don't throw it
+
             logger.error("Error procesando el token JWT: ", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Internal Server Error
+            response.setContentType("application/json");
+            response.getWriter().write("{\"mensaje\": \"Error interno del servidor\", \"código\": 500}");
         }
 
         filterChain.doFilter(request, response);
