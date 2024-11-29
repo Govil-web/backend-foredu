@@ -35,14 +35,14 @@ public class SecurityConfiguration {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Rutas públicas
-                        .requestMatchers(HttpMethod.POST, "/api/login", "/api/user/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
                         // Rutas para ADMINISTRADOR
                         .requestMatchers(HttpMethod.GET, "/api/user/getAll").hasRole("ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.POST, "/api/profesor/register",
-                                "/api/estudiante/register",
-                                "/api/tutorlegal/register").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/profesor/add",
+                                "/api/estudiante/add",
+                                "/api/tutorlegal/add", "/api/user/add").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMINISTRADOR")
 
                         // Rutas para PROFESOR

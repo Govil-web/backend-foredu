@@ -141,7 +141,7 @@ public class EstudianteController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
-            if (!securityService.canViewGradeAttendance(user.id(), gradoId)) {
+            if (securityService.canViewGradeAttendance(user.id(), gradoId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ApiResponseDto<>(false, "No tienes permisos para ver los estudiantes de este grado", null));
             }

@@ -2,10 +2,7 @@ package com.dev.ForoEscolar.config.security;
 
 import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.User;
-import com.dev.ForoEscolar.repository.AsistenciaRepository;
-import com.dev.ForoEscolar.repository.EstudianteRepository;
-import com.dev.ForoEscolar.repository.GradoRepository;
-import com.dev.ForoEscolar.repository.UserRepository;
+import com.dev.ForoEscolar.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,14 +20,17 @@ public class SecurityService {
     private final EstudianteRepository estudianteRepository;
     private final AsistenciaRepository asistenciaRepository;
     private final GradoRepository gradoRepository;
+    private final TutorLegalRepository tutorLegalRepository;
 
     @Autowired
     public SecurityService(UserRepository userRepository, EstudianteRepository estudianteRepository,
-                           AsistenciaRepository asistenciaRepository, GradoRepository gradoRepository) {
+                           AsistenciaRepository asistenciaRepository, GradoRepository gradoRepository,
+                           TutorLegalRepository tutorLegalRepository) {
         this.userRepository = userRepository;
         this.estudianteRepository = estudianteRepository;
         this.asistenciaRepository = asistenciaRepository;
         this.gradoRepository = gradoRepository;
+        this.tutorLegalRepository = tutorLegalRepository;
     }
 
 
@@ -146,7 +146,67 @@ public class SecurityService {
         };
     }
 
-    public boolean canViewGrade(Long id, Long id1) {
-        return false;
+    /**
+     * Verifica si un usuario puede acceder a la información de un tutor
+     */
+    public boolean canAccessTutorInfo(Long userId, Long tutorId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        return switch (user.getRol().name()) {
+            case "ROLE_ADMINISTRADOR" -> true;
+            case "ROLE_TUTOR" -> userId.equals(tutorId);
+            case "ROLE_PROFESOR" -> tutorLegalRepository.existsByIdAndEstudiantesProfesorId(tutorId, userId);
+            default -> false;
+        };
     }
+
+    /**
+     * Verifica si un usuario puede actualizar la información de un tutor
+     */
+    public boolean canUpdateTutor(Long userId, Long tutorId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        return switch (user.getRol().name()) {
+            case "ROLE_ADMINISTRADOR" -> true;
+            case "ROLE_TUTOR" -> userId.equals(tutorId);
+            default -> false;
+        };
+    }
+
+    /**
+     * Verifica si un tutor tiene estudiantes activos asociados
+     */
+    public boolean hasActiveStudents(Long tutorId) {
+        return tutorLegalRepository.existsByIdAndEstudiantesActivoTrue(tutorId);
+    }
+
+    /**
+     * Verifica si un usuario puede ver un grado específico
+     * @param userId iD del usuario que intenta ver el grado
+     * @param gradoId iD del grado que se intenta ver
+     * @return true si tiene permiso, false en caso contrario
+     */
+    public boolean canViewGrade(Long userId, Long gradoId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        // Switch por rol del usuario
+        return switch (user.getRol().name()) {
+            case "ROLE_ADMINISTRADOR" -> true;
+
+            case "ROLE_PROFESOR" -> // Verificar si el profesor está asignado al grado
+                    gradoRepository.existsByIdAndProfesorId(gradoId, userId);
+
+            case "ROLE_TUTOR" -> // Verificar si el tutor tiene estudiantes en ese grado
+                    gradoRepository.existsByIdAndEstudiantesTutorId(gradoId, userId);
+
+            case "ROLE_ESTUDIANTE" -> // Un estudiante solo puede ver su propio grado
+                    gradoRepository.existsByIdAndEstudiantesId(gradoId, userId);
+
+            default -> false;
+        };
+    }
+
 }
