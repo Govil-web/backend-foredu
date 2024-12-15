@@ -24,61 +24,74 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public String generateToken(User user) {
-        try{
-            System.out.println("Generando token...");
+        try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
             return JWT.create()
                     .withIssuer("Foro Escolar")
                     .withSubject(user.getEmail())
                     .withClaim("id", user.getId())
-                    .withClaim("role", user.getRol().name())
+                    .withClaim("role", user.getRol().getAuthority())
                     .withClaim("nombre", user.getNombre())
+                    .withIssuedAt(new Date())
                     .withExpiresAt(Date.from(generateExpirationDate()))
                     .sign(algorithm);
 
-        }catch (JWTCreationException e){
-            throw new RuntimeException("Error al crear el token");
+        } catch (JWTCreationException e) {
+            throw new RuntimeException("Error al generar el token", e);
         }
-
-    }
-
-    private Instant generateExpirationDate() {
-        return LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-05:00"));
     }
 
     @Override
     public String getUsernameFromToken(String token) {
-        if(token == null){
-            throw new RuntimeException("Token nulo");
+        if (token == null || token.trim().isEmpty()) {
+            throw new RuntimeException("Token vacío o nulo");
         }
-        DecodedJWT verifier;
-        try{
+
+        try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
-            verifier = JWT.require(algorithm)
+            DecodedJWT verifier = JWT.require(algorithm)
                     .withIssuer("Foro Escolar")
                     .build()
-                    .verify(token);
-            verifier.getSubject();
-        }catch (JWTCreationException e){
-            throw new RuntimeException("Error al verificar el token");
+                    .verify(token.trim());
+
+            String subject = verifier.getSubject();
+            if (subject == null) {
+                throw new RuntimeException("Token no contiene subject");
+            }
+
+            return subject;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al verificar el token: " + e.getMessage());
         }
-        if (verifier.getSubject() == null){
-            throw new RuntimeException("Verificador invalido");
-        }
-        return verifier.getSubject();
     }
+
+    @Override
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        try {
+            final String username = getUsernameFromToken(token);
+            return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        try {
+            final Date expiration = getExpirationDateFromToken(token);
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     private Date getExpirationDateFromToken(String token) {
-        DecodedJWT jwt = JWT.decode(token);
+        DecodedJWT jwt = JWT.decode(token.trim());
         return jwt.getExpiresAt();
+    }
+
+    private Instant generateExpirationDate() {
+        return LocalDateTime.now()
+                .plusHours(24)
+                .toInstant(ZoneOffset.of("-05:00"));
     }
 }

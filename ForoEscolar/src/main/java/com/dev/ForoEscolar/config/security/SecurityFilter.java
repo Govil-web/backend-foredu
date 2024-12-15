@@ -1,6 +1,7 @@
 package com.dev.ForoEscolar.config.security;
 
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 
 import jakarta.servlet.ServletException;
@@ -27,31 +28,58 @@ import java.io.IOException;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-
     private final UserDetailsService userDetailsService;
 
     @Autowired
     public SecurityFilter(TokenService tokenService, UserDetailsService userDetailsService) {
-        this.tokenService= tokenService;
+        this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.length() == 7) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String token = authHeader.substring(7).trim();
+            if (token.isEmpty()) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             String username = tokenService.getUsernameFromToken(token);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 if (tokenService.validateToken(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"mensaje\": \"El token ha expirado. Por favor, inicie sesión nuevamente.\", \"código\": 401}");
+        } catch (Exception e) {
+
+            logger.error("Error procesando el token JWT: ", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Internal Server Error
+            response.setContentType("application/json");
+            response.getWriter().write("{\"mensaje\": \"Error interno del servidor\", \"código\": 500}");
         }
+
         filterChain.doFilter(request, response);
     }
-
 }

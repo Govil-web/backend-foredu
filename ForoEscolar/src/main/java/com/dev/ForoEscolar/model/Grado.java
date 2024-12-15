@@ -43,7 +43,5 @@ public class Grado {
         this.contador++;
     }
 
-//    @OneToMany(mappedBy = "asistencia",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
-//    private List<Asistencia> asistencia;
 
 }

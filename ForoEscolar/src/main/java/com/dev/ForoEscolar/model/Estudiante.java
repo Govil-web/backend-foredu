@@ -48,7 +48,7 @@ public class Estudiante {
     private TipoDocumentoEnum tipoDocumento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tutor_legal_id", nullable = false, foreignKey = @ForeignKey(name="FK_TUTOR_LEGAL"))
+    @JoinColumn(name = "tutor_legal_id",  referencedColumnName = "user_id")
     private TutorLegal tutor;
 
     @ManyToMany(mappedBy = "estudiantes",cascade ={CascadeType.MERGE,CascadeType.REFRESH,CascadeType.PERSIST}, fetch = FetchType.LAZY)

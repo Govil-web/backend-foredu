@@ -108,11 +108,13 @@ com\dev\ForoEscolar\model\Estudiante$EstudianteBuilder.class
 com\dev\ForoEscolar\mapper\grado\GradoMapperImpl.class
 com\dev\ForoEscolar\services\impl\AsistenciaServiceImpl.class
 com\dev\ForoEscolar\dtos\estudiante\EstudianteResponseDTO.class
+com\dev\ForoEscolar\config\security\SecurityService$1.class
 com\dev\ForoEscolar\controllers\asistencia\AsistenciaController.class
 com\dev\ForoEscolar\dtos\tarea\TareaResponseDto$TareaResponseDtoBuilder.class
 com\dev\ForoEscolar\config\security\SecurityConfiguration.class
 com\dev\ForoEscolar\mapper\user\UserMapperImpl.class
 com\dev\ForoEscolar\services\EstudianteService.class
+com\dev\ForoEscolar\config\security\SecurityService.class
 com\dev\ForoEscolar\dtos\calificacion\CalificacionDTO.class
 com\dev\ForoEscolar\dtos\grado\GradoDto$GradoDtoBuilder.class
 com\dev\ForoEscolar\model\Tarea$TareaBuilder.class

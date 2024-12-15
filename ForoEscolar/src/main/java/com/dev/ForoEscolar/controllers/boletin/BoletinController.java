@@ -22,10 +22,14 @@ import java.util.Optional;
 @RequestMapping("api/boletin")
 public class BoletinController {
 
+    private final BoletinService boletinService;
+    private final UserService userService;
+
     @Autowired
-    private BoletinService boletinService;
-    @Autowired
-    private UserService userService;
+    public BoletinController(BoletinService boletinService, UserService userService) {
+        this.boletinService = boletinService;
+        this.userService = userService;
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Busca un boletin por el id")

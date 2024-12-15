@@ -21,6 +21,6 @@ import java.util.List;
 public class TutorLegal extends User{
 
     @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<Estudiante> estudiantes;
+    private List<Estudiante> estudiante;
 
 }

@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,26 +24,23 @@ public abstract class TutorLegalMapper {
 
 
 
-    @Mapping(source = "estudiante", target = "estudiantes", qualifiedByName = "longListToEstudiantes")
+    @Mapping(source = "estudiante", target = "estudiante", qualifiedByName = "longListToEstudiante")
    public abstract TutorLegal toEntity(TutorLegalRequestDTO tutorLegalRequestDTO);
 
-    @Mapping(source = "estudiantes", target = "estudiante", qualifiedByName = "estudiantesToLongList")
+    @Mapping(source = "estudiante", target = "estudiante", qualifiedByName = "estudianteToLongList")
    public abstract TutorLegalResponseDTO toResponseDTO(TutorLegal tutorLegal);
 
 
-     @Named("estudiantesToLongList")
-     protected List<Long> estudiantesToLongList(List<Estudiante> estudiantes) {
+    @Named("estudianteToLongList")
+    public List<Long> estudianteToLongList(List<Estudiante> estudiantes) {
+        return estudiantes.stream()
+                .filter(estudiante -> estudiante != null && estudiante.getId() != null)
+                .map(Estudiante::getId)
+                .collect(Collectors.toList());
+    }
 
-         if (estudiantes == null) {
-             return Collections.emptyList();
-         }
-         return estudiantes.stream().map(estudiante -> estudiante.getId()).toList();
-
-
-     }
-
-     @Named("longListToEstudiantes")
-    protected List<Estudiante> longListToEstudiantes(List<Long> ids) {
+     @Named("longListToEstudiante")
+    protected List<Estudiante> longListToEstudiante(List<Long> ids) {
         return ids != null ? ids.stream().map(id -> estudianteRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
     }
 }
