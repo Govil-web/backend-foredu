@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-15T16:41:20-0300",
+    date = "2024-12-15T17:38:56-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -24,7 +24,7 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
 
         TutorLegal tutorLegal = new TutorLegal();
 
-        tutorLegal.setEstudiantes( longListToEstudiantes( tutorLegalRequestDTO.estudiante() ) );
+        tutorLegal.setEstudiante( longListToEstudiante( tutorLegalRequestDTO.estudiante() ) );
         tutorLegal.setId( tutorLegalRequestDTO.id() );
         tutorLegal.setNombre( tutorLegalRequestDTO.nombre() );
         tutorLegal.setApellido( tutorLegalRequestDTO.apellido() );
@@ -58,7 +58,7 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         String rol = null;
         boolean activo = false;
 
-        estudiante = estudiantesToLongList( tutorLegal.getEstudiantes() );
+        estudiante = estudianteToLongList( tutorLegal.getEstudiante() );
         id = tutorLegal.getId();
         email = tutorLegal.getEmail();
         nombre = tutorLegal.getNombre();
