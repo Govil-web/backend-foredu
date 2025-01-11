@@ -239,6 +239,7 @@ public class TutorLegalServiceImpl implements TutorLegalService {
 
     }
 
+    // Este metodo es redudante ya que el el dto se aplica
     protected void validarPassword(String contrasena) {
         if (contrasena!=null && contrasena.length() < 8) {
             throw new ApplicationException("La contraseña debe tener al menos 8 caracteres");

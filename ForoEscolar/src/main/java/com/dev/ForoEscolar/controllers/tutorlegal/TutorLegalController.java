@@ -157,6 +157,7 @@ public class TutorLegalController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
+            // Verificar si es administrador
             if (!securityService.isAdmin(user.id())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ApiResponseDto<>(false, "Solo administradores pueden eliminar tutores", null));
