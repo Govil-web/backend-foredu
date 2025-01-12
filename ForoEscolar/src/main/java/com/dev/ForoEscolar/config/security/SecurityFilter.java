@@ -59,7 +59,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            if(tokenService.isTokenBlacklisted(token)){
+            if(tokenService.isTokenInBlacklist(token)){
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(new ErrorResponse(HttpStatus.UNAUTHORIZED,"El Token a sido inválidado")));

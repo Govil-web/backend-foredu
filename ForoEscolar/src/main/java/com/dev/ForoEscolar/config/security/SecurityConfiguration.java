@@ -38,6 +38,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/test/redis").permitAll()
+
                         // Rutas para ADMINISTRADOR
                         .requestMatchers(HttpMethod.GET, "/api/user/getAll").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/api/profesor/add",
