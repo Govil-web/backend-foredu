@@ -65,6 +65,7 @@ public class EstudianteServiceImpl implements EstudianteService {
         estudianteRepository.delete(estudiante);
     }
 
+
     @Transactional
     @Override
     public EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO) {
@@ -129,18 +130,34 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     @Override
     public List<EstudianteResponseDTO> findByGradoId(Long gradoId) {
-        List<Estudiante> estudiantes= estudianteRepository.findByGradoId(gradoId);
+        List<Estudiante> estudiantes = estudianteRepository.findByGradoId(gradoId);
         return estudiantes.stream().map(estudianteMapper::toResponseDTO).collect(Collectors.toList());
     }
 
+
+
     @Override
     public List<AsistenciaDTO> findByEstudianteId(Long id) {
-       List<Asistencia> asistencias= estudianteRepository.findByEstudianteId(id);
+        List<Asistencia> asistencias = estudianteRepository.findByEstudianteId(id);
         return asistencias.stream()
                 .map(asistenciaMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
 
 
+    // Metodo para dar de baja o alta a un estudiante
+    @Override
+    public boolean subscribe_unsubscribe(Long id) {
+        Estudiante estudiante = estudianteRepository.findById(id).orElseThrow(() -> new ApplicationException("Estudiante no encontrado"));
+        if (Boolean.TRUE.equals(estudiante.getActivo())) {
+            estudiante.setActivo(false);
+            estudianteRepository.save(estudiante);
+            return false;
+        }
+        estudiante.setActivo(true);
+            estudianteRepository.save(estudiante);
+
+        return true;
+    }
 
 }

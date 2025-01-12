@@ -11,8 +11,10 @@ import com.dev.ForoEscolar.services.AsistenciaService;
 import com.dev.ForoEscolar.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,7 @@ public class AsistenciaController {
 
     @PostMapping("/add")
     @Operation(summary = "Register a new asistencia")
+
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> registerAsistencia(@RequestBody AsistenciaRequestDto asistenciaDTO) {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -104,6 +107,7 @@ public class AsistenciaController {
     }
 
     @GetMapping("/getAll")
+   // @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     @Operation(summary = "List all asistencias")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> asistenciasList() {
         try {

@@ -7,7 +7,6 @@ import com.dev.ForoEscolar.mapper.asistencia.AsistenciaMapper;
 import com.dev.ForoEscolar.model.Asistencia;
 import com.dev.ForoEscolar.model.Estudiante;
 import com.dev.ForoEscolar.model.Grado;
-
 import com.dev.ForoEscolar.repository.AsistenciaRepository;
 import com.dev.ForoEscolar.repository.EstudianteRepository;
 import com.dev.ForoEscolar.repository.GradoRepository;
@@ -20,13 +19,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class AsistenciaServiceImpl implements AsistenciaService {
 
     private final AsistenciaRepository asistenciaRepository;
     private final GradoRepository gradoRepository;
-    private final EstudianteRepository estudianteRepository;
+    private EstudianteRepository estudianteRepository;
     private final AsistenciaMapper asistenciaMapper;
 
     @Autowired

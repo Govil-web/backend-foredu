@@ -18,6 +18,8 @@ public class CorsConfig {
         corsConfiguration.addAllowedOriginPattern("https://globalia-tech.com/");
         corsConfiguration.addAllowedOriginPattern("https://foredu.globalia-tech.com/");
         corsConfiguration.addAllowedOriginPattern("http://localhost:4200");
+        corsConfiguration.addAllowedOriginPattern("http://localhost:10000");
+
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedHeaders(List.of("Origin","X-Requested-With","Authorization", "Content-Type", "Accept"));

@@ -24,5 +24,7 @@ public class AsistenciaDTO implements Serializable {
     Long estudiante;
     Long grado;
 
+    //xs
+    //hola
 }
 

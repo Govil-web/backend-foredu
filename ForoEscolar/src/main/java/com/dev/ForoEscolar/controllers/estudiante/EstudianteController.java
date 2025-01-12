@@ -179,4 +179,25 @@ public class EstudianteController {
             throw new ApplicationException("Ha ocurrido un error: " + e.getMessage());
         }
     }
+
+    @PostMapping("/{id}/isEnable")
+    @Operation(summary = "Se da de baja o alta a un estudiante")
+    public ResponseEntity<ApiResponseDto<Void>> unsubscribe(@PathVariable("id") Long id) {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+            if (!securityService.isAdmin(user.id())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ApiResponseDto<>(false, "Solo administradores pueden dar de baja a un estudiante", null));
+            }
+Boolean state = estudianteService.subscribe_unsubscribe(id);
+            if (state) {
+                return ResponseEntity.ok(new ApiResponseDto<>(true, "Estudiante dado de alta exitosamente", null));
+            }
+                return ResponseEntity.ok(new ApiResponseDto<>(true, "Estudiante dado de baja exitosamente", null));
+
+        } catch (Exception e) {
+            throw new ApplicationException("Error actualizar el estado del estudiante: " + e.getMessage());
+        }
+    }
 }

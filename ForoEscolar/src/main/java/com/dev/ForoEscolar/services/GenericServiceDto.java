@@ -12,4 +12,7 @@ public interface GenericServiceDto<T, EntityDto> {
 
     void deleteById(Long id);
 
+
+
+
 }
