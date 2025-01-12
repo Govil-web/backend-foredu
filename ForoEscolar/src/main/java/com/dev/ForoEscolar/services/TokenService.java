@@ -11,4 +11,5 @@ public interface TokenService {
     void invalidateToken(String token);
 
     boolean isTokenBlacklisted(String token);
+    public boolean isTokenInBlacklist(String token);
 }
