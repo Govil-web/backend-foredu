@@ -29,7 +29,6 @@ com\dev\ForoEscolar\dtos\tutorlegal\TutorLegalRequestDTO.class
 com\dev\ForoEscolar\enums\GeneroEnum.class
 com\dev\ForoEscolar\controllers\tutorlegal\TutorLegalController.class
 com\dev\ForoEscolar\mapper\estudiante\EstudianteMapperImpl.class
-com\dev\ForoEscolar\exceptions\GlobalExceptionHandler$ErrorResponse.class
 com\dev\ForoEscolar\repository\UserRepository.class
 com\dev\ForoEscolar\controllers\boletin\BoletinController.class
 com\dev\ForoEscolar\mapper\asistencia\AsistenciaMapper.class
@@ -101,6 +100,7 @@ com\dev\ForoEscolar\repository\GenericRepository.class
 com\dev\ForoEscolar\config\cors\CorsConfig.class
 com\dev\ForoEscolar\services\impl\ProfesorServiceImpl.class
 com\dev\ForoEscolar\mapper\tarea\TareaMapperImpl.class
+com\dev\ForoEscolar\exceptions\dtoserror\ErrorResponse.class
 com\dev\ForoEscolar\repository\AsistenciaRepository.class
 com\dev\ForoEscolar\services\impl\TokenServiceImpl.class
 com\dev\ForoEscolar\services\TareaService.class
