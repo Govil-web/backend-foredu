@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Rutas públicas
-                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
                         // Rutas para ADMINISTRADOR
@@ -66,6 +66,9 @@ public class SecurityConfiguration {
                                 "/api/asistencia/**",
                                 "/api/profesor/**",
                                 "/api/tutorlegal/**").hasAnyRole("ADMINISTRADOR", "PROFESOR", "TUTOR")
+
+                        .requestMatchers(HttpMethod.POST
+                                , "api/auth/logout").hasAnyRole("ADMINISTRADOR", "PROFESOR", "TUTOR")
 
                         // Cualquier otra ruta requiere autenticación
                         .anyRequest().authenticated()

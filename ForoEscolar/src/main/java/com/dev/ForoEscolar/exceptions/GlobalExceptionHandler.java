@@ -1,9 +1,12 @@
 package com.dev.ForoEscolar.exceptions;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+
+import com.dev.ForoEscolar.exceptions.dtoserror.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.dao.DuplicateKeyException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,13 +17,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 
+
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler{
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -89,21 +93,10 @@ public class GlobalExceptionHandler {
 
     }
 
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ErrorResponse> handleTokenExpiredException(ExpiredJwtException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED,"El token ha expirado. Por favor, inicie sesión nuevamente."
-        );
+    @ExceptionHandler(value = TokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleTokenExpiredException(TokenExpiredException exception) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, "Token has expired");
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
-
-
-
-    public record ErrorResponse(HttpStatus status, String message, List<String> errors) {
-        public ErrorResponse(HttpStatus status, String message) {
-            this(status, message, null);
-        }
     }
 }
 

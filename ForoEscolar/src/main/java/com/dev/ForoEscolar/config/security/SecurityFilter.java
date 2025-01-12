@@ -1,7 +1,10 @@
 package com.dev.ForoEscolar.config.security;
 
 
-import io.jsonwebtoken.ExpiredJwtException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.dev.ForoEscolar.exceptions.GlobalExceptionHandler;
+import com.dev.ForoEscolar.exceptions.dtoserror.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 
 import jakarta.servlet.ServletException;
@@ -9,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,6 +59,12 @@ public class SecurityFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
+            if(tokenService.isTokenBlacklisted(token)){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(new ErrorResponse(HttpStatus.UNAUTHORIZED,"El Token a sido inválidado")));
+                return;
+            }
 
             String username = tokenService.getUsernameFromToken(token);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -68,16 +79,13 @@ public class SecurityFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        } catch (TokenExpiredException e) {
+            ResponseEntity<ErrorResponse> responseEntity = new GlobalExceptionHandler().handleTokenExpiredException(e);
+            response.setStatus(responseEntity.getStatusCode().value());
             response.setContentType("application/json");
-            response.getWriter().write("{\"mensaje\": \"El token ha expirado. Por favor, inicie sesión nuevamente.\", \"código\": 401}");
-        } catch (Exception e) {
-
-            logger.error("Error procesando el token JWT: ", e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Internal Server Error
-            response.setContentType("application/json");
-            response.getWriter().write("{\"mensaje\": \"Error interno del servidor\", \"código\": 500}");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(responseEntity.getBody()));
+            logger.error("Token expirado en: " + e.getExpiredOn());
+            return;
         }
 
         filterChain.doFilter(request, response);

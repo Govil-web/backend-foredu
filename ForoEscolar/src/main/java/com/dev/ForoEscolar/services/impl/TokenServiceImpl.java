@@ -3,24 +3,29 @@ package com.dev.ForoEscolar.services.impl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import com.dev.ForoEscolar.model.User;
 import com.dev.ForoEscolar.services.TokenService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class TokenServiceImpl implements TokenService {
 
     @Value("${api.security.secret}")
     private String apiSecret;
+
+    private final Set<String> blacklistedTokens = Collections.synchronizedSet(new HashSet<>());
+
 
     @Override
     public String generateToken(User user) {
@@ -32,6 +37,7 @@ public class TokenServiceImpl implements TokenService {
                     .withClaim("id", user.getId())
                     .withClaim("role", user.getRol().getAuthority())
                     .withClaim("nombre", user.getNombre())
+                    .withJWTId(UUID.randomUUID().toString())
                     .withIssuedAt(new Date())
                     .withExpiresAt(Date.from(generateExpirationDate()))
                     .sign(algorithm);
@@ -60,19 +66,44 @@ public class TokenServiceImpl implements TokenService {
             }
 
             return subject;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al verificar el token: " + e.getMessage());
+        } catch (TokenExpiredException e) {
+            throw new TokenExpiredException("El token expiro en: " , e.getExpiredOn());
         }
     }
 
     @Override
     public boolean validateToken(String token, UserDetails userDetails) {
+        if (blacklistedTokens.contains(token)) {
+            return false;
+        }
+
         try {
             final String username = getUsernameFromToken(token);
             return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
+    }
+
+
+    @Override
+    public void invalidateToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(apiSecret);
+            JWT.require(algorithm)
+                    .withIssuer("Foro Escolar")
+                    .build()
+                    .verify(token);
+
+            blacklistedTokens.add(token);
+        } catch (Exception e) {
+            throw new TokenExpiredException("Error al invalidar el token", null);
+        }
+    }
+
+    @Override
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistedTokens.contains(token);
     }
 
     private boolean isTokenExpired(String token) {
