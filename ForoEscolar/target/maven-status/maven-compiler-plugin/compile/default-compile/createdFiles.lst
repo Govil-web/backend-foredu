@@ -75,6 +75,7 @@ com\dev\ForoEscolar\services\impl\TareaServiceImpl.class
 com\dev\ForoEscolar\dtos\jwttoken\JWTTokenDTO.class
 com\dev\ForoEscolar\mapper\GenericMapper.class
 com\dev\ForoEscolar\ForoEscolarApplication.class
+com\dev\ForoEscolar\controllers\test\TestRedisController.class
 com\dev\ForoEscolar\repository\TareaRepository.class
 com\dev\ForoEscolar\model\TutorLegal.class
 com\dev\ForoEscolar\enums\AulaEnum.class
@@ -85,6 +86,7 @@ com\dev\ForoEscolar\mapper\grado\GradoMapper.class
 com\dev\ForoEscolar\model\Grado$GradoBuilder.class
 com\dev\ForoEscolar\utils\springdoc\SpringDocConfiguration.class
 com\dev\ForoEscolar\repository\ProfesorRepository.class
+com\dev\ForoEscolar\config\redis\RedisConfig.class
 com\dev\ForoEscolar\services\GenericServiceDto.class
 com\dev\ForoEscolar\model\Estudiante.class
 com\dev\ForoEscolar\dtos\ApiResponseDto.class

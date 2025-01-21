@@ -98,6 +98,8 @@ C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\en
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\enums\TipoNotificacionEnum.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\repository\ProfesorRepository.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\services\impl\EstudianteServiceImpl.java
+C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\controllers\test\TestRedisController.java
+C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\config\redis\RedisConfig.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\config\security\SecurityConfiguration.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\dtos\estudiante\EstudianteResponseDTO.java
 C:\globalia\backend\backEduTeam\ForoEscolar\src\main\java\com\dev\ForoEscolar\dtos\profesor\ProfesorRequestDTO.java
