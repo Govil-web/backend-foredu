@@ -50,26 +50,26 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-//                .exceptionHandling(exceptionHandling -> exceptionHandling
-//                        .authenticationEntryPoint(securityExceptionHandler)
-//                        .accessDeniedHandler(securityExceptionHandler)
-//                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(securityExceptionHandler)
+                        .accessDeniedHandler(securityExceptionHandler)
+                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/add", HttpMethod.POST.name()).permitAll()
                         .requestMatchers(getPublicEndpoints()).permitAll()
-                        .requestMatchers(getSelfAccessEndpoints()).permitAll()//authenticated()
-                        .requestMatchers(getAdministratorEndpoints()).permitAll()//hasRole(ADMINISTRADOR)
-                        .requestMatchers(getTeacherEndpoints()).permitAll()//hasAnyRole(ADMINISTRADOR, "PROFESOR")
-                        .requestMatchers(getTutorEndpoints()).permitAll()//hasAnyRole(ADMINISTRADOR, "PROFESOR", "TUTOR")
+                        .requestMatchers(getSelfAccessEndpoints()).authenticated()
+                        .requestMatchers(getAdministratorEndpoints()).hasRole(ADMINISTRADOR)
+                        .requestMatchers(getTeacherEndpoints()).hasAnyRole(ADMINISTRADOR, "PROFESOR")
+                        .requestMatchers(getTutorEndpoints()).hasAnyRole(ADMINISTRADOR, "PROFESOR", "TUTOR")
                         .anyRequest().permitAll()//authenticated()
                 )
 
-//                .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
-//                .addFilterAfter(jwtAuthenticationFilter, RequestLoggingFilter.class)
+                .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter, RequestLoggingFilter.class)
 //                .addFilterAfter(blacklistTokenFilter, JwtAuthenticationFilter.class)
-//                .userDetailsService(userDetailsService)
+                .userDetailsService(userDetailsService)
                 .build();
     }
 
@@ -97,7 +97,7 @@ public class SecurityConfiguration {
                 new AntPathRequestMatcher("/api/profesor/add", HttpMethod.POST.name()),
                 new AntPathRequestMatcher("/api/estudiante/add", HttpMethod.POST.name()),
                 new AntPathRequestMatcher("/api/tutorlegal/add", HttpMethod.POST.name()),
-              //  new AntPathRequestMatcher("/api/user/add", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/user/add", HttpMethod.POST.name()),
                 new AntPathRequestMatcher("/api/**", HttpMethod.DELETE.name()),
                 new AntPathRequestMatcher("/api/estudiante/update", HttpMethod.PUT.name()),
                 new AntPathRequestMatcher("/api/profesor/update", HttpMethod.PUT.name()),

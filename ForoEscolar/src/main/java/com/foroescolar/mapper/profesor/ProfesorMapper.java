@@ -23,8 +23,6 @@ public abstract class ProfesorMapper {
     @Autowired
     private BoletinRepository boletinRepository;
     @Autowired
-    private AsistenciaRepository asistenciaRepository;
-    @Autowired
     private TareaRepository tareaRepository;
     @Autowired
     private CalificacionRepository calificacionRepository;
@@ -33,7 +31,6 @@ public abstract class ProfesorMapper {
 
     @Mapping(source = "estudiantes", target = "estudianteIds", qualifiedByName = "estudiantesToLongList")
     @Mapping(source = "boletin", target = "boletinIds", qualifiedByName = "boletinesToLongList")
-   // @Mapping(source = "asistencia", target = "asistenciaIds", qualifiedByName = "asistenciasToLongList")
     @Mapping(source = "tarea", target = "tareaIds", qualifiedByName = "tareasToLongList")
     @Mapping(source = "calificaciones", target = "calificacionIds", qualifiedByName = "calificacionesToLongList")
     @Mapping(source = "grado", target = "gradoIds", qualifiedByName = "gradosToLongList")
@@ -42,7 +39,6 @@ public abstract class ProfesorMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(source = "estudianteIds", target = "estudiantes", qualifiedByName = "longListToEstudiantes")
     @Mapping(source = "boletinIds", target = "boletin", qualifiedByName = "longListToBoletines")
-   // @Mapping(source = "asistenciaIds", target = "asistencia", qualifiedByName = "longListToAsistencias")
     @Mapping(source = "tareaIds", target = "tarea", qualifiedByName = "longListToTareas")
     @Mapping(source = "calificacionIds", target = "calificaciones", qualifiedByName = "longListToCalificaciones")
     @Mapping(source = "gradoIds", target = "grado", qualifiedByName = "longListToGrados")
@@ -90,26 +86,6 @@ public abstract class ProfesorMapper {
         return ids != null ? ids.stream().map(id -> boletinRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
     }
 
-    @Named("asistenciasToLongList")
-    protected List<Long> asistenciasToLongList(List<Asistencia> asistencias) {
-        if (asistencias == null) {
-            return Collections.emptyList();
-        }
-        return asistencias.stream()
-                .map(asistencia -> {
-                    if (asistencia == null) {
-                        return null;
-                    }
-                    return asistencia.getId();
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    @Named("longListToAsistencias")
-    protected List<Asistencia> longListToAsistencias(List<Long> ids) {
-        return ids != null ? ids.stream().map(id -> asistenciaRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
-    }
 
     @Named("tareasToLongList")
     protected List<Long> tareasToLongList(List<Tarea> tareas) {

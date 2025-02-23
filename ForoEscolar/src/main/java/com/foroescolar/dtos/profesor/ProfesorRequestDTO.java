@@ -33,7 +33,6 @@ public record ProfesorRequestDTO (
         String materia,
         List<Long> estudianteIds,
         List<Long> boletinIds,
-        List<Long> asistenciaIds,
         List<Long> tareaIds,
         List<Long> calificacionIds,
         List<Long> gradoIds
