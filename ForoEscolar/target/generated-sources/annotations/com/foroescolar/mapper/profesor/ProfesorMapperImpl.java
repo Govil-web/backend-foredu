@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-02-23T17:22:05-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
 public class ProfesorMapperImpl extends ProfesorMapper {
@@ -25,7 +25,6 @@ public class ProfesorMapperImpl extends ProfesorMapper {
 
         List<Long> estudianteIds = null;
         List<Long> boletinIds = null;
-        List<Long> asistenciaIds = null;
         List<Long> tareaIds = null;
         List<Long> calificacionIds = null;
         List<Long> gradoIds = null;
@@ -43,7 +42,6 @@ public class ProfesorMapperImpl extends ProfesorMapper {
 
         estudianteIds = estudiantesToLongList( profesor.getEstudiantes() );
         boletinIds = boletinesToLongList( profesor.getBoletin() );
-        asistenciaIds = asistenciasToLongList( profesor.getAsistencia() );
         tareaIds = tareasToLongList( profesor.getTarea() );
         calificacionIds = calificacionesToLongList( profesor.getCalificaciones() );
         gradoIds = gradosToLongList( profesor.getGrado() );
@@ -65,6 +63,8 @@ public class ProfesorMapperImpl extends ProfesorMapper {
             materia = profesor.getMateria().name();
         }
 
+        List<Long> asistenciaIds = null;
+
         ProfesorResponseDTO profesorResponseDTO = new ProfesorResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucion, rol, activo, materia, estudianteIds, boletinIds, asistenciaIds, tareaIds, calificacionIds, gradoIds );
 
         return profesorResponseDTO;
@@ -81,7 +81,6 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         profesor.setId( profesorRequestDTO.id() );
         profesor.setEstudiantes( longListToEstudiantes( profesorRequestDTO.estudianteIds() ) );
         profesor.setBoletin( longListToBoletines( profesorRequestDTO.boletinIds() ) );
-        profesor.setAsistencia( longListToAsistencias( profesorRequestDTO.asistenciaIds() ) );
         profesor.setTarea( longListToTareas( profesorRequestDTO.tareaIds() ) );
         profesor.setCalificaciones( longListToCalificaciones( profesorRequestDTO.calificacionIds() ) );
         profesor.setGrado( longListToGrados( profesorRequestDTO.gradoIds() ) );

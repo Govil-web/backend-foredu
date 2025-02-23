@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-02-23T17:22:04-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
 public class BoletinMapperImpl extends BoletinMapper {

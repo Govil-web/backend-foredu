@@ -29,6 +29,7 @@ public class Grado {
     private TurnoEnum turno;
     @Enumerated(value = EnumType.STRING)
     private MateriaEnum materia;
+    private int contador= 0;
 
     @ManyToOne
     @JoinColumn(name="profesor_id")
@@ -37,7 +38,8 @@ public class Grado {
     @OneToMany(mappedBy = "grado",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Estudiante> estudiantes;
 
-    private int contador= 0;
+    @OneToMany(mappedBy = "grado", cascade = {CascadeType.ALL},orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Asistencia> asistencias;
 
     public void incrementarContador(){
         this.contador++;

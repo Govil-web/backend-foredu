@@ -2,15 +2,18 @@ package com.foroescolar.mapper.asistencia;
 
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
+import com.foroescolar.enums.EstadoAsistencia;
 import com.foroescolar.model.Asistencia;
 import com.foroescolar.model.Estudiante;
+import com.foroescolar.model.Fecha;
+import java.time.LocalDate;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-02-23T17:22:05-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
 public class AsistenciaMapperImpl extends AsistenciaMapper {
@@ -23,13 +26,13 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
 
         Asistencia asistencia = new Asistencia();
 
-        asistencia.setProfesor( longToProfesor( asistenciaRquestDto.getProfesor() ) );
         asistencia.setEstudiante( longToEstudiante( asistenciaRquestDto.getEstudiante() ) );
         asistencia.setGrado( longToGrado( asistenciaRquestDto.getGrado() ) );
         asistencia.setObservaciones( asistenciaRquestDto.getJustificativos() );
         asistencia.setId( asistenciaRquestDto.getId() );
-        asistencia.setAsistio( asistenciaRquestDto.isAsistio() );
-        asistencia.setFecha( asistenciaRquestDto.getFecha() );
+        if ( asistenciaRquestDto.getEstado() != null ) {
+            asistencia.setEstado( Enum.valueOf( EstadoAsistencia.class, asistenciaRquestDto.getEstado() ) );
+        }
 
         return asistencia;
     }
@@ -48,9 +51,10 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
         asistenciaDTO.nombreEstudiante( estudianteName( asistencia.getEstudiante() ) );
         asistenciaDTO.estudiante( estudianteToLong( asistencia.getEstudiante() ) );
         asistenciaDTO.grado( gradoToLong( asistencia.getGrado() ) );
-        asistenciaDTO.fecha( asistencia.getFecha() );
-        asistenciaDTO.asistio( asistencia.isAsistio() );
-        asistenciaDTO.asistenciaAlumno( asistencia.getAsistenciaAlumno() );
+        asistenciaDTO.fecha( asistenciaFechaFecha( asistencia ) );
+        if ( asistencia.getEstado() != null ) {
+            asistenciaDTO.estado( asistencia.getEstado().name() );
+        }
 
         return asistenciaDTO.build();
     }
@@ -68,5 +72,20 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
             return null;
         }
         return id;
+    }
+
+    private LocalDate asistenciaFechaFecha(Asistencia asistencia) {
+        if ( asistencia == null ) {
+            return null;
+        }
+        Fecha fecha = asistencia.getFecha();
+        if ( fecha == null ) {
+            return null;
+        }
+        LocalDate fecha1 = fecha.getFecha();
+        if ( fecha1 == null ) {
+            return null;
+        }
+        return fecha1;
     }
 }

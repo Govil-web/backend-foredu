@@ -28,10 +28,10 @@ public class BlacklistTokenFilter extends BaseSecurityFilter {
     @Override
     protected void doFilterInternal(SecurityFilterContext context) throws ServletException, IOException {
         Optional<String> token = TokenExtractor.extractFromRequest(context.request());
-
-        if (token.isPresent() && tokenService.isTokenInBlacklist(token.get())) {
-            throw new TokenInvalidatedException("Token ha sido invalidado");
-        }
+//
+//        if (token.isPresent() && tokenService.isTokenInBlacklist(token.get())) {
+//            throw new TokenInvalidatedException("Token ha sido invalidado");
+//        }
         log.info("Token no está en la lista negra: {}", token);
 
         context.filterChain().doFilter(context.request(), context.response());

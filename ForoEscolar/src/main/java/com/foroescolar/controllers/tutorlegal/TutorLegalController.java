@@ -148,13 +148,13 @@ public class TutorLegalController {
     public ResponseEntity<ApiResponseDto<TutorLegalResponseDTO>> registerTutorLegal(
             @RequestBody @Valid TutorLegalRequestDTO tutorLegalRequestDTO) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-            if (!securityService.isAdmin(user.id())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponseDto<>(false, "Solo administradores pueden registrar tutores", null));
-            }
+//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//            if (!securityService.isAdmin(user.id())) {
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                        .body(new ApiResponseDto<>(false, "Solo administradores pueden registrar tutores", null));
+//            }
 
             TutorLegalResponseDTO tutorLegal = tutorLegalService.save(tutorLegalRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED)

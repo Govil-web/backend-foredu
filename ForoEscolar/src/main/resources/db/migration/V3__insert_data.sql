@@ -38,15 +38,6 @@ VALUES (1, 1, 'MATEMATICAS'),
        (2, 1,'LENGUAJE'),
        (3, 1,'CIENCIAS');
 
--- Insertar asistencia
-INSERT INTO asistencia (estudiante_id, asistio, contador_clases,contador_total, asistencia_alumno, fecha, profesor_id, grado_id, observaciones)
-VALUES (1, 1, 1,1,1, '2024-09-14', 1,1, 'Ninguna'),
-       (1, 0, 1,2,1, '2024-09-15', 1,1, 'Ninguna'),
-       (2, 1, 1,1,1, '2024-09-14', 2,2, 'Ninguna'),
-       (2, 0, 1,2,1, '2024-09-15', 2,2, 'Ninguna'),
-		(3, 1, 1,1,1, '2024-09-14', 3,3, 'Ninguna'),
-       (3, 1, 1,2,2, '2024-09-15', 3,3, 'Ninguna');
-
 -- Insertar notificaciones
 INSERT INTO notificaciones (administrador_escolar_id, fecha_envio, tutor_legal_id, mensaje, tipo_notificacion, titulo)
 VALUES (5, NOW(), 4, 'Reunión de seguimiento', 'EVENTO', 'Reunión de seguimiento para Carlos');
@@ -64,4 +55,22 @@ VALUES (1, 1, 'Primer trimestre', 8.5, NOW(), 'PRIMERO', 'Buen desempeño');
 INSERT INTO calificaciones (estudiante_id, profesor_id, boletin_id, materia, nota, promedio, comentario, fecha, periodo)
 VALUES (1, 1, 1, 'MATEMATICAS', 9.0, 8.5, 'Excelente', NOW(), 'Primer trimestre'),
        (1, 2, 1, 'LENGUAJE', 9.0, 8.5, 'Excelente', NOW(), 'Primer trimestre');
+       
+ -- Insertar FECHA      
+INSERT INTO fecha (anio, dia, mes, trimestre, semana, fecha) VALUES
+(2025, 16, 2, 1, 3, '2025-02-16'),
+(2025, 17, 2, 1, 3, '2025-02-17'),
+(2025, 18, 2, 1, 3, '2025-02-18');
+
+-- Insertar asistencia
+
+INSERT INTO asistencia (observaciones, estado_asistencia, estudiante_id, fecha_id, grado_id) VALUES
+('Llegó a tiempo', 'PRESENTE', 1, 1, 1),
+('Faltó sin justificación', 'AUSENTE', 1, 2, 1),
+
+('Tarde por tráfico', 'PRESENTE', 2, 1, 1),
+('Faltó por enfermedad', 'JUSTIFICADO', 2, 2, 1),
+
+('Presente en clase', 'PRESENTE', 3, 1, 1),
+('Ausente sin aviso', 'PRESENTE', 3, 2, 1);
 

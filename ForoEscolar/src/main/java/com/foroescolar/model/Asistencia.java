@@ -1,9 +1,9 @@
 package com.foroescolar.model;
 
+import com.foroescolar.enums.EstadoAsistencia;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,24 +17,15 @@ public class Asistencia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "asistio")
-    private boolean asistio= false;
+    private String observaciones= "Sin observacion";
 
-    private boolean contadorClases= false;
-
-    private int contadorTotal;
-
-    private int asistenciaAlumno;
-
-
-    @Column(name = "fecha")
-    private LocalDate fecha;
-
-    private String observaciones;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado")
+    private EstadoAsistencia estado;
 
     @ManyToOne
-    @JoinColumn(name = "profesor_id")
-    private Profesor profesor;
+    @JoinColumn(name = "fecha_id")
+    private Fecha fecha;
 
     @ManyToOne
     @JoinColumn(name = "estudiante_id")
@@ -47,14 +38,6 @@ public class Asistencia {
     public void actualizarContadorGrado(){
         if(this.grado!=null){
             this.grado.incrementarContador();
-        }
-    }
-
-    // Dias que hubo clases y si el alumno asistio
-    @PrePersist
-    private void diasDeClasesTranscurridos() {
-        if (asistio) {
-            this.asistenciaAlumno++;
         }
     }
 

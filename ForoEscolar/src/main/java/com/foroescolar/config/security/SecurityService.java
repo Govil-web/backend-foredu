@@ -96,8 +96,7 @@ public class SecurityService {
                 // Verificar si el profesor registró la asistencia o está asignado al grado
                 Asistencia asistencia = asistenciaRepository.findById(asistenciaId)
                         .orElseThrow(() -> new RuntimeException("Asistencia no encontrada"));
-                yield asistencia.getProfesor().getId().equals(userId) ||
-                        gradoRepository.existsByIdAndProfesorId(asistencia.getGrado().getId(), userId);
+                yield  gradoRepository.existsByIdAndProfesorId(asistencia.getGrado().getId(), userId);
             }
             case ROLE_TUTOR ->
                 // Verificar si el tutor tiene estudiantes en el grado de la asistencia
@@ -137,7 +136,7 @@ public class SecurityService {
     /**
      * Verifica si un usuario puede actualizar una asistencia
      */
-    public boolean canUpdateAttendance(Long userId, Long asistenciaId) {
+    public boolean canUpdateAttendance(Long userId, Long gradoId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException(USUARIO_NO_ENCONTRADO));
 
@@ -145,7 +144,7 @@ public class SecurityService {
             case ROLE_ADMINISTRADOR -> true;
             case ROLE_PROFESOR ->
                 // Solo el profesor que registró la asistencia puede actualizarla
-                    asistenciaRepository.existsByIdAndProfesorId(asistenciaId, userId);
+                    gradoRepository.existsByIdAndProfesorId(gradoId, userId);
             default -> false;
         };
     }

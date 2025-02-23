@@ -10,11 +10,8 @@ import java.time.LocalDate;
 public class AsistenciaRequestDto {
 
     Long id;
-    boolean asistio;
-    LocalDate fecha;
+    String Estado;
     String justificativos;
     Long estudiante;
     Long grado;
-    Long profesor;
-
 }
