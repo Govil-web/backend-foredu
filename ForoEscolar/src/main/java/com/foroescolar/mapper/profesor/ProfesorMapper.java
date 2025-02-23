@@ -33,7 +33,7 @@ public abstract class ProfesorMapper {
 
     @Mapping(source = "estudiantes", target = "estudianteIds", qualifiedByName = "estudiantesToLongList")
     @Mapping(source = "boletin", target = "boletinIds", qualifiedByName = "boletinesToLongList")
-    @Mapping(source = "asistencia", target = "asistenciaIds", qualifiedByName = "asistenciasToLongList")
+   // @Mapping(source = "asistencia", target = "asistenciaIds", qualifiedByName = "asistenciasToLongList")
     @Mapping(source = "tarea", target = "tareaIds", qualifiedByName = "tareasToLongList")
     @Mapping(source = "calificaciones", target = "calificacionIds", qualifiedByName = "calificacionesToLongList")
     @Mapping(source = "grado", target = "gradoIds", qualifiedByName = "gradosToLongList")
@@ -42,7 +42,7 @@ public abstract class ProfesorMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(source = "estudianteIds", target = "estudiantes", qualifiedByName = "longListToEstudiantes")
     @Mapping(source = "boletinIds", target = "boletin", qualifiedByName = "longListToBoletines")
-    @Mapping(source = "asistenciaIds", target = "asistencia", qualifiedByName = "longListToAsistencias")
+   // @Mapping(source = "asistenciaIds", target = "asistencia", qualifiedByName = "longListToAsistencias")
     @Mapping(source = "tareaIds", target = "tarea", qualifiedByName = "longListToTareas")
     @Mapping(source = "calificacionIds", target = "calificaciones", qualifiedByName = "longListToCalificaciones")
     @Mapping(source = "gradoIds", target = "grado", qualifiedByName = "longListToGrados")

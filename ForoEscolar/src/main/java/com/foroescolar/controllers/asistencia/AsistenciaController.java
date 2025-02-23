@@ -4,6 +4,7 @@ package com.foroescolar.controllers.asistencia;
 import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
+import com.foroescolar.dtos.asistencia.AsistenciaRequest;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
 import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
@@ -12,6 +13,7 @@ import com.foroescolar.services.UserService;
 import com.foroescolar.utils.ApiResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,35 +41,36 @@ public class AsistenciaController {
 
     @PostMapping("/add")
     @Operation(summary = "Register a new asistencia")
-    public ResponseEntity<ApiResponseDto<AsistenciaDTO>> registerAsistencia(@RequestBody AsistenciaRequestDto asistenciaDTO) {
-        try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+    public ResponseEntity<ApiResponseDto<String>> addAsistencia(@RequestBody AsistenciaRequest asistenciaRequest) {
 
-            // Verificar si el profesor tiene permiso para registrar asistencia en este grado
-            if (securityService.canManageGradeAttendance(user.id(), asistenciaDTO.getGrado())) {
-                return ApiResponseUtils.forbidden("No tienes permiso para registrar asistencia en este grado");
+            try {
+//                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//                UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//                // Verificar si el profesor tiene permiso para registrar asistencia en este grado
+//                if (securityService.canManageGradeAttendance(user.id(), asistenciaRequest.getGradoId())) {
+//                    return ApiResponseUtils.forbidden("No tienes permiso para registrar asistencia en este grado");
+//                }
+
+                asistenciaService.asistenciaDelDia(asistenciaRequest);
+                return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
+
+            } catch (ApplicationException e) {
+                return ApiResponseUtils.error("Error al registrar asistencia: " + e.getMessage());
             }
-
-            asistenciaDTO.setProfesor(user.id());
-            AsistenciaDTO asistencia = asistenciaService.save(asistenciaDTO);
-            return ApiResponseUtils.success(asistencia, "Asistencia guardada exitosamente");
-        } catch (Exception e) {
-            return ApiResponseUtils.error("Error al registrar asistencia: " + e.getMessage());
-        }
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get asistencia by id")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciaById(@PathVariable Long id) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-            // Verificar si tiene permiso para ver esta asistencia específica
-            if (!securityService.canViewAttendance(user.id(), id)) {
-                return ApiResponseUtils.forbidden("No tienes permiso para ver esta asistencia");
-            }
+//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//           //  Verificar si tiene permiso para ver esta asistencia específica
+//            if (!securityService.canViewAttendance(user.id(), id)) {
+//                return ApiResponseUtils.forbidden("No tienes permiso para ver esta asistencia");
+//            }
 
             return asistenciaService.findById(id)
                     .map(asistencia -> ResponseEntity.ok(new ApiResponseDto<>(true, "Asistencia encontrada", asistencia)))
@@ -81,13 +84,13 @@ public class AsistenciaController {
     @Operation(summary = "Get asistencia by grado")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciaByGrado(@PathVariable Long id) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-            // Verificar si tiene permiso para ver asistencias del grado
-            if (!securityService.canViewGradeAttendance(user.id(), id)) {
-                return ApiResponseUtils.forbidden("No tienes permiso para ver las asistencias de este grado");
-            }
+//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//            // Verificar si tiene permiso para ver asistencias del grado
+//            if (!securityService.canViewGradeAttendance(user.id(), id)) {
+//                return ApiResponseUtils.forbidden("No tienes permiso para ver las asistencias de este grado");
+//            }
 
             Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.getAsistenciasByGrado(id);
             return ResponseEntity.ok(new ApiResponseDto<>(true, "Asistencias encontradas", listarAsistencias));
@@ -101,13 +104,13 @@ public class AsistenciaController {
     @Operation(summary = "List all asistencias")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> asistenciasList() {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-            // Solo administradores pueden ver todas las asistencias
-            if (!securityService.isAdmin(user.id())) {
-                return ApiResponseUtils.forbidden("No tienes permiso para ver todas las asistencias");
-            }
+//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//            // Solo administradores pueden ver todas las asistencias
+//            if (!securityService.isAdmin(user.id())) {
+//                return ApiResponseUtils.forbidden("No tienes permiso para ver todas las asistencias");
+//            }
 
             Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.findAll();
             return ResponseEntity.ok(new ApiResponseDto<>(true, "Lista de asistencias", listarAsistencias));
@@ -123,13 +126,13 @@ public class AsistenciaController {
             @RequestParam LocalDate fechaInicio,
             @RequestParam LocalDate fechaFin) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-
-            if (securityService.canViewGradeAttendance(user.id(), id)) {
-                return ApiResponseUtils.forbidden("No tienes permiso para ver las asistencias de este grado");
-            }
+//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//
+//            if (securityService.canViewGradeAttendance(user.id(), id)) {
+//                return ApiResponseUtils.forbidden("No tienes permiso para ver las asistencias de este grado");
+//            }
 
             Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.getByFechaBeetweenAndGrado(id, fechaInicio, fechaFin);
             return ResponseEntity.ok(new ApiResponseDto<>(true, "Asistencias encontradas", listarAsistencias));
@@ -138,19 +141,19 @@ public class AsistenciaController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PatchMapping("/update/{id}")
     @Operation(summary = "Update asistencia")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> updateAsistencia(
             @PathVariable Long id,
             @RequestBody AsistenciaRequestDto asistenciaDTO) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-            // Verificar si tiene permiso para actualizar esta asistencia
-            if (!securityService.canUpdateAttendance(user.id(), id)) {
-                return ApiResponseUtils.forbidden("No tienes permiso para actualizar esta asistencia");
-            }
+//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//            // Verificar si tiene permiso para actualizar esta asistencia
+//            if (!securityService.canUpdateAttendance(user.id(), asistenciaDTO.getGrado())) {
+//                return ApiResponseUtils.forbidden("No tienes permiso para actualizar esta asistencia");
+//            }
 
             asistenciaService.update(asistenciaDTO);
             return ApiResponseUtils.success(null, "Asistencia actualizada exitosamente");

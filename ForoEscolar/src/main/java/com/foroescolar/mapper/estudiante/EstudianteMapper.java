@@ -13,13 +13,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-
 @Mapper(componentModel = "spring")
-
-
 public abstract class EstudianteMapper {
-
-
 
     @Autowired
     private TutorLegalRepository tutorLegalRepository;

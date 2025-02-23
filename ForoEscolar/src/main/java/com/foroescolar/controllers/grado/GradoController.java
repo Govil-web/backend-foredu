@@ -46,13 +46,13 @@ public class GradoController {
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> registerGrado(@RequestBody @Valid GradoDto gradoDto) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-            if (!user.rol().equals(ROLE_ADMINISTRADOR)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar grados", null));
-            }
+//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+//
+//            if (!user.rol().equals(ROLE_ADMINISTRADOR)) {
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar grados", null));
+//            }
 
             GradoDto gradoCreado = gradoService.save(gradoDto);
             return ResponseEntity.status(HttpStatus.CREATED)

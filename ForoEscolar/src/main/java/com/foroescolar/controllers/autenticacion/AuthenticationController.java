@@ -49,7 +49,7 @@ public class AuthenticationController {
             }
 
             String token = authHeader.substring(7).trim();
-            tokenService.invalidateToken(token);
+           // tokenService.invalidateToken(token);
 
             response.put(MENSAJE, "Sesión cerrada exitosamente");
             return ResponseEntity.ok(response);
