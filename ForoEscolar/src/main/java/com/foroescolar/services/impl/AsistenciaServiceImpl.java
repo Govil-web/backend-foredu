@@ -182,20 +182,31 @@ public class AsistenciaServiceImpl implements AsistenciaService {
     }
 
     @Override
-    public DetalleAsistenciaByAlumno findByAsistenciaPresente(Long estudianteId){
+    public Optional<DetalleAsistenciaByAlumno> getDetailsByStudent(Long estudianteId) {
+        return estudianteRepository.findById(estudianteId)
+                .map(estudiante -> {
+                    int totalClases = estudiante.getGrado().getContador();
+                    DetalleAsistenciaByAlumno detalleAsistencia = new DetalleAsistenciaByAlumno();
+                    detalleAsistencia.setNombreEstudiante(estudiante.getNombre());
+                    detalleAsistencia.setIdEstudiante(estudianteId);
+                    detalleAsistencia.setAsistenciasPresente(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId, EstadoAsistencia.PRESENTE));
+                    detalleAsistencia.setAsistenciasAusente(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId, EstadoAsistencia.AUSENTE));
+                    detalleAsistencia.setAsistenciasTarde(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId, EstadoAsistencia.TARDE));
+                    detalleAsistencia.setAsistenciasJustificadas(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId, EstadoAsistencia.JUSTIFICADO));
+                    detalleAsistencia.setGrado(estudiante.getGrado().getCurso() + " " + estudiante.getGrado().getAula());
+                    detalleAsistencia.setClasesVistasDelGrado(totalClases);
 
-        Optional<Estudiante> estudiante= estudianteRepository.findById(estudianteId);
-        if (estudiante.isPresent()){
-            DetalleAsistenciaByAlumno details= new DetalleAsistenciaByAlumno();
-            details.setNombreEstudiante(estudiante.get().getNombre());
-            details.setIdEstudiante(estudianteId);
-            details.setAsistenciasPresente(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId,EstadoAsistencia.PRESENTE));
-            details.setAsistenciasAusente(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId, EstadoAsistencia.AUSENTE));
-            details.setAsistenciasTarde(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId, EstadoAsistencia.TARDE));
-            details.setAsistenciasJustificadas(asistenciaRepository.countByEstudianteIdAndEstado(estudianteId, EstadoAsistencia.JUSTIFICADO));
-            details.setGrado(String.valueOf(estudiante.get().getGrado().getCurso())+" "+ estudiante.get().getGrado().getAula());
+                    int clasesAsistidas= detalleAsistencia.getAsistenciasPresente()+detalleAsistencia.getAsistenciasJustificadas();
 
-        }
+                    detalleAsistencia.setPorcentajeDeAsistencias(calcularPorcentajeDeCLases(totalClases, clasesAsistidas));
+                    return detalleAsistencia;
+                });
+    }
+
+    protected Double calcularPorcentajeDeCLases(int contador, int totalAsistencias){
+
+        return (double) (totalAsistencias * 100 )/ contador;
+
     }
 
 }

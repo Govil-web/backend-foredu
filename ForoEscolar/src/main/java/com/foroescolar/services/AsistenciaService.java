@@ -7,6 +7,7 @@ import com.foroescolar.dtos.asistencia.DetalleAsistenciaByAlumno;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface AsistenciaService extends GenericServiceDto<Long, AsistenciaDTO>{
 
@@ -19,6 +20,5 @@ public interface AsistenciaService extends GenericServiceDto<Long, AsistenciaDTO
     Iterable<AsistenciaDTO> getAsistenciasByGrado(Long gradoId);
     List<AsistenciaDTO> getByFechaBeetweenAndGrado(Long gradoId, LocalDate fechaDesde, LocalDate fechaHasta);
 
-
-    DetalleAsistenciaByAlumno findByAsistenciaPresente(Long estudianteId);
+    Optional<DetalleAsistenciaByAlumno> getDetailsByStudent(Long estudianteId);
 }

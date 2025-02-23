@@ -2,6 +2,7 @@ package com.foroescolar.mapper.asistencia;
 
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
+import com.foroescolar.enums.EstadoAsistencia;
 import com.foroescolar.model.Asistencia;
 import com.foroescolar.model.Estudiante;
 import com.foroescolar.model.Fecha;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-22T19:14:29-0300",
+    date = "2025-02-23T17:22:05-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -29,6 +30,9 @@ public class AsistenciaMapperImpl extends AsistenciaMapper {
         asistencia.setGrado( longToGrado( asistenciaRquestDto.getGrado() ) );
         asistencia.setObservaciones( asistenciaRquestDto.getJustificativos() );
         asistencia.setId( asistenciaRquestDto.getId() );
+        if ( asistenciaRquestDto.getEstado() != null ) {
+            asistencia.setEstado( Enum.valueOf( EstadoAsistencia.class, asistenciaRquestDto.getEstado() ) );
+        }
 
         return asistencia;
     }

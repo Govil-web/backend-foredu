@@ -87,14 +87,21 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        <!--<dependency>
+
+                                  <!-- FlyWay Dependencies -->
+
+
+
+     <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-mysql</artifactId>
-        </dependency> -->
+        </dependency>
+
+                                     <!-- Swagger Dependency -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

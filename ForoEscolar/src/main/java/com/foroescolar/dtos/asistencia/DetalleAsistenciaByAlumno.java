@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
-public class DetalleAsistenciaByAlumno {
+public class DetalleAsistenciaByAlumno implements Serializable {
 
     private Long idEstudiante;
     private String nombreEstudiante;

@@ -6,6 +6,7 @@ import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.asistencia.AsistenciaRequest;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
+import com.foroescolar.dtos.asistencia.DetalleAsistenciaByAlumno;
 import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
 import com.foroescolar.services.AsistenciaService;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/asistencia")
@@ -150,7 +152,7 @@ public class AsistenciaController {
 //            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 //
-//            // Verificar si tiene permiso para actualizar esta asistencia
+////            // Verificar si tiene permiso para actualizar esta asistencia
 //            if (!securityService.canUpdateAttendance(user.id(), asistenciaDTO.getGrado())) {
 //                return ApiResponseUtils.forbidden("No tienes permiso para actualizar esta asistencia");
 //            }
@@ -161,4 +163,26 @@ public class AsistenciaController {
             return ApiResponseUtils.badRequest("Error al actualizar asistencia: " + e.getMessage());
         }
     }
+
+    @GetMapping("/detailsByStudent/{id}")
+    @Operation(summary = "Obtiene el detalle de asistencias global del alumno en el grado")
+    public ResponseEntity<ApiResponseDto<DetalleAsistenciaByAlumno>> detailsByStudent(@PathVariable Long id){
+
+        try{
+            Optional<DetalleAsistenciaByAlumno> response= asistenciaService.getDetailsByStudent(id);
+            return response.map(detalleAsistenciaByAlumno ->
+                    ApiResponseUtils.success(detalleAsistenciaByAlumno, "Busqueda exitosa"))
+                    .orElseGet(() -> ApiResponseUtils.forbidden("No tienes permiso para actualizar esta asistencia"));
+
+        }catch (Exception e){
+
+            return ApiResponseUtils.internalError("Ha ocurrido un error: "+ e.getMessage());
+
+        }
+
+
+
+
+    }
+
 }
