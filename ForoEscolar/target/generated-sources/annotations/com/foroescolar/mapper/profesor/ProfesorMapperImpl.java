@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-03-06T05:24:54+0000",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.41.0.z20250213-2037, environment: Java 21.0.5 (Microsoft)"
 )
 @Component
 public class ProfesorMapperImpl extends ProfesorMapper {
@@ -85,16 +85,16 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         profesor.setTarea( longListToTareas( profesorRequestDTO.tareaIds() ) );
         profesor.setCalificaciones( longListToCalificaciones( profesorRequestDTO.calificacionIds() ) );
         profesor.setGrado( longListToGrados( profesorRequestDTO.gradoIds() ) );
-        profesor.setNombre( profesorRequestDTO.nombre() );
         profesor.setApellido( profesorRequestDTO.apellido() );
+        profesor.setContrasena( profesorRequestDTO.contrasena() );
         profesor.setDni( profesorRequestDTO.dni() );
+        profesor.setEmail( profesorRequestDTO.email() );
+        profesor.setInstitucion( profesorRequestDTO.institucion() );
+        profesor.setNombre( profesorRequestDTO.nombre() );
+        profesor.setTelefono( profesorRequestDTO.telefono() );
         if ( profesorRequestDTO.tipoDocumento() != null ) {
             profesor.setTipoDocumento( Enum.valueOf( TipoDocumentoEnum.class, profesorRequestDTO.tipoDocumento() ) );
         }
-        profesor.setEmail( profesorRequestDTO.email() );
-        profesor.setTelefono( profesorRequestDTO.telefono() );
-        profesor.setContrasena( profesorRequestDTO.contrasena() );
-        profesor.setInstitucion( profesorRequestDTO.institucion() );
         if ( profesorRequestDTO.materia() != null ) {
             profesor.setMateria( Enum.valueOf( MateriaEnum.class, profesorRequestDTO.materia() ) );
         }

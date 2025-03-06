@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-03-06T05:24:54+0000",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.41.0.z20250213-2037, environment: Java 21.0.5 (Microsoft)"
 )
 @Component
 public class UserMapperImpl implements UserMapper {
@@ -60,16 +60,16 @@ public class UserMapperImpl implements UserMapper {
 
         User user = new User();
 
-        user.setNombre( userRequestDTO.nombre() );
         user.setApellido( userRequestDTO.apellido() );
+        user.setContrasena( userRequestDTO.contrasena() );
         user.setDni( userRequestDTO.dni() );
+        user.setEmail( userRequestDTO.email() );
+        user.setInstitucion( userRequestDTO.institucion() );
+        user.setNombre( userRequestDTO.nombre() );
+        user.setTelefono( userRequestDTO.telefono() );
         if ( userRequestDTO.tipoDocumento() != null ) {
             user.setTipoDocumento( Enum.valueOf( TipoDocumentoEnum.class, userRequestDTO.tipoDocumento() ) );
         }
-        user.setEmail( userRequestDTO.email() );
-        user.setTelefono( userRequestDTO.telefono() );
-        user.setContrasena( userRequestDTO.contrasena() );
-        user.setInstitucion( userRequestDTO.institucion() );
 
         return user;
     }

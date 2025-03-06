@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-03-06T05:24:54+0000",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.41.0.z20250213-2037, environment: Java 21.0.5 (Microsoft)"
 )
 @Component
 public class BoletinMapperImpl extends BoletinMapper {
@@ -26,12 +26,12 @@ public class BoletinMapperImpl extends BoletinMapper {
 
         boletinDto.estudiante( estudianteToLong( boletin.getEstudiante() ) );
         boletinDto.calificacion( calificacionListToLongList( boletin.getCalificacion() ) );
-        boletinDto.id( boletin.getId() );
-        boletinDto.promedio( boletin.getPromedio() );
-        boletinDto.observaciones( boletin.getObservaciones() );
-        boletinDto.periodo( boletin.getPeriodo() );
         boletinDto.curso( boletin.getCurso() );
         boletinDto.fecha( boletin.getFecha() );
+        boletinDto.id( boletin.getId() );
+        boletinDto.observaciones( boletin.getObservaciones() );
+        boletinDto.periodo( boletin.getPeriodo() );
+        boletinDto.promedio( boletin.getPromedio() );
 
         return boletinDto.build();
     }
@@ -46,12 +46,12 @@ public class BoletinMapperImpl extends BoletinMapper {
 
         boletin.estudiante( longToEstudiante( boletinDto.getEstudiante() ) );
         boletin.calificacion( longListToCalificacionList( boletinDto.getCalificacion() ) );
+        boletin.curso( boletinDto.getCurso() );
+        boletin.fecha( boletinDto.getFecha() );
         boletin.id( boletinDto.getId() );
-        boletin.promedio( boletinDto.getPromedio() );
         boletin.observaciones( boletinDto.getObservaciones() );
         boletin.periodo( boletinDto.getPeriodo() );
-        boletin.fecha( boletinDto.getFecha() );
-        boletin.curso( boletinDto.getCurso() );
+        boletin.promedio( boletinDto.getPromedio() );
 
         return boletin.build();
     }

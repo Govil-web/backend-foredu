@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-03-06T05:24:54+0000",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.41.0.z20250213-2037, environment: Java 21.0.5 (Microsoft)"
 )
 @Component
 public class GradoMapperImpl extends GradoMapper {
@@ -24,11 +24,11 @@ public class GradoMapperImpl extends GradoMapper {
 
         gradoDto.profesor( profesorToLong( grado.getProfesor() ) );
         gradoDto.profesorNombre( gradoProfesorNombre( grado ) );
-        gradoDto.id( grado.getId() );
         gradoDto.aula( grado.getAula() );
         gradoDto.curso( grado.getCurso() );
-        gradoDto.turno( grado.getTurno() );
+        gradoDto.id( grado.getId() );
         gradoDto.materia( grado.getMateria() );
+        gradoDto.turno( grado.getTurno() );
 
         return gradoDto.build();
     }
@@ -42,11 +42,11 @@ public class GradoMapperImpl extends GradoMapper {
         Grado.GradoBuilder grado = Grado.builder();
 
         grado.profesor( longToProfesor( gradoDto.getProfesor() ) );
-        grado.id( gradoDto.getId() );
         grado.aula( gradoDto.getAula() );
         grado.curso( gradoDto.getCurso() );
-        grado.turno( gradoDto.getTurno() );
+        grado.id( gradoDto.getId() );
         grado.materia( gradoDto.getMateria() );
+        grado.turno( gradoDto.getTurno() );
 
         return grado.build();
     }

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-03-06T05:24:54+0000",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.41.0.z20250213-2037, environment: Java 21.0.5 (Microsoft)"
 )
 @Component
 public class TareaMapperImpl extends TareaMapper {
@@ -23,12 +23,12 @@ public class TareaMapperImpl extends TareaMapper {
 
         tareaResponseDto.profesor( profesorToLong( tarea.getProfesor() ) );
         tareaResponseDto.estudiante( estudianteToLong( tarea.getEstudiante() ) );
-        tareaResponseDto.id( tarea.getId() );
-        tareaResponseDto.descripcion( tarea.getDescripcion() );
-        tareaResponseDto.titulo( tarea.getTitulo() );
-        tareaResponseDto.fechaEntrega( tarea.getFechaEntrega() );
         tareaResponseDto.activo( tarea.isActivo() );
+        tareaResponseDto.descripcion( tarea.getDescripcion() );
         tareaResponseDto.estadoDeEntrega( tarea.getEstadoDeEntrega() );
+        tareaResponseDto.fechaEntrega( tarea.getFechaEntrega() );
+        tareaResponseDto.id( tarea.getId() );
+        tareaResponseDto.titulo( tarea.getTitulo() );
 
         return tareaResponseDto.build();
     }
@@ -43,12 +43,12 @@ public class TareaMapperImpl extends TareaMapper {
 
         tarea.profesor( longToProfesor( tareaRequestDTO.getProfesor() ) );
         tarea.estudiante( longToEstudiante( tareaRequestDTO.getEstudiante() ) );
-        tarea.id( tareaRequestDTO.getId() );
-        tarea.descripcion( tareaRequestDTO.getDescripcion() );
-        tarea.titulo( tareaRequestDTO.getTitulo() );
-        tarea.fechaEntrega( tareaRequestDTO.getFechaEntrega() );
         tarea.activo( tareaRequestDTO.isActivo() );
+        tarea.descripcion( tareaRequestDTO.getDescripcion() );
         tarea.estadoDeEntrega( tareaRequestDTO.getEstadoDeEntrega() );
+        tarea.fechaEntrega( tareaRequestDTO.getFechaEntrega() );
+        tarea.id( tareaRequestDTO.getId() );
+        tarea.titulo( tareaRequestDTO.getTitulo() );
 
         return tarea.build();
     }

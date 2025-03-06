@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-25T14:18:41-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2025-03-06T05:24:54+0000",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.41.0.z20250213-2037, environment: Java 21.0.5 (Microsoft)"
 )
 @Component
 public class EstudianteMapperImpl extends EstudianteMapper {
@@ -74,13 +74,13 @@ public class EstudianteMapperImpl extends EstudianteMapper {
         estudiante.tarea( longListToTareas( estudianteResponseDTO.tarea() ) );
         estudiante.calificaciones( longListToCalificaciones( estudianteResponseDTO.calificaciones() ) );
         estudiante.grado( longToGrado( estudianteResponseDTO.grado() ) );
-        estudiante.id( estudianteResponseDTO.id() );
-        estudiante.nombre( estudianteResponseDTO.nombre() );
+        estudiante.activo( estudianteResponseDTO.activo() );
         estudiante.apellido( estudianteResponseDTO.apellido() );
         estudiante.dni( estudianteResponseDTO.dni() );
-        estudiante.genero( estudianteResponseDTO.genero() );
-        estudiante.activo( estudianteResponseDTO.activo() );
         estudiante.fechaNacimiento( estudianteResponseDTO.fechaNacimiento() );
+        estudiante.genero( estudianteResponseDTO.genero() );
+        estudiante.id( estudianteResponseDTO.id() );
+        estudiante.nombre( estudianteResponseDTO.nombre() );
         if ( estudianteResponseDTO.tipoDocumento() != null ) {
             estudiante.tipoDocumento( Enum.valueOf( TipoDocumentoEnum.class, estudianteResponseDTO.tipoDocumento() ) );
         }
