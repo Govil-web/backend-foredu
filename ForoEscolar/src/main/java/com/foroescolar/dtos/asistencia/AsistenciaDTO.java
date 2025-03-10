@@ -2,7 +2,6 @@ package com.foroescolar.dtos.asistencia;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -13,17 +12,13 @@ import java.time.LocalDate;
 public class AsistenciaDTO implements Serializable {
 
     Long id;
-    boolean asistio;
-    int asistenciaAlumno;
     LocalDate fecha;
     String justificativos;
     double porcentajeAsistencia;
     String nombreEstudiante;
-    Long profesor;
+    String estado;
     Long estudiante;
     Long grado;
 
-    //xs
-    //hola
 }
 

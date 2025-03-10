@@ -57,17 +57,18 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/user/add", HttpMethod.POST.name()).permitAll()
                         .requestMatchers(getPublicEndpoints()).permitAll()
                         .requestMatchers(getSelfAccessEndpoints()).authenticated()
                         .requestMatchers(getAdministratorEndpoints()).hasRole(ADMINISTRADOR)
                         .requestMatchers(getTeacherEndpoints()).hasAnyRole(ADMINISTRADOR, "PROFESOR")
                         .requestMatchers(getTutorEndpoints()).hasAnyRole(ADMINISTRADOR, "PROFESOR", "TUTOR")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()//authenticated()
                 )
 
                 .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtAuthenticationFilter, RequestLoggingFilter.class)
-                .addFilterAfter(blacklistTokenFilter, JwtAuthenticationFilter.class)
+//                .addFilterAfter(blacklistTokenFilter, JwtAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .build();
     }

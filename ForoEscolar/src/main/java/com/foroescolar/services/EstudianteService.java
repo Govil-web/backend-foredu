@@ -2,6 +2,7 @@ package com.foroescolar.services;
 
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
+import com.foroescolar.model.Estudiante;
 
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface EstudianteService extends GenericServiceDto<Long, EstudianteRes
 
     boolean subscribe_unsubscribe(Long id);
 
+    List<Estudiante> findByIds(List<Long> id);
+
+    Estudiante findByIdToEntity(Long id);
 }

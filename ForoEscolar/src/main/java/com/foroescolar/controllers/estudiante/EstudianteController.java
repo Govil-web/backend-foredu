@@ -54,8 +54,8 @@ public class EstudianteController {
     @Operation(summary = "Agregar nuevo estudiante")
     public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> save(
             @Valid @RequestBody EstudianteResponseDTO dto) {
-        UserPrincipal currentUser = getCurrentUser();
-        validateAdminAccess(currentUser.id());
+//        UserPrincipal currentUser = getCurrentUser();
+//        validateAdminAccess(currentUser.id());
 
         try {
             EstudianteResponseDTO estudiante = estudianteService.save(dto);

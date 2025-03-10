@@ -69,19 +69,27 @@ CREATE TABLE profesor_estudiante (
                                      FOREIGN KEY (estudiante_id) REFERENCES estudiantes(id)
 );
 
+CREATE TABLE fecha (
+						
+                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         anio int,
+                         dia int,
+                         mes int,
+                         trimestre int,
+                         semana int,
+                         fecha DATE UNIQUE
+);
+
+
 CREATE TABLE asistencia (
                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
+							observaciones VARCHAR(255),
+                            estado_asistencia ENUM('PRESENTE','AUSENTE','TARDE','JUSTIFICADO'),
                             estudiante_id BIGINT,
-                            asistio TINYINT(1),
-							contador_clases TINYINT(1),
-                            contador_total int,
-                            asistencia_alumno int,
-                            fecha DATE,
-                            profesor_id BIGINT,
+                            fecha_id BIGINT,
 							grado_id BIGINT,
-                            observaciones VARCHAR(255),
+							FOREIGN KEY (fecha_id) REFERENCES fecha(id),
                             FOREIGN KEY (estudiante_id) REFERENCES estudiantes(id),
-                            FOREIGN KEY (profesor_id) REFERENCES profesores(user_id),
 							FOREIGN KEY (grado_id) REFERENCES grado(id)
 );
 

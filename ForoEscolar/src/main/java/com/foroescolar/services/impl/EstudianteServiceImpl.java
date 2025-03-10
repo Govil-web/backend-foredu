@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,13 +120,11 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
 
-
     @Override
     public List<EstudianteResponseDTO> findByGradoId(Long gradoId) {
         List<Estudiante> estudiantes = estudianteRepository.findByGradoId(gradoId);
         return estudiantes.stream().map(estudianteMapper::toResponseDTO).toList();
     }
-
 
 
     @Override
@@ -139,6 +138,7 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     /**
      * Método que permite suscribir o unsubscribe a un estudiante
+     *
      * @param id id del estudiante
      * @return true si se suscribe, false si se unsubscribe
      */
@@ -151,7 +151,7 @@ public class EstudianteServiceImpl implements EstudianteService {
             return false;
         }
         estudiante.setActivo(true);
-            estudianteRepository.save(estudiante);
+        estudianteRepository.save(estudiante);
 
         return true;
     }
@@ -164,6 +164,21 @@ public class EstudianteServiceImpl implements EstudianteService {
         }
 
         // Otras validaciones específicas del negocio...
+    }
+
+    @Override
+    public List<Estudiante> findByIds(List<Long> id) {
+
+        List<Estudiante> estudiantesList = new ArrayList<>();
+        for (Long idEstudiante : id) {
+            Optional<Estudiante> estudiante = estudianteRepository.findById(idEstudiante);
+            estudiante.ifPresent(estudiantesList::add);
+        }
+        return estudiantesList;
+    }
+    @Override
+    public Estudiante findByIdToEntity(Long id){
+        return estudianteRepository.findById(id).orElse(null);
     }
 
 }

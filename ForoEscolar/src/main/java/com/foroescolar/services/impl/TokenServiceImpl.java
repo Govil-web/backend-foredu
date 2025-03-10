@@ -10,10 +10,11 @@ import com.foroescolar.exceptions.security.ErrorCode;
 import com.foroescolar.exceptions.security.filters.token.*;
 import com.foroescolar.model.User;
 import com.foroescolar.services.TokenService;
-import io.lettuce.core.RedisConnectionException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.RedisTemplate;
+//import io.lettuce.core.RedisConnectionException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +33,14 @@ public class TokenServiceImpl implements TokenService {
 
     private final Set<String> blacklistedTokens = Collections.synchronizedSet(new HashSet<>());
 
-    private final RedisTemplate<String, String> redisTemplate;
+    //private final RedisTemplate<String, String> redisTemplate;
     private static final String TOKEN_BLACKLIST_PREFIX = "blacklist:";
     private static final long TOKEN_BLACKLIST_DURATION = 24;
     private static final String FORO_ESCOLAR = "Foro Escolar";
 
-    public TokenServiceImpl(RedisTemplate<String, String> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+//    public TokenServiceImpl(RedisTemplate<String, String> redisTemplate) {
+//        this.redisTemplate = redisTemplate;
+//    }
 
 
     @Override
@@ -116,24 +117,24 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-    @Override
-    public void invalidateToken(String token) {
-        log.info("Iniciando proceso de invalidación de token");
-        try {
-            validateTokenBeforeBlacklisting(token);
-            addTokenToBlacklist(token);
-            log.info("Token invalidado exitosamente");
-        } catch (JWTVerificationException e) {
-            log.error("Error al verificar el token antes de invalidar: {}", e.getMessage());
-            throw new TokenInvalidException("El token proporcionado no es válido");
-        } catch (RedisConnectionException e) {
-            log.error("Error de conexión con Redis al invalidar token: {}", e.getMessage());
-            throw new TokenOperationException("Error al procesar la invalidación del token", e);
-        } catch (Exception e) {
-            log.error("Error inesperado al invalidar token: {}", e.getMessage(), e);
-            throw new TokenOperationException("Error inesperado al invalidar el token", e);
-        }
-    }
+//    @Override
+//    public void invalidateToken(String token) {
+//        log.info("Iniciando proceso de invalidación de token");
+//        try {
+//            validateTokenBeforeBlacklisting(token);
+//            addTokenToBlacklist(token);
+//            log.info("Token invalidado exitosamente");
+//        } catch (JWTVerificationException e) {
+//            log.error("Error al verificar el token antes de invalidar: {}", e.getMessage());
+//            throw new TokenInvalidException("El token proporcionado no es válido");
+//        } catch (RedisConnectionException e) {
+//            log.error("Error de conexión con Redis al invalidar token: {}", e.getMessage());
+//            throw new TokenOperationException("Error al procesar la invalidación del token", e);
+//        } catch (Exception e) {
+//            log.error("Error inesperado al invalidar token: {}", e.getMessage(), e);
+//            throw new TokenOperationException("Error inesperado al invalidar el token", e);
+//        }
+//    }
 
     private void validateTokenBeforeBlacklisting(String token) throws JWTVerificationException {
         Algorithm algorithm = Algorithm.HMAC256(apiSecret);
@@ -143,20 +144,20 @@ public class TokenServiceImpl implements TokenService {
                 .verify(token);
     }
 
-    private void addTokenToBlacklist(String token) {
-        redisTemplate.opsForValue().set(
-                TOKEN_BLACKLIST_PREFIX + token,
-                "true",
-                TOKEN_BLACKLIST_DURATION,
-                TimeUnit.HOURS
-        );
-    }
+//    private void addTokenToBlacklist(String token) {
+//        redisTemplate.opsForValue().set(
+//                TOKEN_BLACKLIST_PREFIX + token,
+//                "true",
+//                TOKEN_BLACKLIST_DURATION,
+//                TimeUnit.HOURS
+//        );
+//    }
 
-    @Override
-    public boolean isTokenInBlacklist(String token) {
-        Boolean result = redisTemplate.hasKey(TOKEN_BLACKLIST_PREFIX + token);
-        return Boolean.TRUE.equals(result);
-    }
+//    @Override
+//    public boolean isTokenInBlacklist(String token) {
+//        Boolean result = redisTemplate.hasKey(TOKEN_BLACKLIST_PREFIX + token);
+//        return Boolean.TRUE.equals(result);
+//    }
 
 
     @Override
