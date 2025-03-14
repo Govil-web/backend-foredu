@@ -20,7 +20,7 @@ public class Asistencia {
     private String observaciones= "Sin observacion";
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado")
+    @Column(name = "estado_asistencia")
     private EstadoAsistencia estado;
 
     @ManyToOne

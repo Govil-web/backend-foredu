@@ -1,0 +1,31 @@
+name: Despliegue en Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Construir con Maven
+        run: mvn clean package -DskipTests
+
+      - name: Desplegar en Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'ForoEscolar'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: 'target/*.jar'

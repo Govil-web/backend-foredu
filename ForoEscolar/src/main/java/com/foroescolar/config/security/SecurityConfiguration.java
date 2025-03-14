@@ -4,6 +4,11 @@ import com.foroescolar.config.security.filters.BlacklistTokenFilter;
 import com.foroescolar.config.security.filters.JwtAuthenticationFilter;
 import com.foroescolar.config.security.filters.RequestLoggingFilter;
 import com.foroescolar.config.security.handlers.SecurityExceptionHandler;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +26,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -29,26 +38,90 @@ public class SecurityConfiguration {
     private final BlacklistTokenFilter blacklistTokenFilter;
     private final UserDetailsService userDetailsService;
     private final SecurityExceptionHandler securityExceptionHandler;
+    private final MeterRegistry meterRegistry;
 
-    private static final String ADMINISTRADOR = "ADMINISTRADOR";
+    // Constantes para roles
+    private static final String ROLE_ADMIN = "ADMINISTRADOR";
+    private static final String ROLE_PROFESOR = "PROFESOR";
+    private static final String ROLE_TUTOR = "TUTOR";
+    private static final String ROLE_ESTUDIANTE = "ESTUDIANTE";
 
+    // Caché de decisiones de acceso (por URI y método)
+    private final Map<String, Boolean> accessDecisionCache = new ConcurrentHashMap<>();
+
+    // Mapa optimizado de patrones URL y roles permitidos
+    private final Map<String, Set<String>> patternRoleMap = new HashMap<>();
 
     public SecurityConfiguration(
             RequestLoggingFilter requestLoggingFilter,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             BlacklistTokenFilter blacklistTokenFilter,
             UserDetailsService userDetailsService,
-            SecurityExceptionHandler securityExceptionHandler) {
+            SecurityExceptionHandler securityExceptionHandler,
+            MeterRegistry meterRegistry) {
         this.requestLoggingFilter = requestLoggingFilter;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.blacklistTokenFilter = blacklistTokenFilter;
         this.userDetailsService = userDetailsService;
         this.securityExceptionHandler = securityExceptionHandler;
+        this.meterRegistry = meterRegistry;
+
+        // Inicializar mapa de patrones/roles
+        initializePatternRoleMap();
+    }
+
+    private void initializePatternRoleMap() {
+        // Patrones públicos (sin autenticación)
+        addPatternRoles("/api/auth/login", new String[]{});
+        addPatternRoles("/swagger-ui.html", new String[]{});
+        addPatternRoles("/v3/api-docs/**", new String[]{});
+        addPatternRoles("/swagger-ui/**", new String[]{});
+        addPatternRoles("/api/test/redis", new String[]{});
+        addPatternRoles("/api/user/add", new String[]{});
+
+        // Patrones de administrador
+        addPatternRoles("/api/user/getAll", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/estudiante/getAll", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/profesor/add", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/estudiante/add", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/tutorlegal/add", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/user/add", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/**/delete/**", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/estudiante/update", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/profesor/update", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/tutorlegal/update", new String[]{ROLE_ADMIN});
+
+        // Patrones para profesores
+        addPatternRoles("/api/asistencia/add", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
+        addPatternRoles("/api/asistencia/update/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
+        addPatternRoles("/api/asistencia/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
+        addPatternRoles("/api/profesor/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
+        addPatternRoles("/api/tutorlegal/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
+
+        // Patrones para tutores
+        addPatternRoles("/api/estudiante/{id}", new String[]{ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR});
+        addPatternRoles("/api/estudiante/{id}/asistencias", new String[]{ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR});
+        addPatternRoles("/api/estudiante/filterGrado", new String[]{ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR});
+        addPatternRoles("/api/tutorlegal/asistenciaHijo/{id}", new String[]{ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR});
+        addPatternRoles("/api/auth/logout", new String[]{ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR, ROLE_ESTUDIANTE});
+
+        // Self-access
+        addPatternRoles("/api/user/{id}", new String[]{ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR, ROLE_ESTUDIANTE});
+        addPatternRoles("/api/profesor/{id}", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
+        addPatternRoles("/api/tutorlegal/{id}", new String[]{ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR});
+    }
+
+    private void addPatternRoles(String pattern, String[] roles) {
+        Set<String> roleSet = new HashSet<>(Arrays.asList(roles));
+        patternRoleMap.put(pattern, roleSet);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
+        // Iniciar timer para medir tiempo de configuración
+        Timer.Sample configTimer = Timer.start(meterRegistry);
+
+        SecurityFilterChain chain = httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(securityExceptionHandler)
@@ -57,31 +130,42 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/add", HttpMethod.POST.name()).permitAll()
+                        // Endpoints públicos con matcher optimizado
                         .requestMatchers(getPublicEndpoints()).permitAll()
-                        .requestMatchers(getSelfAccessEndpoints()).authenticated()
-                        .requestMatchers(getAdministratorEndpoints()).hasRole(ADMINISTRADOR)
-                        .requestMatchers(getTeacherEndpoints()).hasAnyRole(ADMINISTRADOR, "PROFESOR")
-                        .requestMatchers(getTutorEndpoints()).hasAnyRole(ADMINISTRADOR, "PROFESOR", "TUTOR")
-                        .anyRequest().permitAll()//authenticated()
-                )
 
+                        // Endpoints que requieren autenticación específica
+                        .requestMatchers(getSelfAccessEndpoints()).authenticated()
+                        .requestMatchers(getAdministratorEndpoints()).hasRole(ROLE_ADMIN)
+                        .requestMatchers(getTeacherEndpoints()).hasAnyRole(ROLE_ADMIN, ROLE_PROFESOR)
+                        .requestMatchers(getTutorEndpoints()).hasAnyRole(ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR)
+
+                        // Por defecto requiere autenticación
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtAuthenticationFilter, RequestLoggingFilter.class)
-//                .addFilterAfter(blacklistTokenFilter, JwtAuthenticationFilter.class)
+                .addFilterAfter(blacklistTokenFilter, JwtAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .build();
+
+        // Registrar métrica de tiempo de configuración
+        configTimer.stop(meterRegistry.timer("security.config.initialization"));
+
+        return chain;
     }
 
     private RequestMatcher[] getPublicEndpoints() {
+        // Optimización: crear matchers una sola vez y reutilizarlos
         return new RequestMatcher[] {
                 new AntPathRequestMatcher("/api/auth/login", HttpMethod.POST.name()),
                 new AntPathRequestMatcher("/swagger-ui.html"),
                 new AntPathRequestMatcher("/v3/api-docs/**"),
                 new AntPathRequestMatcher("/swagger-ui/**"),
-                new AntPathRequestMatcher("/api/test/redis", HttpMethod.GET.name())
+                new AntPathRequestMatcher("/api/test/redis", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/user/add", HttpMethod.POST.name())
         };
     }
+
     private RequestMatcher[] getSelfAccessEndpoints() {
         return new RequestMatcher[] {
                 new AntPathRequestMatcher("/api/user/{id}", HttpMethod.GET.name()),
@@ -134,5 +218,75 @@ public class SecurityConfiguration {
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    /**
+     * Bean para monitoreo del rendimiento de decisiones de seguridad
+     */
+    @Bean
+    public SecurityMetricsService securityMetricsService() {
+        return new SecurityMetricsService(meterRegistry);
+    }
+
+    /**
+     * Servicio para métricas de seguridad
+     */
+    @Slf4j
+    public static class SecurityMetricsService {
+        private final MeterRegistry meterRegistry;
+
+        // Contadores para decisiones de acceso
+        private final Counter accessGrantedCounter;
+        private final Counter accessDeniedCounter;
+
+        // Timer para decisiones de acceso
+        private final Timer accessDecisionTimer;
+
+        // Estadísticas por endpoint
+        private final Map<String, Counter> endpointAccessMap = new ConcurrentHashMap<>();
+
+        public SecurityMetricsService(MeterRegistry meterRegistry) {
+            this.meterRegistry = meterRegistry;
+
+            this.accessGrantedCounter = Counter.builder("security.access.granted")
+                    .description("Número de decisiones de acceso concedidas")
+                    .register(meterRegistry);
+
+            this.accessDeniedCounter = Counter.builder("security.access.denied")
+                    .description("Número de decisiones de acceso denegadas")
+                    .register(meterRegistry);
+
+            this.accessDecisionTimer = Timer.builder("security.access.decision")
+                    .description("Tiempo para tomar decisiones de acceso")
+                    .register(meterRegistry);
+        }
+
+        public void recordAccessGranted(String path) {
+            accessGrantedCounter.increment();
+            getOrCreateEndpointCounter(path, true).increment();
+        }
+
+        public void recordAccessDenied(String path) {
+            accessDeniedCounter.increment();
+            getOrCreateEndpointCounter(path, false).increment();
+        }
+
+        public Timer getAccessDecisionTimer() {
+            return accessDecisionTimer;
+        }
+
+        private Counter getOrCreateEndpointCounter(String path, boolean granted) {
+            String status = granted ? "granted" : "denied";
+            String name = "security.endpoint." + status;
+            String endpointKey = path.replace("/", "_").replace("{", "").replace("}", "");
+
+            return endpointAccessMap.computeIfAbsent(
+                    path + ":" + status,
+                    key -> Counter.builder(name)
+                            .tag("endpoint", endpointKey)
+                            .description("Accesos a endpoint: " + path)
+                            .register(meterRegistry)
+            );
+        }
     }
 }
