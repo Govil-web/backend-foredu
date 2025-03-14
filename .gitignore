@@ -41,12 +41,6 @@ logs/
 ### Environment Variables ###
 .env
 *.env
-application.properties
-application.yml
-application-dev.properties
-application-prod.properties
-application-*.yml
-application-*.properties
 
 ### Database ###
 *.db
