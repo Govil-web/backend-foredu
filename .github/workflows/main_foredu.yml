@@ -27,7 +27,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
-      - name: Rename JAR file
+      - name: Rename JAR file for Azure
         run: mv target/*.jar target/app.jar  
 
       - name: Upload artifact for deployment job
