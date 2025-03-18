@@ -57,7 +57,7 @@ public class SecurityService {
                     estudianteRepository.existsByIdAndTutorId(requestedUserId, currentUser.getId());
             case ROLE_PROFESOR ->
                 // Verificar si el estudiante está en alguna de las clases del profesor
-                    estudianteRepository.existsByIdAndProfesores(requestedUserId, currentUser.getId());
+                    estudianteRepository.existsByIdAndTutorId(requestedUserId, currentUser.getId());
             case ROLE_ESTUDIANTE ->
                 // Un estudiante solo puede ver su propia información
                     false;
@@ -130,7 +130,7 @@ public class SecurityService {
     public boolean isAdmin(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException(USUARIO_NO_ENCONTRADO));
-        return ROLE_ADMINISTRADOR.equals(user.getRol());
+        return !ROLE_ADMINISTRADOR.equals(user.getRol());
     }
 
     /**
@@ -220,4 +220,21 @@ public class SecurityService {
         };
     }
 
+    public Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User currentUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException(USUARIO_NO_ENCONTRADO));
+
+        return currentUser.getId();
+    }
+
+    public boolean isCurrentUserAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User currentUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException(USUARIO_NO_ENCONTRADO));
+
+        return ROLE_ADMINISTRADOR.equals(currentUser.getRol());
+    }
 }

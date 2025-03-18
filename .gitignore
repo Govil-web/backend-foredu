@@ -9,6 +9,7 @@ logs/
 hs_err_pid*
 
 ### Maven ###
+target
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -41,8 +42,10 @@ logs/
 ### Environment Variables ###
 .env
 *.env
+application.properties
 application.yml
 application-dev.properties
+application-prod.properties
 application-*.yml
 application-*.properties
 

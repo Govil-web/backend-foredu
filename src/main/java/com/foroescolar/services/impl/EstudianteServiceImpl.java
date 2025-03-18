@@ -1,7 +1,7 @@
 package com.foroescolar.services.impl;
 
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
-import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
+import com.foroescolar.dtos.estudiante.*;
 import com.foroescolar.enums.RoleEnum;
 import com.foroescolar.exceptions.model.DniDuplicadoException;
 import com.foroescolar.exceptions.model.EntityNotFoundException;
@@ -11,174 +11,171 @@ import com.foroescolar.model.Asistencia;
 import com.foroescolar.model.Estudiante;
 import com.foroescolar.repository.EstudianteRepository;
 import com.foroescolar.services.EstudianteService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EstudianteServiceImpl implements EstudianteService {
-
 
     private final EstudianteRepository estudianteRepository;
     private final EstudianteMapper estudianteMapper;
     private final AsistenciaMapper asistenciaMapper;
 
     @Autowired
-    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper estudianteMapper, AsistenciaMapper asistenciaMapper) {
+    public EstudianteServiceImpl(
+            EstudianteRepository estudianteRepository,
+            EstudianteMapper estudianteMapper,
+            AsistenciaMapper asistenciaMapper) {
         this.estudianteRepository = estudianteRepository;
         this.estudianteMapper = estudianteMapper;
         this.asistenciaMapper = asistenciaMapper;
     }
 
-    @Transactional
     @Override
-    public EstudianteResponseDTO save(EstudianteResponseDTO estudianteRequestDTO) {
+    @Transactional(readOnly = true)
+    public List<EstudianteListaDTO> obtenerTodos() {
+        return estudianteRepository.findAll()
+                .stream()
+                .map(estudianteMapper::mapearAListaDTO)
+                .collect(Collectors.toList());
+    }
 
-        validateUniqueFields(estudianteRequestDTO);
+    @Override
+    @Transactional(readOnly = true)
+    public Page<EstudianteListaDTO> obtenerTodosPaginados(int pagina, int tamano) {
+        Pageable pageable = PageRequest.of(pagina, tamano);
+        return estudianteRepository.findAll(pageable)
+                .map(estudianteMapper::mapearAListaDTO);
+    }
 
-        Estudiante estudiante = estudianteMapper.toEntity(estudianteRequestDTO);
-        estudiante.setRol(RoleEnum.valueOf("ROLE_ESTUDIANTE"));
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<EstudianteDetalleDTO> obtenerDetallePorId(Long id) {
+        return estudianteRepository.findById(id)
+                .map(estudianteMapper::mapearADetalleDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EstudianteListaDTO> obtenerPorGrado(Long gradoId) {
+        return estudianteRepository.findByGradoId(gradoId)
+                .stream()
+                .map(estudianteMapper::mapearAListaDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public EstudianteDetalleDTO crear(EstudianteCreacionDTO dto) {
+        // Validar campos únicos
+        if (estudianteRepository.existsByDni(dto.numeroDocumento())) {
+            throw new DniDuplicadoException(dto.numeroDocumento());
+        }
+
+        Estudiante estudiante = estudianteMapper.crearDesdeDTO(dto);
+        estudiante.setRol(RoleEnum.ROLE_ESTUDIANTE);
         estudiante.setActivo(true);
+
         estudiante = estudianteRepository.save(estudiante);
-        return estudianteMapper.toResponseDTO(estudiante);
-
-
+        return estudianteMapper.mapearADetalleDTO(estudiante);
     }
 
     @Override
-    public Optional<EstudianteResponseDTO> findById(Long id) {
-        Optional<Estudiante> estudiante = estudianteRepository.findById(id);
-        return estudiante.map(estudianteMapper::toResponseDTO);
-    }
-
-    @Override
-    public List<EstudianteResponseDTO> findAll() {
-        List<Estudiante> estudiantes = estudianteRepository.findAll();
-        return estudiantes.stream()
-                .map(estudianteMapper::toResponseDTO)
-                .toList();
-    }
-
     @Transactional
+    public EstudianteDetalleDTO actualizar(EstudianteActualizacionDTO dto) {
+        Estudiante estudiante = estudianteRepository.findById(dto.id())
+                .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
+
+        // Verificar si se está cambiando el DNI y si ya existe
+        if (dto.numeroDocumento() != null &&
+                !dto.numeroDocumento().equals(estudiante.getDni()) &&
+                estudianteRepository.existsByDni(dto.numeroDocumento())) {
+            throw new DniDuplicadoException(dto.numeroDocumento());
+        }
+
+        estudianteMapper.actualizarDesdeDTO(estudiante, dto);
+        estudiante = estudianteRepository.save(estudiante);
+
+        return estudianteMapper.mapearADetalleDTO(estudiante);
+    }
+
     @Override
-    public void deleteById(Long id) {
-        Estudiante estudiante = estudianteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
+    @Transactional
+    public void eliminar(Long id) {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
         estudianteRepository.delete(estudiante);
     }
 
-
+    @Override
     @Transactional
-    @Override
-    public EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO) {
-        // Buscamos el estudiante por ID
-        Estudiante estudianteExistente = estudianteRepository.findById(estudianteRequestDTO.id())
-                .orElseThrow(() -> new EntityNotFoundException("La entidad con ese ID " + estudianteRequestDTO.id() + " no fue encontrada"));
+    public boolean cambiarEstadoActivo(Long id) {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
 
-        // Mapeamos el DTO recibido a una entidad Estudiante
-        Estudiante estudianteRequest = estudianteMapper.toEntity(estudianteRequestDTO);
-
-        // Actualizamos solo los campos que son modificados (como el nombre)
-        actualizarCampos(estudianteExistente, estudianteRequest);
-
-        // Guardamos la entidad actualizada y la convertimos en DTO de respuesta
-        Estudiante estudianteActualizado = estudianteRepository.save(estudianteExistente);
-        return estudianteMapper.toResponseDTO(estudianteActualizado);
-    }
-
-    /**
-     * Método que actualiza solo los campos no coleccionados del estudiante.
-     */
-    private void actualizarCampos(Estudiante estudianteExistente, Estudiante estudianteRequest) {
-        // Actualizamos solo los campos que necesitan ser modificados, como el nombre
-        if (estudianteRequest.getNombre() != null) {
-            estudianteExistente.setNombre(estudianteRequest.getNombre());
-        }
-        if (estudianteRequest.getApellido() != null) {
-            estudianteExistente.setApellido(estudianteRequest.getApellido());
-        }
-        if (estudianteRequest.getDni() != null) {
-            estudianteExistente.setDni(estudianteRequest.getDni());
-        }
-        if (estudianteRequest.getGenero() != null) {
-            estudianteExistente.setGenero(estudianteRequest.getGenero());
-        }
-        if (estudianteRequest.getFechaNacimiento() != null) {
-            estudianteExistente.setFechaNacimiento(estudianteRequest.getFechaNacimiento());
-        }
-        if (estudianteRequest.getActivo() != null) {
-            estudianteExistente.setActivo(estudianteRequest.getActivo());
-        }
-        if (estudianteRequest.getTipoDocumento() != null) {
-            estudianteExistente.setTipoDocumento(estudianteRequest.getTipoDocumento());
-        }
-
-
-    }
-
-
-    @Override
-    public List<EstudianteResponseDTO> findByGradoId(Long gradoId) {
-        List<Estudiante> estudiantes = estudianteRepository.findByGradoId(gradoId);
-        return estudiantes.stream().map(estudianteMapper::toResponseDTO).toList();
-    }
-
-
-    @Override
-    public List<AsistenciaDTO> findByEstudianteId(Long id) {
-        List<Asistencia> asistencias = estudianteRepository.findByEstudianteId(id);
-        return asistencias.stream()
-                .map(asistenciaMapper::toResponseDto)
-                .toList();
-    }
-
-
-    /**
-     * Método que permite suscribir o unsubscribe a un estudiante
-     *
-     * @param id id del estudiante
-     * @return true si se suscribe, false si se unsubscribe
-     */
-    @Override
-    public boolean subscribe_unsubscribe(Long id) {
-        Estudiante estudiante = estudianteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
-        if (Boolean.TRUE.equals(estudiante.getActivo())) {
-            estudiante.setActivo(false);
-            estudianteRepository.save(estudiante);
-            return false;
-        }
-        estudiante.setActivo(true);
+        boolean nuevoEstado = !estudiante.getActivo();
+        estudiante.setActivo(nuevoEstado);
         estudianteRepository.save(estudiante);
 
-        return true;
-    }
-
-    private void validateUniqueFields(EstudianteResponseDTO dto) {
-        // Validar DNI
-        if (estudianteRepository.existsByDni(dto.dni())) {
-            throw new DniDuplicadoException(dto.dni());
-
-        }
-
-        // Otras validaciones específicas del negocio...
+        return nuevoEstado;
     }
 
     @Override
-    public List<Estudiante> findByIds(List<Long> id) {
-
-        List<Estudiante> estudiantesList = new ArrayList<>();
-        for (Long idEstudiante : id) {
-            Optional<Estudiante> estudiante = estudianteRepository.findById(idEstudiante);
-            estudiante.ifPresent(estudiantesList::add);
-        }
-        return estudiantesList;
+    @Transactional(readOnly = true)
+    public List<AsistenciaDTO> obtenerAsistencias(Long estudianteId) {
+        List<Asistencia> asistencias = estudianteRepository.findByEstudianteId(estudianteId);
+        return asistencias.stream()
+                .map(asistenciaMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
+
     @Override
-    public Estudiante findByIdToEntity(Long id){
-        return estudianteRepository.findById(id).orElse(null);
+    @Transactional(readOnly = true)
+    public Estudiante obtenerEntidadPorId(Long id) {
+        return estudianteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Estudiante> obtenerEntidadesPorIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return estudianteRepository.findAllById(ids);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EstudianteResumenDTO> obtenerTodosResumen() {
+        return estudianteRepository.findAllResumen();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<EstudianteResumenDTO> obtenerTodosResumenPaginados(int pagina, int tamano) {
+        Pageable pageable = PageRequest.of(pagina, tamano);
+        return estudianteRepository.findAllResumen(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EstudianteResumenDTO> obtenerResumenPorTutor(Long tutorId) {
+        return estudianteRepository.findAllByTutorId(tutorId);
+    }
+
+    @Override
+    public Estudiante findByIdToEntity(Long estudianteId) {
+        return estudianteRepository.findById(estudianteId)
+                .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
+    }
 }
