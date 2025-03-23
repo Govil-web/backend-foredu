@@ -37,5 +37,10 @@ public class AutenticacionServiceImpl implements AutenticacionService {
         return new JWTTokenDTO(token);
     }
 
+    @Override
+    public User getCurrentUser(String name) {
+        return (User) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(name, null)).getPrincipal();
+    }
+
 
 }
