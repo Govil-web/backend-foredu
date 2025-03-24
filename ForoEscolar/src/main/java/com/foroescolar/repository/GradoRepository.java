@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GradoRepository extends JpaRepository<Grado,Long> {
 
@@ -68,6 +69,8 @@ public interface GradoRepository extends JpaRepository<Grado,Long> {
 
     // Buscar grados por curso
     List<Grado> findByCurso(CursoEnum curso);
+
+    Optional<Grado> findByCursoAndAulaAndTurno(CursoEnum curso, AulaEnum aula, TurnoEnum turno);
 
 
 }

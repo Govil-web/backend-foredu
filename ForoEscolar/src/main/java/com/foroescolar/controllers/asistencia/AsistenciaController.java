@@ -7,18 +7,14 @@ import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.asistencia.AsistenciaRequest;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
 import com.foroescolar.dtos.asistencia.DetalleAsistenciaByAlumno;
-import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
 import com.foroescolar.services.AsistenciaService;
 import com.foroescolar.services.UserService;
 import com.foroescolar.utils.ApiResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -144,10 +140,9 @@ return new ResponseEntity<>(new ApiResponseDto<>(true,"exitoooooo", null), HttpS
         }
     }
 
-    @PatchMapping("/update/{id}")
-    @Operation(summary = "Update asistencia")
+    @PatchMapping("/update")
+    @Operation(summary = "Update asistencia", description = "Solo se necesita ID de la asistencia,justificativo y estado")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> updateAsistencia(
-            @PathVariable Long id,
             @RequestBody AsistenciaRequestDto asistenciaDTO) {
         try {
 //            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

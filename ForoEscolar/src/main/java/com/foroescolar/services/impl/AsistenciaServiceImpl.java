@@ -94,10 +94,11 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         Optional<Asistencia> response = asistenciaRepository.findById(requestDto.getId());
         if (response.isPresent()) {
             Asistencia asistencia= response.get();
-            if("JUSTIFICADO".equals(requestDto.getEstado())){
-                asistencia.setEstado(EstadoAsistencia.JUSTIFICADO);
+            if("JUSTIFICADO".equals(requestDto.getEstado())|| "TARDE".equals(requestDto.getEstado())){
+                asistencia.setEstado(EstadoAsistencia.valueOf(requestDto.getEstado()));
                 asistencia.setObservaciones(requestDto.getJustificativos());
             }
+
             asistenciaRepository.save(asistencia);
         } else{
             throw new EntityNotFoundException("No se puede cambiar el estado de la asistencia");
