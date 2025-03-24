@@ -15,7 +15,7 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("http://localhost:5173");
-        corsConfiguration.addAllowedOriginPattern("https://test.zilibro.com/");
+        corsConfiguration.addAllowedOriginPattern("https://icy-river-01633c80f.6.azurestaticapps.net");
         corsConfiguration.addAllowedOriginPattern("https://globalia-tech.com/");
         corsConfiguration.addAllowedOriginPattern("https://foredu.globalia-tech.com/");
         corsConfiguration.addAllowedOriginPattern("http://localhost:10000");
