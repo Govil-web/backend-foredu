@@ -14,10 +14,10 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("http://localhost:5173");
         corsConfiguration.addAllowedOriginPattern("https://test.zilibro.com/");
         corsConfiguration.addAllowedOriginPattern("https://globalia-tech.com/");
         corsConfiguration.addAllowedOriginPattern("https://foredu.globalia-tech.com/");
-        corsConfiguration.addAllowedOriginPattern("http://localhost:5173");
         corsConfiguration.addAllowedOriginPattern("http://localhost:10000");
 
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));

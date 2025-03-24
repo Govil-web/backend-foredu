@@ -25,6 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +40,8 @@ public class SecurityConfiguration {
     private final UserDetailsService userDetailsService;
     private final SecurityExceptionHandler securityExceptionHandler;
     private final MeterRegistry meterRegistry;
+    private final CorsConfigurationSource corsConfigurationSource;
+
 
     // Constantes para roles
     private static final String ROLE_ADMIN = "ADMINISTRADOR";
@@ -58,13 +61,14 @@ public class SecurityConfiguration {
             BlacklistTokenFilter blacklistTokenFilter,
             UserDetailsService userDetailsService,
             SecurityExceptionHandler securityExceptionHandler,
-            MeterRegistry meterRegistry) {
+            MeterRegistry meterRegistry, CorsConfigurationSource corsConfigurationSource) {
         this.requestLoggingFilter = requestLoggingFilter;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.blacklistTokenFilter = blacklistTokenFilter;
         this.userDetailsService = userDetailsService;
         this.securityExceptionHandler = securityExceptionHandler;
         this.meterRegistry = meterRegistry;
+        this.corsConfigurationSource = corsConfigurationSource;
 
         // Inicializar mapa de patrones/roles
         initializePatternRoleMap();
@@ -122,6 +126,7 @@ public class SecurityConfiguration {
         Timer.Sample configTimer = Timer.start(meterRegistry);
 
         SecurityFilterChain chain = httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Usa el bean inyectado
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(securityExceptionHandler)
