@@ -1,5 +1,6 @@
 package com.foroescolar.mapper.estudiante;
 
+import com.foroescolar.dtos.estudiante.EstudiantePerfilDto;
 import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
 import com.foroescolar.model.*;
 import com.foroescolar.repository.*;
@@ -36,6 +37,10 @@ public abstract class EstudianteMapper {
     @Mapping(source = "calificaciones", target = "calificaciones", qualifiedByName = "calificacionesToLongList")
     @Mapping(source= "grado", target = "grado", qualifiedByName = "gradoToLong")
     public abstract EstudianteResponseDTO toResponseDTO(Estudiante estudiante);
+
+    @Mapping(source = "tutor", target = "tutor", qualifiedByName = "tutorToLong")
+    @Mapping(source= "grado", target = "grado", qualifiedByName = "gradoToLong")
+    public abstract EstudiantePerfilDto toPerfilDto(Estudiante estudiante);
 
     @Mapping(source = "tutor", target = "tutor", qualifiedByName = "longToTutor")
     @Mapping(source = "boletin", target = "boletin", qualifiedByName = "longListToBoletines")

@@ -14,21 +14,15 @@ public record EstudiantePerfilDto(
 
     Long id,
 
-    @NotBlank(message = " Debe ingresar el nombre del usuario")
     String nombre,
 
-    @NotBlank(message = "Debe ingresar el apellido del usuario")
     String apellido,
 
-    @NotBlank(message = "Debe ingresar el DNI del usuario")
-    @Pattern(regexp = "\\d+", message = "El DNI solo debe contener números")
     String dni,
     GeneroEnum genero,
-    @NotNull(message = "Debe ingresar la fecha de nacimiento")
     LocalDate fechaNacimiento,
 
     @Enumerated(EnumType.STRING)
-    @NotBlank(message = "Debe ingresar el tipo de documento")
     String tipoDocumento,
     Boolean activo,
     Long tutor,
