@@ -1,6 +1,5 @@
 package com.foroescolar.controllers.asistencia;
 
-
 import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
@@ -8,6 +7,7 @@ import com.foroescolar.dtos.asistencia.AsistenciaRequest;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
 import com.foroescolar.dtos.asistencia.DetalleAsistenciaByAlumno;
 import com.foroescolar.exceptions.ApplicationException;
+import com.foroescolar.exceptions.model.EntityNotFoundException;
 import com.foroescolar.services.AsistenciaService;
 import com.foroescolar.services.UserService;
 import com.foroescolar.utils.ApiResponseUtils;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -53,8 +52,8 @@ public class AsistenciaController {
 
                 asistenciaService.asistenciaDelDia(asistenciaRequest);
               //  return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
-return new ResponseEntity<>(new ApiResponseDto<>(true,"exitoooooo", null), HttpStatus.OK);
-            } catch (ApplicationException e) {
+return new ResponseEntity<>(new ApiResponseDto<>(true,"exito", null), HttpStatus.OK);
+            } catch (EntityNotFoundException e) {
                 return ApiResponseUtils.error("Error al registrar asistencia: " + e.getMessage());
             }
     }
