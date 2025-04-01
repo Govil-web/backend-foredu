@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,8 +49,6 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         this.estudianteService = estudianteService;
     }
 
-
-
     @Override
     public void asistenciaDelDia(AsistenciaRequest request) {
 
@@ -69,22 +68,37 @@ public class AsistenciaServiceImpl implements AsistenciaService {
             fecha= fechaService.save(fechaActual);
         }
         grado.incrementarContador();
+        List<Estudiante> estudiantes= new ArrayList<>();
 
-        for(Map.Entry<Long,String> entry: response.entrySet()){
+        for(Map.Entry<Long,String> entry: response.entrySet()) {
             Long estudianteId = entry.getKey();
             EstadoAsistencia estado = EstadoAsistencia.valueOf(entry.getValue());
 
             // Obtener el estudiante correspondiente
             Estudiante estudiante = estudianteService.findByIdToEntity(estudianteId);
 
-            // Crear la asistencia para el estudiante
-            Asistencia asistencia = new Asistencia();
-            asistencia.setFecha(fecha); // Fecha actual
-            asistencia.setEstudiante(estudiante);
-            asistencia.setGrado(grado);
-            asistencia.setEstado(estado);
+            if (estudiante.getGrado().getId() == grado.getId()) {
 
-            asistenciaRepository.save(asistencia);
+                // Crear la asistencia para el estudiante
+                Asistencia asistencia = new Asistencia();
+                asistencia.setFecha(fecha); // Fecha actual
+                asistencia.setEstudiante(estudiante);
+                asistencia.setGrado(grado);
+                asistencia.setEstado(estado);
+
+                asistenciaRepository.save(asistencia);
+            } else {
+                estudiantes.add(estudiante);
+            }
+        }
+        if (!estudiantes.isEmpty()) {
+            StringBuilder mensajeError = new StringBuilder("Los estudiantes con ID: ");
+            for (Estudiante estudiante : estudiantes) {
+                mensajeError.append(estudiante.getId()).append(", ");
+            }
+            mensajeError.delete(mensajeError.length() - 2, mensajeError.length()); // eliminar la última coma y espacio
+            mensajeError.append(" no pertenecen al grado");
+            throw new EntityNotFoundException(mensajeError.toString());
         }
     }
     @Override
@@ -94,10 +108,11 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         Optional<Asistencia> response = asistenciaRepository.findById(requestDto.getId());
         if (response.isPresent()) {
             Asistencia asistencia= response.get();
-            if("JUSTIFICADO".equals(requestDto.getEstado())){
-                asistencia.setEstado(EstadoAsistencia.JUSTIFICADO);
+            if("JUSTIFICADO".equals(requestDto.getEstado())|| "TARDE".equals(requestDto.getEstado())){
+                asistencia.setEstado(EstadoAsistencia.valueOf(requestDto.getEstado()));
                 asistencia.setObservaciones(requestDto.getJustificativos());
             }
+
             asistenciaRepository.save(asistencia);
         } else{
             throw new EntityNotFoundException("No se puede cambiar el estado de la asistencia");

@@ -42,7 +42,7 @@ public class GradoController {
     }
 
     @PostMapping("/register")
-    @Operation(summary = "Registra un nuevo grado")
+    @Operation(summary = "Registra un nuevo grado", description = "Solo los administradores pueden registrar grados")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> registerGrado(@RequestBody @Valid GradoDto gradoDto) {
         try {
@@ -54,7 +54,7 @@ public class GradoController {
 //                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar grados", null));
 //            }
 
-            GradoDto gradoCreado = gradoService.save(gradoDto);
+            GradoDto gradoCreado = gradoService.createGrado(gradoDto);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponseDto<>(true, "Grado creado exitosamente", gradoCreado));
         } catch (ApplicationException e) {
@@ -63,7 +63,9 @@ public class GradoController {
     }
 
     @GetMapping("/getAll")
-    @Operation(summary = "Obtiene todos los grados")
+    @Operation(summary = "Obtiene todos los grados", description = "Solo los administradores pueden ver todos los grados." +
+            " Los profesores ven sus grados asignados y" +
+            " Los tutores pueden ver los grados de sus hijos")
     public ResponseEntity<ApiResponseDto<GradoDto>> getAll() {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -90,7 +92,7 @@ public class GradoController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtiene un grado por Id")
+    @Operation(summary = "Obtiene un grado por Id", description = "Solo los administradores pueden ver los grados de otros usuarios")
     public ResponseEntity<ApiResponseDto<GradoDto>> getById(@PathVariable("id") Long id) {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -111,7 +113,7 @@ public class GradoController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Elimina un grado por Id")
+    @Operation(summary = "Elimina un grado por Id", description = "Solo los administradores pueden eliminar grados")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> deleteById(@PathVariable("id") Long id) {
         try {
@@ -144,7 +146,7 @@ public class GradoController {
     }
 
     @PutMapping("/update/{id}")
-    @Operation(summary = "Actualiza un grado")
+    @Operation(summary = "Actualiza un grado", description = "Solo los administradores pueden actualizar grados")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> updateGrado(
             @PathVariable Long id,

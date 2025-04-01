@@ -1,6 +1,7 @@
 package com.foroescolar.services;
 
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
+import com.foroescolar.dtos.estudiante.EstudiantePerfilDto;
 import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
 import com.foroescolar.model.Estudiante;
 
@@ -11,7 +12,7 @@ public interface EstudianteService extends GenericServiceDto<Long, EstudianteRes
 
     EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO);
 
-    List<EstudianteResponseDTO> findByGradoId(Long gradoId);
+    List<EstudiantePerfilDto> findByGradoId(Long gradoId);
 
     List<AsistenciaDTO> findByEstudianteId(Long id);
 

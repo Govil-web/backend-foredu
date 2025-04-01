@@ -1,14 +1,13 @@
 package com.foroescolar.controllers.asistencia;
 
-
 import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.asistencia.AsistenciaRequest;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
 import com.foroescolar.dtos.asistencia.DetalleAsistenciaByAlumno;
-import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
+import com.foroescolar.exceptions.model.EntityNotFoundException;
 import com.foroescolar.services.AsistenciaService;
 import com.foroescolar.services.UserService;
 import com.foroescolar.utils.ApiResponseUtils;
@@ -16,10 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -55,9 +51,9 @@ public class AsistenciaController {
                 }
 
                 asistenciaService.asistenciaDelDia(asistenciaRequest);
-                return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
-
-            } catch (ApplicationException e) {
+              //  return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
+return new ResponseEntity<>(new ApiResponseDto<>(true,"exito", null), HttpStatus.OK);
+            } catch (EntityNotFoundException e) {
                 return ApiResponseUtils.error("Error al registrar asistencia: " + e.getMessage());
             }
     }
@@ -143,10 +139,9 @@ public class AsistenciaController {
         }
     }
 
-    @PatchMapping("/update/{id}")
-    @Operation(summary = "Update asistencia")
+    @PatchMapping("/update")
+    @Operation(summary = "Update asistencia", description = "Solo se necesita ID de la asistencia,justificativo y estado")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> updateAsistencia(
-            @PathVariable Long id,
             @RequestBody AsistenciaRequestDto asistenciaDTO) {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
