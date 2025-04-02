@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface EstudianteService extends GenericServiceDto<Long, EstudianteResponseDTO>{
 
+    List<EstudiantePerfilDto> findAllStudents();
+
     EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO);
 
     List<EstudiantePerfilDto> findByGradoId(Long gradoId);

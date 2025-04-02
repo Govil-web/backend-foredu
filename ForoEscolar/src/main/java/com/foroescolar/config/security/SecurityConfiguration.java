@@ -185,7 +185,13 @@ public class SecurityConfiguration {
                 new AntPathRequestMatcher("/api/**", HttpMethod.DELETE.name()),
                 new AntPathRequestMatcher("/api/estudiante/update", HttpMethod.PUT.name()),
                 new AntPathRequestMatcher("/api/profesor/update", HttpMethod.PUT.name()),
-                new AntPathRequestMatcher("/api/tutorlegal/update", HttpMethod.PUT.name())
+                new AntPathRequestMatcher("/api/tutorlegal/update", HttpMethod.PUT.name()),
+                new AntPathRequestMatcher("/api/asistencia/add", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/asistencia/update/**", HttpMethod.PATCH.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.DELETE.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.PATCH.name())
         };
     }
 

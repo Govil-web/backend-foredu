@@ -63,6 +63,13 @@ public class EstudianteServiceImpl implements EstudianteService {
                 .map(estudianteMapper::toResponseDTO)
                 .toList();
     }
+    @Override
+    public List<EstudiantePerfilDto> findAllStudents() {
+        List<Estudiante> estudiantes = estudianteRepository.findAll();
+        return estudiantes.stream()
+                .map(estudianteMapper::toPerfilDto)
+                .toList();
+    }
 
     @Transactional
     @Override

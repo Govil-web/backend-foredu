@@ -49,6 +49,7 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         this.estudianteService = estudianteService;
     }
 
+    @Transactional
     @Override
     public void asistenciaDelDia(AsistenciaRequest request) {
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 public record ProfesorRequestDTO (
         Long id,
-        @NotNull(message = "El email no puede estar vacío")
+        @NotBlank(message = "El email no puede estar vacío")
         @Email(message = "Debe ingresar una dirección de correo electrónico válida")
         String email,
         @NotBlank(message = " Debe ingresar el nombre del usuario")

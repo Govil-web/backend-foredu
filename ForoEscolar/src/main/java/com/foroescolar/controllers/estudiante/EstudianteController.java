@@ -43,10 +43,13 @@ public class EstudianteController {
                 .map(estudiante -> ApiResponse.success("Estudiante encontrado", estudiante))
                 .orElse(ApiResponse.notFound("Estudiante no encontrado"));
     }
-    @GetMapping("getAll")
+    @GetMapping("/getAll")
     @Operation(summary = "Obtiene todos los estudiantes")
-    public ResponseEntity<ApiResponseDto<List<EstudianteResponseDTO>>> getAllEstudiantes() {
-        List<EstudianteResponseDTO> estudiantes = (List<EstudianteResponseDTO>) estudianteService.findAll();
+    public ResponseEntity<ApiResponseDto<List<EstudiantePerfilDto>>> getAllEstudiantes() {
+        UserPrincipal currentUser = getCurrentUser();
+        validateAdminAccess(currentUser.id());
+
+        List<EstudiantePerfilDto> estudiantes = estudianteService.findAllStudents();
         return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantes);
     }
 

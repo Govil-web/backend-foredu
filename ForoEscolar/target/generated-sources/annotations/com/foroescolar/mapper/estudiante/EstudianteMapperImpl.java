@@ -1,5 +1,6 @@
 package com.foroescolar.mapper.estudiante;
 
+import com.foroescolar.dtos.estudiante.EstudiantePerfilDto;
 import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
 import com.foroescolar.enums.GeneroEnum;
 import com.foroescolar.enums.TipoDocumentoEnum;
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-03-13T21:28:42-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.6 (Amazon.com Inc.)"
+    date = "2025-04-02T14:17:41-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
 public class EstudianteMapperImpl extends EstudianteMapper {
@@ -58,6 +59,41 @@ public class EstudianteMapperImpl extends EstudianteMapper {
         EstudianteResponseDTO estudianteResponseDTO = new EstudianteResponseDTO( id, nombre, apellido, dni, genero, fechaNacimiento, tipoDocumento, activo, tutor, grado, asistencia, boletin, tarea, calificaciones );
 
         return estudianteResponseDTO;
+    }
+
+    @Override
+    public EstudiantePerfilDto toPerfilDto(Estudiante estudiante) {
+        if ( estudiante == null ) {
+            return null;
+        }
+
+        Long tutor = null;
+        Long grado = null;
+        Long id = null;
+        String nombre = null;
+        String apellido = null;
+        String dni = null;
+        GeneroEnum genero = null;
+        LocalDate fechaNacimiento = null;
+        String tipoDocumento = null;
+        Boolean activo = null;
+
+        tutor = tutorToLong( estudiante.getTutor() );
+        grado = gradoToLong( estudiante.getGrado() );
+        id = estudiante.getId();
+        nombre = estudiante.getNombre();
+        apellido = estudiante.getApellido();
+        dni = estudiante.getDni();
+        genero = estudiante.getGenero();
+        fechaNacimiento = estudiante.getFechaNacimiento();
+        if ( estudiante.getTipoDocumento() != null ) {
+            tipoDocumento = estudiante.getTipoDocumento().name();
+        }
+        activo = estudiante.getActivo();
+
+        EstudiantePerfilDto estudiantePerfilDto = new EstudiantePerfilDto( id, nombre, apellido, dni, genero, fechaNacimiento, tipoDocumento, activo, tutor, grado );
+
+        return estudiantePerfilDto;
     }
 
     @Override

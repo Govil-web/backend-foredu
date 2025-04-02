@@ -6,6 +6,7 @@ import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.asistencia.AsistenciaRequest;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
 import com.foroescolar.dtos.asistencia.DetalleAsistenciaByAlumno;
+import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
 import com.foroescolar.exceptions.model.EntityNotFoundException;
 import com.foroescolar.services.AsistenciaService;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -46,13 +49,13 @@ public class AsistenciaController {
                 UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
                 // Verificar si el profesor tiene permiso para registrar asistencia en este grado
-                if (securityService.canManageGradeAttendance(user.id(), asistenciaRequest.getGradoId())) {
+                if (!securityService.canManageGradeAttendance(user.id(), asistenciaRequest.getGradoId())) {
                     return ApiResponseUtils.forbidden("No tienes permiso para registrar asistencia en este grado");
                 }
 
                 asistenciaService.asistenciaDelDia(asistenciaRequest);
-              //  return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
-return new ResponseEntity<>(new ApiResponseDto<>(true,"exito", null), HttpStatus.OK);
+                return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
+//return new ResponseEntity<>(new ApiResponseDto<>(true,"exito", null), HttpStatus.OK);
             } catch (EntityNotFoundException e) {
                 return ApiResponseUtils.error("Error al registrar asistencia: " + e.getMessage());
             }

@@ -3,6 +3,7 @@ package com.foroescolar.controllers.grado;
 import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.grado.GradoDto;
+import com.foroescolar.dtos.user.UserPrincipal;
 import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
 import com.foroescolar.services.GradoService;
@@ -10,6 +11,7 @@ import com.foroescolar.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.mapstruct.control.MappingControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,17 +48,16 @@ public class GradoController {
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> registerGrado(@RequestBody @Valid GradoDto gradoDto) {
         try {
-//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-//
-//            if (!user.rol().equals(ROLE_ADMINISTRADOR)) {
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar grados", null));
-//            }
+           // UserPrincipal user= securityService.getCurrentUser();
+            UserPrincipal user = getCurrentUser();
+            if (!securityService.isAdmin(user.id())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar grados", null));
+            }
 
-            GradoDto gradoCreado = gradoService.createGrado(gradoDto);
+          //  GradoDto gradoCreado = gradoService.createGrado(gradoDto);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ApiResponseDto<>(true, "Grado creado exitosamente", gradoCreado));
+                    .body(new ApiResponseDto<>(true, "Grado creado exitosamente", gradoService.createGrado(gradoDto)));
         } catch (ApplicationException e) {
             throw new ApplicationException("", "Error al registrar grado: " , e.getHttpStatus());
         }
@@ -171,5 +172,13 @@ public class GradoController {
         } catch (ApplicationException e) {
             throw new ApplicationException(null, "Error al actualizar el grado: ", e.getHttpStatus());
         }
+    }
+
+    public UserPrincipal getCurrentUser() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+        return new UserPrincipal(user.id(), user.email());
     }
 }

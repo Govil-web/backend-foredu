@@ -50,7 +50,7 @@ public class GradoServiceImp implements GradoService {
                .materia(gradoDto.getMateria())
                .profesor(profesor)
                .build();
-       return save(gradoMapper.toResponseDto(grado));
+       return gradoMapper.toResponseDto(gradoRepository.save(grado));
    }
 
     @Override
