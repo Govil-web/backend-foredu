@@ -4,11 +4,7 @@ import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.controllers.ApiResponse;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
-import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
-import com.foroescolar.dtos.user.UserPrincipal;
-import com.foroescolar.dtos.user.UserResponseDTO;
-import com.foroescolar.exceptions.ApplicationException;
-import com.foroescolar.exceptions.model.DniDuplicadoException;
+import com.foroescolar.dtos.estudiante.*;
 import com.foroescolar.exceptions.model.ForbiddenException;
 import com.foroescolar.services.EstudianteService;
 import com.foroescolar.services.UserService;
@@ -16,10 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,156 +29,137 @@ public class EstudianteController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtiene un estudiante por ID")
-    public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> findById(@PathVariable Long id) {
-        validateAccess(id);
-        return estudianteService.findById(id)
+    @Operation(summary = "Obtiene los detalles de un estudiante por ID")
+    public ResponseEntity<ApiResponseDto<EstudianteDetalleDTO>> obtenerDetalle(@PathVariable Long id) {
+        validarAcceso(id);
+        return estudianteService.obtenerDetallePorId(id)
                 .map(estudiante -> ApiResponse.success("Estudiante encontrado", estudiante))
                 .orElse(ApiResponse.notFound("Estudiante no encontrado"));
     }
-    @GetMapping("getAll")
-    @Operation(summary = "Obtiene todos los estudiantes")
-    public ResponseEntity<ApiResponseDto<List<EstudianteResponseDTO>>> getAllEstudiantes() {
-        List<EstudianteResponseDTO> estudiantes = (List<EstudianteResponseDTO>) estudianteService.findAll();
+
+    @GetMapping
+    @Operation(summary = "Obtiene todos los estudiantes con paginación")
+    public ResponseEntity<ApiResponseDto<Page<EstudianteListaDTO>>> obtenerTodos(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "20") int tamano) {
+        Page<EstudianteListaDTO> estudiantes = estudianteService.obtenerTodosPaginados(pagina, tamano);
         return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantes);
     }
 
+    @PostMapping
+    @Operation(summary = "Crear nuevo estudiante")
+    public ResponseEntity<ApiResponseDto<EstudianteDetalleDTO>> crear(
+            @Valid @RequestBody EstudianteCreacionDTO dto) {
+        validarAccesoAdmin();
 
-    @PostMapping("/add")
-    @Operation(summary = "Agregar nuevo estudiante")
-    public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> save(
-            @Valid @RequestBody EstudianteResponseDTO dto) {
-//        UserPrincipal currentUser = getCurrentUser();
-//        validateAdminAccess(currentUser.id());
-
-        try {
-            EstudianteResponseDTO estudiante = estudianteService.save(dto);
-            log.info("Estudiante creado. ID: {}", estudiante.id());
-            return ApiResponse.created("Estudiante registrado exitosamente", estudiante);
-        } catch (DniDuplicadoException ex) {
-            log.warn("DNI duplicado: {}", dto.dni());
-            return ApiResponse.conflict(ex.getMessage());
-        }
+        EstudianteDetalleDTO estudiante = estudianteService.crear(dto);
+        log.info("Estudiante creado. ID: {}", estudiante.id());
+        return ApiResponse.created("Estudiante registrado exitosamente", estudiante);
     }
 
-    @PutMapping("/update")
-    @Operation(summary = "Actualiza un estudiante")
-    public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> update(
-            @Valid @RequestBody EstudianteResponseDTO dto) {
+    @PutMapping
+    @Operation(summary = "Actualiza un estudiante existente")
+    public ResponseEntity<ApiResponseDto<EstudianteDetalleDTO>> actualizar(
+            @Valid @RequestBody EstudianteActualizacionDTO dto) {
+        validarAcceso(dto.id());
 
-        validateAccess(dto.id());
-
-        EstudianteResponseDTO estudiante = estudianteService.update(dto);
+        EstudianteDetalleDTO estudiante = estudianteService.actualizar(dto);
         return ApiResponse.success("Estudiante actualizado exitosamente", estudiante);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Se elimina un estudiante en particular")
-    public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable("id") Long id) {
-        try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+    @Operation(summary = "Elimina un estudiante")
+    public ResponseEntity<ApiResponseDto<Void>> eliminar(@PathVariable Long id) {
+        validarAccesoAdmin();
 
-            if (!securityService.isAdmin(user.id())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden eliminar estudiantes", null));
-            }
-
-            estudianteService.deleteById(id);
-            return ResponseEntity.ok(new ApiResponseDto<>(true, "Estudiante eliminado exitosamente", null));
-        } catch (ApplicationException e) {
-            throw new ApplicationException("", "Error al listar los boletines", e.getHttpStatus());
-        }
+        estudianteService.eliminar(id);
+        return ApiResponse.success("Estudiante eliminado exitosamente", null);
     }
 
-    @GetMapping("/filterGrado")
-    @Operation(summary = "Se filtra a los estudiantes por grado")
-    public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> filtroXGrado(@RequestParam Long gradoId) {
-        try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
-            if (!securityService.canViewGradeAttendance(user.id(), gradoId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponseDto<>(false, "No tienes permisos para ver los estudiantes de este grado", null));
-            }
-
-            List<EstudianteResponseDTO> estudianteResponseDTOS = estudianteService.findByGradoId(gradoId);
-            if (estudianteResponseDTOS.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ApiResponseDto<>(true, "No hay estudiantes asignados al grado", null));
-            }
-            return ResponseEntity.ok(new ApiResponseDto<>(true, "Exito", estudianteResponseDTOS));
-        } catch (ApplicationException e) {
-            throw new ApplicationException("", "Error al listar los boletines", e.getHttpStatus());
+    @GetMapping("/grado/{gradoId}")
+    @Operation(summary = "Obtiene estudiantes por grado")
+    public ResponseEntity<ApiResponseDto<List<EstudianteListaDTO>>> obtenerPorGrado(@PathVariable Long gradoId) {
+        if (!securityService.canViewGradeAttendance(getCurrentUserId(), gradoId)) {
+            return ApiResponse.forbidden("No tienes permisos para ver los estudiantes de este grado");
         }
+
+        List<EstudianteListaDTO> estudiantes = estudianteService.obtenerPorGrado(gradoId);
+        if (estudiantes.isEmpty()) {
+            return ApiResponse.notFound("No hay estudiantes asignados al grado");
+        }
+
+        return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantes);
     }
 
     @GetMapping("/{id}/asistencias")
-    @Operation(summary = "Obtiene la lista de asistencias de un estudiante por su ID")
-    public ResponseEntity<ApiResponseDto<AsistenciaDTO>> findAsistenciasByEstudianteId(@PathVariable("id") Long id) {
-        try {
+    @Operation(summary = "Obtiene las asistencias de un estudiante")
+    public ResponseEntity<ApiResponseDto<List<AsistenciaDTO>>> obtenerAsistencias(@PathVariable Long id) {
+        validarAcceso(id);
 
+        List<AsistenciaDTO> asistencias = estudianteService.obtenerAsistencias(id);
+        if (asistencias.isEmpty()) {
+            return ApiResponse.notFound("No hay asistencias para el estudiante");
+        }
 
-            if (securityService.hasAccessToInformation(id)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponseDto<>(false, "No tienes permisos para ver las asistencias de este estudiante", null));
-            }
+        return ApiResponse.success("Asistencias recuperadas exitosamente", asistencias);
+    }
 
-            List<AsistenciaDTO> asistencias = estudianteService.findByEstudianteId(id);
-            if (asistencias.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ApiResponseDto<>(true, "No hay asistencias para el estudiante", null));
-            }
-            return ResponseEntity.ok(new ApiResponseDto<>(true, "Exito", asistencias));
-        } catch (ApplicationException e) {
-            throw new ApplicationException("Ha ocurrido un error: ",e.getMessage() , e.getHttpStatus());
+    @PostMapping("/{id}/activar")
+    @Operation(summary = "Activa o desactiva un estudiante")
+    public ResponseEntity<ApiResponseDto<Void>> cambiarEstadoActivo(@PathVariable Long id) {
+        validarAccesoAdmin();
+
+        boolean nuevoEstado = estudianteService.cambiarEstadoActivo(id);
+        String mensaje = nuevoEstado ?
+                "Estudiante activado exitosamente" :
+                "Estudiante desactivado exitosamente";
+
+        return ApiResponse.success(mensaje, null);
+    }
+
+    // Métodos auxiliares
+    private Long getCurrentUserId() {
+        return securityService.getCurrentUserId();
+    }
+
+    private void validarAcceso(Long recursoId) {
+        if (!securityService.hasAccessToInformation(recursoId)) {
+            throw new ForbiddenException("No tienes permisos para acceder a este recurso");
         }
     }
 
-    @PostMapping("/{id}/isEnable")
-    @Operation(summary = "Se da de baja o alta a un estudiante")
-    public ResponseEntity<ApiResponseDto<Void>> unsubscribe(@PathVariable("id") Long id) {
-        try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-            if (!securityService.isAdmin(user.id())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponseDto<>(false, "Solo administradores pueden dar de baja a un estudiante", null));
-            }
-            boolean state = estudianteService.subscribe_unsubscribe(id);
-            if (state) {
-                return ResponseEntity.ok(new ApiResponseDto<>(true, "Estudiante dado de alta exitosamente", null));
-            }
-            return ResponseEntity.ok(new ApiResponseDto<>(true, "Estudiante dado de baja exitosamente", null));
-
-        } catch (ApplicationException e) {
-            throw new ApplicationException("Error actualizar el estado del estudiante: ",e.getMessage() , e.getHttpStatus());
-        }
-    }
-
-    private UserPrincipal getCurrentUser() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
-        UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-        return new UserPrincipal(user.id(), user.email());
-    }
-
-    private void validateAccess(Long resourceId) {
-        if (securityService.hasAccessToInformation(resourceId)) {
-            throw new ForbiddenException("No tiene permisos para acceder a este recurso");
-        }
-    }
-
-    private void validateAdminAccess(Long userId) {
-        if (!securityService.isAdmin(userId)) {
-            throw new ForbiddenException("Solo administradores pueden realizar esta operación");
+    private void validarAccesoAdmin() {
+        if (!securityService.isCurrentUserAdmin()) {
+            throw new ForbiddenException("Solo los administradores pueden realizar esta operación");
         }
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ApiResponseDto<Void>> handleForbiddenException(ForbiddenException ex) {
+    public ResponseEntity<ApiResponseDto<Void>> manejarExcepcionForbidden(ForbiddenException ex) {
         return ApiResponse.forbidden(ex.getMessage());
+    }
+
+    @GetMapping("/resumen")
+    @Operation(summary = "Obtiene un resumen de todos los estudiantes")
+    public ResponseEntity<ApiResponseDto<List<EstudianteResumenDTO>>> obtenerTodosResumen() {
+        List<EstudianteResumenDTO> estudiantes = estudianteService.obtenerTodosResumen();
+        return ApiResponse.success("Resumen de estudiantes recuperado exitosamente", estudiantes);
+    }
+
+    @GetMapping("/resumen/paginado")
+    @Operation(summary = "Obtiene un resumen paginado de estudiantes")
+    public ResponseEntity<ApiResponseDto<Page<EstudianteResumenDTO>>> obtenerResumenPaginado(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "20") int tamano) {
+        Page<EstudianteResumenDTO> estudiantes = estudianteService.obtenerTodosResumenPaginados(pagina, tamano);
+        return ApiResponse.success("Resumen de estudiantes recuperado exitosamente", estudiantes);
+    }
+
+    @GetMapping("/resumen/tutor/{tutorId}")
+    @Operation(summary = "Obtiene un resumen de estudiantes por tutor")
+    public ResponseEntity<ApiResponseDto<List<EstudianteResumenDTO>>> obtenerResumenPorTutor(
+            @PathVariable Long tutorId) {
+        List<EstudianteResumenDTO> estudiantes = estudianteService.obtenerResumenPorTutor(tutorId);
+        return ApiResponse.success("Resumen de estudiantes por tutor recuperado exitosamente", estudiantes);
     }
 }

@@ -198,7 +198,7 @@ public class TutorLegalServiceImpl implements TutorLegalService {
 
     private void updateTutorEstudiantes(TutorLegal tutor, List<Long> newEstudianteIds) {
         try {
-            List<Estudiante> estudiantesActuales = estudianteRepository.findByTutorUserId(tutor.getId());
+            List<Estudiante> estudiantesActuales = estudianteRepository.buscarPorTutorId(tutor.getId());
             List<Estudiante> nuevosEstudiantes = obtenerNuevosEstudiantes(newEstudianteIds);
 
             desvincularEstudiantesAnteriores(estudiantesActuales, newEstudianteIds);

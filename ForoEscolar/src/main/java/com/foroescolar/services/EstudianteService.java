@@ -1,23 +1,39 @@
 package com.foroescolar.services;
 
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
-import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
+import com.foroescolar.dtos.estudiante.*;
 import com.foroescolar.model.Estudiante;
-
-
+import org.springframework.data.domain.Page;
 import java.util.List;
+import java.util.Optional;
 
-public interface EstudianteService extends GenericServiceDto<Long, EstudianteResponseDTO>{
+/**
+ * Interfaz de servicio para operaciones relacionadas con estudiantes
+ */
+public interface EstudianteService {
 
-    EstudianteResponseDTO update(EstudianteResponseDTO estudianteRequestDTO);
+    // Métodos para obtener estudiantes
+    List<EstudianteListaDTO> obtenerTodos();
+    Page<EstudianteListaDTO> obtenerTodosPaginados(int pagina, int tamano);
+    Optional<EstudianteDetalleDTO> obtenerDetallePorId(Long id);
+    List<EstudianteListaDTO> obtenerPorGrado(Long gradoId);
 
-    List<EstudianteResponseDTO> findByGradoId(Long gradoId);
+    // Métodos para manipular estudiantes
+    EstudianteDetalleDTO crear(EstudianteCreacionDTO estudiante);
+    EstudianteDetalleDTO actualizar(EstudianteActualizacionDTO estudiante);
+    void eliminar(Long id);
 
-    List<AsistenciaDTO> findByEstudianteId(Long id);
+    // Métodos para operaciones específicas
+    boolean cambiarEstadoActivo(Long id);
+    List<AsistenciaDTO> obtenerAsistencias(Long estudianteId);
 
-    boolean subscribe_unsubscribe(Long id);
+    // Métodos para uso interno (pueden no exponer DTOs)
+    Estudiante obtenerEntidadPorId(Long id);
+    List<Estudiante> obtenerEntidadesPorIds(List<Long> ids);
+    // Métodos para trabajar con EstudianteResumenDTO
+    List<EstudianteResumenDTO> obtenerTodosResumen();
+    Page<EstudianteResumenDTO> obtenerTodosResumenPaginados(int pagina, int tamano);
+    List<EstudianteResumenDTO> obtenerResumenPorTutor(Long tutorId);
 
-    List<Estudiante> findByIds(List<Long> id);
-
-    Estudiante findByIdToEntity(Long id);
+    Estudiante findByIdToEntity(Long estudianteId);
 }

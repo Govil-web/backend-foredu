@@ -1,57 +1,58 @@
 package com.foroescolar.repository;
 
-
-
+import com.foroescolar.dtos.estudiante.EstudianteResumenDTO;
 import com.foroescolar.model.Asistencia;
 import com.foroescolar.model.Estudiante;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface EstudianteRepository extends GenericRepository<Estudiante, Long>{
+public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
 
+    boolean existsByDni(String numeroDocumento);
 
     List<Estudiante> findByGradoId(Long gradoId);
 
     @Query("SELECT a FROM Asistencia a WHERE a.estudiante.id = :id")
-    List<Asistencia> findByEstudianteId(Long id);
-//    List<Asistencia> findAsistenciasByEstudianteId(Long id);
+    List<Asistencia> findByEstudianteId(@Param("id") Long id);
 
-    List<Estudiante> findByTutorId(Long idTutor);
+    // Consulta optimizada para listados
+    @Query("SELECT new com.foroescolar.dtos.estudiante.EstudianteResumenDTO(" +
+            "e.id, e.nombre, e.apellido, e.dni, e.genero, e.activo, g.materia) " +
+            "FROM Estudiante e LEFT JOIN e.grado g")
+    List<EstudianteResumenDTO> findAllResumen();
+
+    // Versión paginada
+    @Query("SELECT new com.foroescolar.dtos.estudiante.EstudianteResumenDTO(" +
+            "e.id, e.nombre, e.apellido, e.dni, e.genero, e.activo, g.materia) " +
+            "FROM Estudiante e LEFT JOIN e.grado g")
+    Page<EstudianteResumenDTO> findAllResumen(Pageable pageable);
+
+    // Consulta optimizada para detalles con joins
+    @Query("SELECT e FROM Estudiante e " +
+            "LEFT JOIN FETCH e.grado g " +
+            "LEFT JOIN FETCH e.tutor t " +
+            "WHERE e.id = :id")
+    Optional<Estudiante> findByIdWithDetails(@Param("id") Long id);
+
+    // Búsqueda por número de documento
+    Optional<Estudiante> findByDni(String numeroDocumento);
+
+    // Consulta para estudiantes por tutor legal
+    @Query("SELECT new com.foroescolar.dtos.estudiante.EstudianteResumenDTO(" +
+            "e.id, e.nombre, e.apellido, e.dni, e.genero, e.activo, g.materia) " +
+            "FROM Estudiante e LEFT JOIN e.grado g WHERE e.tutor.id = :tutorId")
+    List<EstudianteResumenDTO> findAllByTutorId(@Param("tutorId") Long tutorId);
 
     boolean existsByIdAndTutorId(Long requestedUserId, Long id);
 
-    // Verificar si existe un estudiante con el ID y que tenga un profesor específico
-    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END " +
-            "FROM Estudiante e " +
-            "JOIN e.profesores p " +
-            "WHERE e.id = :estudianteId AND p.id = :profesorId")
-    boolean existsByIdAndProfesores(@Param("estudianteId") Long estudianteId,
-                                    @Param("profesorId") Long profesorId);
+    @Query("SELECT e FROM Estudiante e WHERE e.tutor.id = :tutorId")
+    List<Estudiante> buscarPorTutorId(@Param("tutorId") Long tutorId);
 
-
-    /**
-     * Verifica si un estudiante ya tiene un tutor asignado
-     */
-    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Estudiante e " +
-            "WHERE e.id = :estudianteId AND e.tutor IS NOT NULL")
-    boolean existsByIdAndTutorIsNotNull(@Param("estudianteId") Long estudianteId);
-
-    @Query("SELECT e FROM Estudiante e LEFT JOIN FETCH e.tutor WHERE e.id IN :ids")
-    List<Estudiante> findAllByIdWithTutor(@Param("ids") List<Long> ids);
-
-    @Query("SELECT e FROM Estudiante e WHERE e.tutor.id = :tutorUserId")
-    List<Estudiante> findByTutorUserId(@Param("tutorUserId") Long tutorUserId);
-
-    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Estudiante e " +
-            "WHERE e.id = :estudianteId AND e.tutor.id = :tutorUserId")
-    boolean existsByIdAndTutorUserId(@Param("estudianteId") Long estudianteId,
-                                     @Param("tutorUserId") Long tutorUserId);
-
-    boolean existsByDni(@NotBlank(message = "Debe ingresar el DNI del usuario") @Pattern(regexp = "\\d+", message = "El DNI solo debe contener números") String dni);
+    List<Estudiante> findByTutorId(Long tutorId);
 }
