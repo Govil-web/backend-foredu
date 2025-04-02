@@ -60,6 +60,7 @@ com\foroescolar\model\UpdatedEntities.class
 com\foroescolar\controllers\user\UserController.class
 com\foroescolar\dtos\ApiResponseDto.class
 com\foroescolar\dtos\profesor\ProfesorResponseDTO.class
+com\foroescolar\exceptions\security\filters\FilterAuthenticationException.class
 com\foroescolar\exceptions\security\filters\token\TokenException.class
 com\foroescolar\dtos\grado\GradoDto.class
 com\foroescolar\exceptions\security\filters\token\TokenInvalidException.class
@@ -69,6 +70,7 @@ com\foroescolar\exceptions\security\filters\token\TokenMalformedException.class
 com\foroescolar\enums\TipoDocumentoEnum.class
 com\foroescolar\dtos\jwttoken\JWTTokenDTO.class
 com\foroescolar\exceptions\security\ErrorCode.class
+com\foroescolar\exceptions\security\filters\FilterAuthorizationException.class
 com\foroescolar\enums\RoleEnum.class
 com\foroescolar\enums\TurnoEnum.class
 com\foroescolar\model\Grado$GradoBuilder.class
@@ -82,10 +84,12 @@ com\foroescolar\services\BoletinService.class
 com\foroescolar\config\cors\CorsConfig.class
 com\foroescolar\controllers\profesor\ProfesorController.class
 com\foroescolar\exceptions\security\filters\FilterErrorHandler.class
+com\foroescolar\config\security\filters\JwtAuthenticationFilter$1.class
 com\foroescolar\dtos\boletin\BoletinDto.class
 com\foroescolar\model\Grado.class
 com\foroescolar\model\User.class
 com\foroescolar\services\CalificacionService.class
+com\foroescolar\config\security\SecurityConfiguration$SecurityMetricsService.class
 com\foroescolar\mapper\grado\GradoMapperImpl.class
 com\foroescolar\dtos\FechaDto.class
 com\foroescolar\services\EstudianteService.class

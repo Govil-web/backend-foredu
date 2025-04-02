@@ -84,6 +84,7 @@ C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroe
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\mapper\ErrorResponseMapper.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\controllers\autenticacion\AuthenticationController.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\services\AutenticacionService.java
+C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\exceptions\security\filters\FilterAuthenticationException.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\controllers\calificacion\CalificacionController.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\controllers\user\UserController.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\config\security\filters\JwtAuthenticationFilter.java
@@ -102,6 +103,7 @@ C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroe
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\dtos\estudiante\EstudiantePerfilDto.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\services\impl\TutorLegalServiceImpl.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\model\Boletin.java
+C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\exceptions\security\filters\FilterAuthorizationException.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\repository\AsistenciaRepository.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\mapper\boletin\BoletinMapper.java
 C:\Users\DELL\Desktop\Globalia-Tech\SomosEdu\ForoEscolar\src\main\java\com\foroescolar\model\Profesor.java
