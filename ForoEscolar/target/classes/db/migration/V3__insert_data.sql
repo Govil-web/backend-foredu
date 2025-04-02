@@ -64,7 +64,7 @@ INSERT INTO fecha (anio, dia, mes, trimestre, semana, fecha) VALUES
 
 -- Insertar asistencia
 
-INSERT INTO asistencia (observaciones, estado_asistencia, estudiante_id, fecha_id, grado_id) VALUES
+INSERT INTO asistencia (observaciones, estado, estudiante_id, fecha_id, grado_id) VALUES
 ('Llegó a tiempo', 'PRESENTE', 1, 1, 1),
 ('Faltó sin justificación', 'AUSENTE', 1, 2, 1),
 

@@ -1,8 +1,11 @@
 package com.foroescolar.config.security;
 
+import com.foroescolar.dtos.user.UserPrincipal;
+import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.model.Asistencia;
 import com.foroescolar.model.User;
 import com.foroescolar.repository.*;
+import com.foroescolar.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,18 +26,28 @@ public class SecurityService {
     private final AsistenciaRepository asistenciaRepository;
     private final GradoRepository gradoRepository;
     private final TutorLegalRepository tutorLegalRepository;
+    private final UserService userService;
 
     private static final String USUARIO_NO_ENCONTRADO = "Usuario no encontrado";
 
     @Autowired
     public SecurityService(UserRepository userRepository, EstudianteRepository estudianteRepository,
                            AsistenciaRepository asistenciaRepository, GradoRepository gradoRepository,
-                           TutorLegalRepository tutorLegalRepository) {
+                           TutorLegalRepository tutorLegalRepository, UserService userService) {
         this.userRepository = userRepository;
         this.estudianteRepository = estudianteRepository;
         this.asistenciaRepository = asistenciaRepository;
         this.gradoRepository = gradoRepository;
         this.tutorLegalRepository = tutorLegalRepository;
+        this.userService = userService;
+    }
+
+    public UserPrincipal getCurrentUser() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+        return new UserPrincipal(user.id(), user.email());
     }
 
 

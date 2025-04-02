@@ -68,7 +68,7 @@ public class ProfesorController {
 
     @PutMapping("/update")
     @Operation(summary = "Se actualiza un profesor en particular")
-    public ResponseEntity<ApiResponseDto<ProfesorResponseDTO>> update(@RequestBody ProfesorRequestDTO dto) {
+    public ResponseEntity<ApiResponseDto<ProfesorResponseDTO>> update(@RequestBody @Valid ProfesorRequestDTO dto) {
         try{
             ProfesorResponseDTO profesor = profesorService.update(dto);
             String message = "Profesor Actualizado";

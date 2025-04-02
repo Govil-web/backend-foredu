@@ -1,6 +1,7 @@
 package com.foroescolar.services.impl;
 
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
+import com.foroescolar.dtos.estudiante.EstudiantePerfilDto;
 import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
 import com.foroescolar.enums.RoleEnum;
 import com.foroescolar.exceptions.model.DniDuplicadoException;
@@ -62,6 +63,13 @@ public class EstudianteServiceImpl implements EstudianteService {
                 .map(estudianteMapper::toResponseDTO)
                 .toList();
     }
+    @Override
+    public List<EstudiantePerfilDto> findAllStudents() {
+        List<Estudiante> estudiantes = estudianteRepository.findAll();
+        return estudiantes.stream()
+                .map(estudianteMapper::toPerfilDto)
+                .toList();
+    }
 
     @Transactional
     @Override
@@ -121,9 +129,9 @@ public class EstudianteServiceImpl implements EstudianteService {
 
 
     @Override
-    public List<EstudianteResponseDTO> findByGradoId(Long gradoId) {
+    public List<EstudiantePerfilDto> findByGradoId(Long gradoId) {
         List<Estudiante> estudiantes = estudianteRepository.findByGradoId(gradoId);
-        return estudiantes.stream().map(estudianteMapper::toResponseDTO).toList();
+        return estudiantes.stream().map(estudianteMapper::toPerfilDto).toList();
     }
 
 

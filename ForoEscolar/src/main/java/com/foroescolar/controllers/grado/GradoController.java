@@ -3,6 +3,7 @@ package com.foroescolar.controllers.grado;
 import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.grado.GradoDto;
+import com.foroescolar.dtos.user.UserPrincipal;
 import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
 import com.foroescolar.services.GradoService;
@@ -10,6 +11,7 @@ import com.foroescolar.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.mapstruct.control.MappingControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,28 +44,29 @@ public class GradoController {
     }
 
     @PostMapping("/register")
-    @Operation(summary = "Registra un nuevo grado")
+    @Operation(summary = "Registra un nuevo grado", description = "Solo los administradores pueden registrar grados")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> registerGrado(@RequestBody @Valid GradoDto gradoDto) {
         try {
-//            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-//
-//            if (!user.rol().equals(ROLE_ADMINISTRADOR)) {
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar grados", null));
-//            }
+           // UserPrincipal user= securityService.getCurrentUser();
+            UserPrincipal user = getCurrentUser();
+            if (!securityService.isAdmin(user.id())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar grados", null));
+            }
 
-            GradoDto gradoCreado = gradoService.save(gradoDto);
+          //  GradoDto gradoCreado = gradoService.createGrado(gradoDto);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ApiResponseDto<>(true, "Grado creado exitosamente", gradoCreado));
+                    .body(new ApiResponseDto<>(true, "Grado creado exitosamente", gradoService.createGrado(gradoDto)));
         } catch (ApplicationException e) {
             throw new ApplicationException("", "Error al registrar grado: " , e.getHttpStatus());
         }
     }
 
     @GetMapping("/getAll")
-    @Operation(summary = "Obtiene todos los grados")
+    @Operation(summary = "Obtiene todos los grados", description = "Solo los administradores pueden ver todos los grados." +
+            " Los profesores ven sus grados asignados y" +
+            " Los tutores pueden ver los grados de sus hijos")
     public ResponseEntity<ApiResponseDto<GradoDto>> getAll() {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -90,7 +93,7 @@ public class GradoController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtiene un grado por Id")
+    @Operation(summary = "Obtiene un grado por Id", description = "Solo los administradores pueden ver los grados de otros usuarios")
     public ResponseEntity<ApiResponseDto<GradoDto>> getById(@PathVariable("id") Long id) {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -111,7 +114,7 @@ public class GradoController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Elimina un grado por Id")
+    @Operation(summary = "Elimina un grado por Id", description = "Solo los administradores pueden eliminar grados")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> deleteById(@PathVariable("id") Long id) {
         try {
@@ -144,7 +147,7 @@ public class GradoController {
     }
 
     @PutMapping("/update/{id}")
-    @Operation(summary = "Actualiza un grado")
+    @Operation(summary = "Actualiza un grado", description = "Solo los administradores pueden actualizar grados")
     @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
     public ResponseEntity<ApiResponseDto<GradoDto>> updateGrado(
             @PathVariable Long id,
@@ -169,5 +172,13 @@ public class GradoController {
         } catch (ApplicationException e) {
             throw new ApplicationException(null, "Error al actualizar el grado: ", e.getHttpStatus());
         }
+    }
+
+    public UserPrincipal getCurrentUser() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+        return new UserPrincipal(user.id(), user.email());
     }
 }

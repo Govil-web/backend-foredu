@@ -4,6 +4,7 @@ import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.controllers.ApiResponse;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
+import com.foroescolar.dtos.estudiante.EstudiantePerfilDto;
 import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
 import com.foroescolar.dtos.user.UserPrincipal;
 import com.foroescolar.dtos.user.UserResponseDTO;
@@ -42,10 +43,13 @@ public class EstudianteController {
                 .map(estudiante -> ApiResponse.success("Estudiante encontrado", estudiante))
                 .orElse(ApiResponse.notFound("Estudiante no encontrado"));
     }
-    @GetMapping("getAll")
+    @GetMapping("/getAll")
     @Operation(summary = "Obtiene todos los estudiantes")
-    public ResponseEntity<ApiResponseDto<List<EstudianteResponseDTO>>> getAllEstudiantes() {
-        List<EstudianteResponseDTO> estudiantes = (List<EstudianteResponseDTO>) estudianteService.findAll();
+    public ResponseEntity<ApiResponseDto<List<EstudiantePerfilDto>>> getAllEstudiantes() {
+        UserPrincipal currentUser = getCurrentUser();
+        validateAdminAccess(currentUser.id());
+
+        List<EstudiantePerfilDto> estudiantes = estudianteService.findAllStudents();
         return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantes);
     }
 
@@ -99,7 +103,7 @@ public class EstudianteController {
 
     @GetMapping("/filterGrado")
     @Operation(summary = "Se filtra a los estudiantes por grado")
-    public ResponseEntity<ApiResponseDto<EstudianteResponseDTO>> filtroXGrado(@RequestParam Long gradoId) {
+    public ResponseEntity<ApiResponseDto<EstudiantePerfilDto>> filtroXGrado(@RequestParam("gradoId") Long gradoId) {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
@@ -109,7 +113,7 @@ public class EstudianteController {
                         .body(new ApiResponseDto<>(false, "No tienes permisos para ver los estudiantes de este grado", null));
             }
 
-            List<EstudianteResponseDTO> estudianteResponseDTOS = estudianteService.findByGradoId(gradoId);
+            List<EstudiantePerfilDto> estudianteResponseDTOS = estudianteService.findByGradoId(gradoId);
             if (estudianteResponseDTOS.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResponseDto<>(true, "No hay estudiantes asignados al grado", null));

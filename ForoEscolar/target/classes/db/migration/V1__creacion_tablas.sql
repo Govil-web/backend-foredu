@@ -84,7 +84,7 @@ CREATE TABLE fecha (
 CREATE TABLE asistencia (
                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
 							observaciones VARCHAR(255),
-                            estado_asistencia ENUM('PRESENTE','AUSENTE','TARDE','JUSTIFICADO'),
+                            estado ENUM('PRESENTE','AUSENTE','TARDE','JUSTIFICADO'),
                             estudiante_id BIGINT,
                             fecha_id BIGINT,
 							grado_id BIGINT,
