@@ -5,6 +5,7 @@ import com.foroescolar.controllers.ApiResponse;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.estudiante.*;
+import com.foroescolar.dtos.user.UserPrincipal;
 import com.foroescolar.exceptions.model.ForbiddenException;
 import com.foroescolar.services.EstudianteService;
 import com.foroescolar.services.UserService;
@@ -42,7 +43,20 @@ public class EstudianteController {
     public ResponseEntity<ApiResponseDto<Page<EstudianteListaDTO>>> obtenerTodos(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "20") int tamano) {
+        // Validar que es administrador para este endpoint
+        validarAccesoAdmin();
+
         Page<EstudianteListaDTO> estudiantes = estudianteService.obtenerTodosPaginados(pagina, tamano);
+        return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantes);
+    }
+
+    @GetMapping("/getAll")
+    @Operation(summary = "Obtiene todos los estudiantes sin paginación")
+    public ResponseEntity<ApiResponseDto<List<EstudiantePerfilDto>>> getAllEstudiantes() {
+        // Validar que es administrador para este endpoint
+        validarAccesoAdmin();
+
+        List<EstudiantePerfilDto> estudiantes = estudianteService.findAllStudents();
         return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantes);
     }
 
@@ -61,7 +75,10 @@ public class EstudianteController {
     @Operation(summary = "Actualiza un estudiante existente")
     public ResponseEntity<ApiResponseDto<EstudianteDetalleDTO>> actualizar(
             @Valid @RequestBody EstudianteActualizacionDTO dto) {
-        validarAcceso(dto.id());
+        // Si es admin, permitir actualizar cualquier estudiante
+        if (!securityService.isCurrentUserAdmin()) {
+            validarAcceso(dto.id());
+        }
 
         EstudianteDetalleDTO estudiante = estudianteService.actualizar(dto);
         return ApiResponse.success("Estudiante actualizado exitosamente", estudiante);
@@ -77,7 +94,7 @@ public class EstudianteController {
     }
 
     @GetMapping("/grado/{gradoId}")
-    @Operation(summary = "Obtiene estudiantes por grado")
+    @Operation(summary = "Obtiene estudiantes por grado como lista DTO")
     public ResponseEntity<ApiResponseDto<List<EstudianteListaDTO>>> obtenerPorGrado(@PathVariable Long gradoId) {
         if (!securityService.canViewGradeAttendance(getCurrentUserId(), gradoId)) {
             return ApiResponse.forbidden("No tienes permisos para ver los estudiantes de este grado");
@@ -91,10 +108,30 @@ public class EstudianteController {
         return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantes);
     }
 
+    @GetMapping("/filterGrado")
+    @Operation(summary = "Obtiene estudiantes por grado como PerfilDto")
+    public ResponseEntity<ApiResponseDto<List<EstudiantePerfilDto>>> filtroXGrado(@RequestParam("gradoId") Long gradoId) {
+        Long userId = securityService.getCurrentUserId();
+
+        if (!securityService.canViewGradeAttendance(userId, gradoId)) {
+            return ApiResponse.forbidden("No tienes permisos para ver los estudiantes de este grado");
+        }
+
+        List<EstudiantePerfilDto> estudiantePerfilDtos = estudianteService.findByGradoId(gradoId);
+        if (estudiantePerfilDtos.isEmpty()) {
+            return ApiResponse.notFound("No hay estudiantes asignados al grado");
+        }
+
+        return ApiResponse.success("Estudiantes recuperados exitosamente", estudiantePerfilDtos);
+    }
+
     @GetMapping("/{id}/asistencias")
     @Operation(summary = "Obtiene las asistencias de un estudiante")
     public ResponseEntity<ApiResponseDto<List<AsistenciaDTO>>> obtenerAsistencias(@PathVariable Long id) {
-        validarAcceso(id);
+        // Si es administrador, permitir acceder a cualquier asistencia
+        if (!securityService.isCurrentUserAdmin()) {
+            validarAcceso(id);
+        }
 
         List<AsistenciaDTO> asistencias = estudianteService.obtenerAsistencias(id);
         if (asistencias.isEmpty()) {

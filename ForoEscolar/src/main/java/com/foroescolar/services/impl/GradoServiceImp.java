@@ -9,6 +9,7 @@ import com.foroescolar.model.Estudiante;
 import com.foroescolar.model.Grado;
 import com.foroescolar.model.Profesor;
 import com.foroescolar.repository.GradoRepository;
+import com.foroescolar.repository.ProfesorRepository;
 import com.foroescolar.services.GradoService;
 import org.springframework.stereotype.Service;
 
@@ -21,27 +22,35 @@ public class GradoServiceImp implements GradoService {
 
     private final GradoRepository gradoRepository;
     private final GradoMapper gradoMapper;
+    private final ProfesorRepository profesorRepository;
 
-    public GradoServiceImp(GradoRepository gradoRepository, GradoMapper gradoMapper) {
+    public GradoServiceImp(GradoRepository gradoRepository, GradoMapper gradoMapper, ProfesorRepository profesorRepository) {
         this.gradoRepository = gradoRepository;
         this.gradoMapper = gradoMapper;
+        this.profesorRepository = profesorRepository;
     }
     @Override
     public GradoDto save(GradoDto gradoDto) {
-        if(gradoDto==null){
-            throw new EntityNotFoundException("El grado no puede estar vacío");
-        }
-        Profesor profesor= new Profesor();
-        profesor.setId(gradoDto.getProfesor());
-        Grado grado=Grado.builder()
-                .curso(gradoDto.getCurso())
-                .aula(gradoDto.getAula())
-                .turno(gradoDto.getTurno())
-                .materia(gradoDto.getMateria())
-                .profesor(profesor)
-                .build();
+
+        Grado grado= gradoMapper.toEntity(gradoDto);
         gradoRepository.save(grado);
         return gradoMapper.toResponseDto(grado);
+   }
+
+   @Override
+   public GradoDto createGrado(GradoDto gradoDto){
+       existGrado(gradoDto);
+       validateGradoData(gradoDto);
+      Profesor profesor=profesorRepository.findById(gradoDto.getProfesor()).orElse(null);
+
+      Grado grado=Grado.builder()
+               .curso(gradoDto.getCurso())
+               .aula(gradoDto.getAula())
+               .turno(gradoDto.getTurno())
+               .materia(gradoDto.getMateria())
+               .profesor(profesor)
+               .build();
+       return gradoMapper.toResponseDto(gradoRepository.save(grado));
    }
 
     @Override
@@ -114,7 +123,7 @@ public class GradoServiceImp implements GradoService {
         gradoToUpdate.setEstudiantes(estudiantesActuales);
 
         // Validar los datos del grado
-        validateGradoData(gradoToUpdate);
+       // validateGradoData(gradoToUpdate);
 
         // Verificar si el profesor asignado ha cambiado
         if (gradoToUpdate.getProfesor() != null &&
@@ -138,7 +147,7 @@ public class GradoServiceImp implements GradoService {
         return gradoMapper.toResponseDto(updatedGrado);
     }
 
-    private void validateGradoData(Grado grado) {
+    private void validateGradoData(GradoDto grado) {
         List<String> errors = new ArrayList<>();
 
         if (grado.getAula() == null) {
@@ -162,6 +171,13 @@ public class GradoServiceImp implements GradoService {
         if (!errors.isEmpty()) {
             throw new ForbiddenException("Errores de validación: " + String.join(", ", errors));
         }
+    }
+
+    private void existGrado(GradoDto gradoDto){
+        Optional<Grado> response= gradoRepository.findByCursoAndAulaAndTurno(gradoDto.getCurso(), gradoDto.getAula(), gradoDto.getTurno());
+if (response.isPresent()) {
+    throw new EntityNotFoundException("Ya existe un grado asignado para esta aula y turno");
+}
     }
 
     private void validateProfesorAssignment(Long profesorId) {

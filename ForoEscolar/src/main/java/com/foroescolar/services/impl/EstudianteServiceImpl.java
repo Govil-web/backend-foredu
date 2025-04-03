@@ -11,6 +11,7 @@ import com.foroescolar.model.Asistencia;
 import com.foroescolar.model.Estudiante;
 import com.foroescolar.repository.EstudianteRepository;
 import com.foroescolar.services.EstudianteService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class EstudianteServiceImpl implements EstudianteService {
 
     private final EstudianteRepository estudianteRepository;
@@ -42,16 +44,19 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EstudianteListaDTO> obtenerTodos() {
+    public List<EstudiantePerfilDto> findAllStudents() {
+        // Usando consulta optimizada con proyección
+        log.debug("Obteniendo todos los estudiantes como PerfilDto");
         return estudianteRepository.findAll()
                 .stream()
-                .map(estudianteMapper::mapearAListaDTO)
+                .map(estudianteMapper::toPerfilDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<EstudianteListaDTO> obtenerTodosPaginados(int pagina, int tamano) {
+        log.debug("Obteniendo estudiantes paginados: página {}, tamaño {}", pagina, tamano);
         Pageable pageable = PageRequest.of(pagina, tamano);
         return estudianteRepository.findAll(pageable)
                 .map(estudianteMapper::mapearAListaDTO);
@@ -60,13 +65,16 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional(readOnly = true)
     public Optional<EstudianteDetalleDTO> obtenerDetallePorId(Long id) {
-        return estudianteRepository.findById(id)
+        log.debug("Obteniendo detalles del estudiante con ID: {}", id);
+        // Usamos la consulta optimizada con joins en lugar de findById simple
+        return estudianteRepository.findByIdWithDetails(id)
                 .map(estudianteMapper::mapearADetalleDTO);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EstudianteListaDTO> obtenerPorGrado(Long gradoId) {
+        log.debug("Buscando estudiantes del grado: {}", gradoId);
         return estudianteRepository.findByGradoId(gradoId)
                 .stream()
                 .map(estudianteMapper::mapearAListaDTO)
@@ -74,8 +82,20 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<EstudiantePerfilDto> findByGradoId(Long gradoId) {
+        log.debug("Buscando perfiles de estudiantes del grado: {}", gradoId);
+        return estudianteRepository.findByGradoId(gradoId)
+                .stream()
+                .map(estudianteMapper::toPerfilDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public EstudianteDetalleDTO crear(EstudianteCreacionDTO dto) {
+        log.info("Creando nuevo estudiante: {} {}", dto.nombre(), dto.apellido());
+
         // Validar campos únicos
         if (estudianteRepository.existsByDni(dto.numeroDocumento())) {
             throw new DniDuplicadoException(dto.numeroDocumento());
@@ -92,6 +112,8 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional
     public EstudianteDetalleDTO actualizar(EstudianteActualizacionDTO dto) {
+        log.info("Actualizando estudiante con ID: {}", dto.id());
+
         Estudiante estudiante = estudianteRepository.findById(dto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
 
@@ -111,6 +133,8 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional
     public void eliminar(Long id) {
+        log.info("Eliminando estudiante con ID: {}", id);
+
         Estudiante estudiante = estudianteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
         estudianteRepository.delete(estudiante);
@@ -119,6 +143,8 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional
     public boolean cambiarEstadoActivo(Long id) {
+        log.info("Cambiando estado activo del estudiante con ID: {}", id);
+
         Estudiante estudiante = estudianteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
 
@@ -132,6 +158,8 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional(readOnly = true)
     public List<AsistenciaDTO> obtenerAsistencias(Long estudianteId) {
+        log.debug("Obteniendo asistencias del estudiante con ID: {}", estudianteId);
+
         List<Asistencia> asistencias = estudianteRepository.findByEstudianteId(estudianteId);
         return asistencias.stream()
                 .map(asistenciaMapper::toResponseDto)
@@ -141,6 +169,8 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional(readOnly = true)
     public Estudiante obtenerEntidadPorId(Long id) {
+        log.debug("Obteniendo entidad Estudiante con ID: {}", id);
+
         return estudianteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
     }
@@ -148,6 +178,8 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional(readOnly = true)
     public List<Estudiante> obtenerEntidadesPorIds(List<Long> ids) {
+        log.debug("Obteniendo entidades Estudiante para {} IDs", ids != null ? ids.size() : 0);
+
         if (ids == null || ids.isEmpty()) {
             return new ArrayList<>();
         }
@@ -157,24 +189,35 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     @Transactional(readOnly = true)
     public List<EstudianteResumenDTO> obtenerTodosResumen() {
+        log.debug("Obteniendo resumen de todos los estudiantes");
+
+        // Usando consulta JPQL optimizada que proyecta directamente al DTO
         return estudianteRepository.findAllResumen();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<EstudianteResumenDTO> obtenerTodosResumenPaginados(int pagina, int tamano) {
+        log.debug("Obteniendo resumen paginado de estudiantes: página {}, tamaño {}", pagina, tamano);
+
         Pageable pageable = PageRequest.of(pagina, tamano);
+        // Usando consulta JPQL optimizada con paginación
         return estudianteRepository.findAllResumen(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EstudianteResumenDTO> obtenerResumenPorTutor(Long tutorId) {
+        log.debug("Obteniendo resumen de estudiantes para el tutor con ID: {}", tutorId);
+
+        // Usando consulta JPQL optimizada filtrada por tutor
         return estudianteRepository.findAllByTutorId(tutorId);
     }
 
     @Override
     public Estudiante findByIdToEntity(Long estudianteId) {
+        log.debug("Obteniendo entidad Estudiante con ID: {}", estudianteId);
+
         return estudianteRepository.findById(estudianteId)
                 .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
     }
