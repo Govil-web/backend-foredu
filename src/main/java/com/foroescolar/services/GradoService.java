@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface GradoService extends GenericServiceDto<Grado, GradoDto> {
+    GradoDto createGrado(GradoDto gradoDto);
+
     Iterable<GradoDto> findGradosByProfesorId(Long id);
 
     Iterable<GradoDto> findGradosByTutorId(Long id);

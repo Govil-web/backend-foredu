@@ -25,7 +25,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +39,6 @@ public class SecurityConfiguration {
     private final UserDetailsService userDetailsService;
     private final SecurityExceptionHandler securityExceptionHandler;
     private final MeterRegistry meterRegistry;
-    private final CorsConfigurationSource corsConfigurationSource;
-
 
     // Constantes para roles
     private static final String ROLE_ADMIN = "ADMINISTRADOR";
@@ -61,14 +58,13 @@ public class SecurityConfiguration {
             BlacklistTokenFilter blacklistTokenFilter,
             UserDetailsService userDetailsService,
             SecurityExceptionHandler securityExceptionHandler,
-            MeterRegistry meterRegistry, CorsConfigurationSource corsConfigurationSource) {
+            MeterRegistry meterRegistry) {
         this.requestLoggingFilter = requestLoggingFilter;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.blacklistTokenFilter = blacklistTokenFilter;
         this.userDetailsService = userDetailsService;
         this.securityExceptionHandler = securityExceptionHandler;
         this.meterRegistry = meterRegistry;
-        this.corsConfigurationSource = corsConfigurationSource;
 
         // Inicializar mapa de patrones/roles
         initializePatternRoleMap();
@@ -126,7 +122,6 @@ public class SecurityConfiguration {
         Timer.Sample configTimer = Timer.start(meterRegistry);
 
         SecurityFilterChain chain = httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Usa el bean inyectado
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(securityExceptionHandler)
@@ -190,7 +185,13 @@ public class SecurityConfiguration {
                 new AntPathRequestMatcher("/api/**", HttpMethod.DELETE.name()),
                 new AntPathRequestMatcher("/api/estudiante/update", HttpMethod.PUT.name()),
                 new AntPathRequestMatcher("/api/profesor/update", HttpMethod.PUT.name()),
-                new AntPathRequestMatcher("/api/tutorlegal/update", HttpMethod.PUT.name())
+                new AntPathRequestMatcher("/api/tutorlegal/update", HttpMethod.PUT.name()),
+                new AntPathRequestMatcher("/api/asistencia/add", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/asistencia/update/**", HttpMethod.PATCH.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.DELETE.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.PATCH.name())
         };
     }
 

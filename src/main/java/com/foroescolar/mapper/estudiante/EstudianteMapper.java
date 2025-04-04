@@ -1,9 +1,8 @@
 package com.foroescolar.mapper.estudiante;
 
 import com.foroescolar.dtos.estudiante.*;
-import com.foroescolar.model.Estudiante;
-import com.foroescolar.repository.GradoRepository;
-import com.foroescolar.repository.TutorLegalRepository;
+import com.foroescolar.model.*;
+import com.foroescolar.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +16,25 @@ public class EstudianteMapper extends EstudianteMapperBase {
 
     private final GradoRepository gradoRepository;
     private final TutorLegalRepository tutorLegalRepository;
+    private final BoletinRepository boletinRepository;
+    private final AsistenciaRepository asistenciaRepository;
+    private final TareaRepository tareaRepository;
+    private final CalificacionRepository calificacionRepository;
 
     @Autowired
-    public EstudianteMapper(GradoRepository gradoRepository, TutorLegalRepository tutorLegalRepository) {
+    public EstudianteMapper(
+            GradoRepository gradoRepository,
+            TutorLegalRepository tutorLegalRepository,
+            BoletinRepository boletinRepository,
+            AsistenciaRepository asistenciaRepository,
+            TareaRepository tareaRepository,
+            CalificacionRepository calificacionRepository) {
         this.gradoRepository = gradoRepository;
         this.tutorLegalRepository = tutorLegalRepository;
+        this.boletinRepository = boletinRepository;
+        this.asistenciaRepository = asistenciaRepository;
+        this.tareaRepository = tareaRepository;
+        this.calificacionRepository = calificacionRepository;
     }
 
     /**
@@ -76,5 +89,43 @@ public class EstudianteMapper extends EstudianteMapperBase {
         if (dto.tutorLegalId() != null) {
             estudiante.setTutor(tutorLegalRepository.findById(dto.tutorLegalId()).orElse(null));
         }
+    }
+
+    /**
+     * Método para mapear a EstudiantePerfilDto
+     * @param estudiante Entidad estudiante
+     * @return DTO con información de perfil
+     */
+    public EstudiantePerfilDto toPerfilDto(Estudiante estudiante) {
+        if (estudiante == null) {
+            return null;
+        }
+
+        return new EstudiantePerfilDto(
+                estudiante.getId(),
+                estudiante.getNombre(),
+                estudiante.getApellido(),
+                estudiante.getDni(),
+                estudiante.getGenero(),
+                estudiante.getFechaNacimiento(),
+                estudiante.getTipoDocumento() != null ? estudiante.getTipoDocumento().name() : null,
+                estudiante.getActivo(),
+                estudiante.getTutor() != null ? estudiante.getTutor().getId() : null,
+                estudiante.getGrado() != null ? estudiante.getGrado().getId() : null
+        );
+    }
+
+    /**
+     * Método auxiliar para obtener el ID de un grado
+     */
+    protected Long gradoToLong(Grado grado) {
+        return grado != null ? grado.getId() : null;
+    }
+
+    /**
+     * Método auxiliar para obtener el ID de un tutor
+     */
+    protected Long tutorToLong(TutorLegal tutor) {
+        return tutor != null ? tutor.getId() : null;
     }
 }

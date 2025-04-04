@@ -3,14 +3,12 @@ package com.foroescolar.controllers.autenticacion;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.foroescolar.dtos.jwttoken.JWTTokenDTO;
 import com.foroescolar.dtos.user.DatosAutenticacionUsuario;
-import com.foroescolar.model.User;
 import com.foroescolar.services.AutenticacionService;
 import com.foroescolar.services.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -64,22 +62,6 @@ public class AuthenticationController {
             response.put(MENSAJE, "Error al cerrar sesión");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        // Obtener el usuario autenticado del servicio
-        User currentUser = autenticacionService.getCurrentUser(authentication.getName());
-
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        return ResponseEntity.ok(currentUser);
     }
 
 }

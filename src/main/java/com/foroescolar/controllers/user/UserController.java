@@ -1,6 +1,8 @@
 package com.foroescolar.controllers.user;
 
+import com.foroescolar.config.security.SecurityService;
 import com.foroescolar.dtos.ApiResponseDto;
+import com.foroescolar.dtos.user.UserPrincipal;
 import com.foroescolar.dtos.user.UserRequestDTO;
 import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
@@ -21,15 +23,25 @@ public class UserController {
 
 
     private final UserService userService;
+    private final SecurityService securityService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, SecurityService securityService) {
         this.userService = userService;
+        this.securityService = securityService;
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Registra un nuevo usuario")
+    @Operation(summary = "Registra un nuevo usuario como administrador")
     public ResponseEntity<ApiResponseDto<UserResponseDTO>> registerUser(@RequestBody @Valid UserRequestDTO userRegisterDataDTO) {
+
+        UserPrincipal userPrincipal= securityService.getCurrentUser();
+
+        if (!securityService.isAdmin(userPrincipal.id())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponseDto<>(false, "Solo los administradores pueden registrar usuarios", null));
+        }
+
         UserResponseDTO user = userService.save(userRegisterDataDTO);
         if (user == null) {
             return ResponseEntity.badRequest()

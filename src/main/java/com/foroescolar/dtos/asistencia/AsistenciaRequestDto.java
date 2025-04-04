@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class AsistenciaRequestDto {
 
     Long id;
-    String Estado;
+    String estado;
     String justificativos;
     Long estudiante;
     Long grado;
