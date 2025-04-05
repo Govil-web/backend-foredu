@@ -123,7 +123,7 @@ public class EstudianteController {
     }
 
     private void validarAcceso(Long recursoId) {
-        if (!securityService.hasAccessToInformation(recursoId)) {
+        if (securityService.hasAccessToInformation(recursoId)) {
             throw new ForbiddenException("No tienes permisos para acceder a este recurso");
         }
     }

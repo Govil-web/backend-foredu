@@ -143,7 +143,7 @@ public class SecurityService {
     public boolean isAdmin(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException(USUARIO_NO_ENCONTRADO));
-        return !ROLE_ADMINISTRADOR.equals(user.getRol());
+        return ROLE_ADMINISTRADOR.equals(user.getRol());
     }
 
     /**
