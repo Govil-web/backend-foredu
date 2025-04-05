@@ -1,157 +1,80 @@
 package com.foroescolar.mapper.estudiante;
 
-import com.foroescolar.dtos.estudiante.EstudiantePerfilDto;
-import com.foroescolar.dtos.estudiante.EstudianteResponseDTO;
-import com.foroescolar.model.*;
-import com.foroescolar.repository.*;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import com.foroescolar.dtos.estudiante.*;
+import com.foroescolar.model.Estudiante;
+import com.foroescolar.repository.GradoRepository;
+import com.foroescolar.repository.TutorLegalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+/**
+ * Implementación concreta del mapper que extiende la clase base
+ * y agrega capacidades relacionadas con los repositorios
+ */
+@Component
+public class EstudianteMapper extends EstudianteMapperBase {
 
-@Mapper(componentModel = "spring")
-public abstract class EstudianteMapper {
+    private final GradoRepository gradoRepository;
+    private final TutorLegalRepository tutorLegalRepository;
 
     @Autowired
-    private TutorLegalRepository tutorLegalRepository;
-    @Autowired
-    private BoletinRepository boletinRepository;
-    @Autowired
-    private AsistenciaRepository asistenciaRepository;
-    @Autowired
-    private TareaRepository tareaRepository;
-    @Autowired
-    private CalificacionRepository calificacionRepository;
-    @Autowired
-    private GradoRepository gradoRepository;
-
-    @Mapping(source = "tutor", target = "tutor", qualifiedByName = "tutorToLong")
-    @Mapping(source = "boletin", target = "boletin", qualifiedByName = "boletinesToLongList")
-    @Mapping(source = "asistencia", target = "asistencia", qualifiedByName = "asistenciasToLongList")
-    @Mapping(source = "tarea", target = "tarea", qualifiedByName = "tareasToLongList")
-    @Mapping(source = "calificaciones", target = "calificaciones", qualifiedByName = "calificacionesToLongList")
-    @Mapping(source= "grado", target = "grado", qualifiedByName = "gradoToLong")
-    public abstract EstudianteResponseDTO toResponseDTO(Estudiante estudiante);
-
-    @Mapping(source = "tutor", target = "tutor", qualifiedByName = "tutorToLong")
-    @Mapping(source= "grado", target = "grado", qualifiedByName = "gradoToLong")
-    public abstract EstudiantePerfilDto toPerfilDto(Estudiante estudiante);
-
-    @Mapping(source = "tutor", target = "tutor", qualifiedByName = "longToTutor")
-    @Mapping(source = "boletin", target = "boletin", qualifiedByName = "longListToBoletines")
-    @Mapping(source = "asistencia", target = "asistencia", qualifiedByName = "longListToAsistencias")
-    @Mapping(source = "tarea", target = "tarea", qualifiedByName = "longListToTareas")
-    @Mapping(source = "calificaciones", target = "calificaciones", qualifiedByName = "longListToCalificaciones")
-    @Mapping(source= "grado", target = "grado", qualifiedByName = "longToGrado")
-    @Mapping(target = "rol", ignore = true)
-    public abstract Estudiante toEntity(EstudianteResponseDTO estudianteResponseDTO);
-
-    @Named("gradoToLong")
-    protected Long gradoToLong(Grado grado) {
-        return grado != null ? grado.getId() : null;
+    public EstudianteMapper(GradoRepository gradoRepository, TutorLegalRepository tutorLegalRepository) {
+        this.gradoRepository = gradoRepository;
+        this.tutorLegalRepository = tutorLegalRepository;
     }
 
-    @Named("longToGrado")
-    protected Grado longToGrado(Long id) {
-        return id != null ? gradoRepository.findById(id).orElse(null) : null;
-    }
-
-    @Named("tutorToLong")
-    protected Long tutorToLong(TutorLegal tutor) {
-
-        return tutor != null ? tutor.getId() : null;
-    }
-
-    @Named("longToTutor")
-    protected TutorLegal longToTutor(Long id) {
-        return id != null ? tutorLegalRepository.findById(id).orElse(null) : null;
-    }
-
-    @Named("boletinesToLongList")
-    protected List<Long> boletinesToLongList(List<Boletin> boletines) {
-        if (boletines == null) {
-            return Collections.emptyList();
+    /**
+     * Implementación que requiere acceso a repositorios para configurar relaciones
+     */
+    @Override
+    @Transactional
+    public Estudiante crearDesdeDTO(EstudianteCreacionDTO dto) {
+        if (dto == null) {
+            return null;
         }
-        return boletines.stream()
-                .map(boletin -> {
-                    if (boletin == null) {
-                        return null;
-                    }
-                    return boletin.getId();
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
 
-    @Named("longListToBoletines")
-    protected List<Boletin> longListToBoletines(List<Long> ids) {
-        return ids != null ? ids.stream().map(id -> boletinRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
-    }
+        Estudiante estudiante = new Estudiante();
+        estudiante.setNombre(dto.nombre());
+        estudiante.setApellido(dto.apellido());
+        estudiante.setDni(dto.numeroDocumento());
+        estudiante.setGenero(dto.genero());
+        estudiante.setFechaNacimiento(dto.fechaNacimiento());
+        estudiante.setTipoDocumento(dto.tipoDocumento());
+        estudiante.setActivo(true);
 
-    @Named("asistenciasToLongList")
-    protected List<Long> asistenciasToLongList(List<Asistencia> asistencias) {
-        if (asistencias == null) {
-            return Collections.emptyList();
+        // Configurar relaciones
+        if (dto.gradoId() != null) {
+            estudiante.setGrado(gradoRepository.findById(dto.gradoId()).orElse(null));
         }
-        return asistencias.stream()
-                .map(asistencia -> {
-                    if (asistencia == null) {
-                        return null;
-                    }
-                    return asistencia.getId();
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
 
-    @Named("longListToAsistencias")
-    protected List<Asistencia> longListToAsistencias(List<Long> ids) {
-        return ids != null ? ids.stream().map(id -> asistenciaRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
-    }
-
-    @Named("tareasToLongList")
-    protected List<Long> tareasToLongList(List<Tarea> tareas) {
-        if (tareas == null) {
-            return Collections.emptyList();
+        if (dto.tutorLegalId() != null) {
+            estudiante.setTutor(tutorLegalRepository.findById(dto.tutorLegalId()).orElse(null));
         }
-        return tareas.stream()
-                .map(tarea -> {
-                    if (tarea == null) {
-                        return null;
-                    }
-                    return tarea.getId();
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+
+        return estudiante;
     }
 
-    @Named("longListToTareas")
-    protected List<Tarea> longListToTareas(List<Long> ids) {
-        return ids != null ? ids.stream().map(id -> tareaRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
-    }
-
-    @Named("calificacionesToLongList")
-    protected List<Long> calificacionesToLongList(List<Calificacion> calificaciones) {
-        if (calificaciones == null) {
-            return Collections.emptyList();
+    /**
+     * Implementación que requiere acceso a repositorios para configurar relaciones
+     */
+    @Override
+    @Transactional
+    public void actualizarDesdeDTO(Estudiante estudiante, EstudianteActualizacionDTO dto) {
+        if (estudiante == null || dto == null) {
+            return;
         }
-        return calificaciones.stream()
-                .map(calificacion -> {
-                    if (calificacion == null) {
-                        return null;
-                    }
-                    return calificacion.getId();
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());    }
 
-    @Named("longListToCalificaciones")
-    protected List<Calificacion> longListToCalificaciones(List<Long> ids) {
-        return ids != null ? ids.stream().map(id -> calificacionRepository.findById(id).orElse(null)).collect(Collectors.toList()) : null;
+        // Utiliza el método de la clase base para actualizar campos básicos
+        actualizarCamposBasicos(estudiante, dto);
+
+        // Actualizar relaciones
+        if (dto.gradoId() != null) {
+            estudiante.setGrado(gradoRepository.findById(dto.gradoId()).orElse(null));
+        }
+
+        if (dto.tutorLegalId() != null) {
+            estudiante.setTutor(tutorLegalRepository.findById(dto.tutorLegalId()).orElse(null));
+        }
     }
 }

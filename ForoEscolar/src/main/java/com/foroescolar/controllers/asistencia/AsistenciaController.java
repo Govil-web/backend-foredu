@@ -14,7 +14,6 @@ import com.foroescolar.services.UserService;
 import com.foroescolar.utils.ApiResponseUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -109,7 +108,7 @@ public class AsistenciaController {
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
             // Solo administradores pueden ver todas las asistencias
-            if (!securityService.isAdmin(user.id())) {
+            if (securityService.isAdmin(user.id())) {
                 return ApiResponseUtils.forbidden("No tienes permiso para ver todas las asistencias");
             }
 
