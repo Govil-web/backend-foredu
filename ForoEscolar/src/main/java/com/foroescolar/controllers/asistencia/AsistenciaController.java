@@ -6,6 +6,7 @@ import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.asistencia.AsistenciaRequest;
 import com.foroescolar.dtos.asistencia.AsistenciaRequestDto;
 import com.foroescolar.dtos.asistencia.DetalleAsistenciaByAlumno;
+import com.foroescolar.dtos.user.UserPrincipal;
 import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.exceptions.ApplicationException;
 import com.foroescolar.exceptions.model.EntityNotFoundException;
@@ -119,24 +120,22 @@ public class AsistenciaController {
         }
     }
 
-    @GetMapping("/fechaAndGrado/{id}")
+    @GetMapping("/fechaAndGrado/{idGrado}")
     @Operation(summary = "List all asistencias for a specific date and grade")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> getAsistenciasByDateAndGrado(
-            @PathVariable Long id,
+            @PathVariable Long idGrado,
             @RequestParam LocalDate fechaInicio,
             @RequestParam LocalDate fechaFin) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+            UserPrincipal user = securityService.getCurrentUser();
 
-
-            if (securityService.canViewGradeAttendance(user.id(), id)) {
+            if (!securityService.canViewGradeAttendance(user.id(), idGrado)) {
                 return ApiResponseUtils.forbidden("No tienes permiso para ver las asistencias de este grado");
             }
 
-            Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.getByFechaBeetweenAndGrado(id, fechaInicio, fechaFin);
+            Iterable<AsistenciaDTO> listarAsistencias = asistenciaService.getByFechaBeetweenAndGrado(idGrado, fechaInicio, fechaFin);
             return ResponseEntity.ok(new ApiResponseDto<>(true, "Asistencias encontradas", listarAsistencias));
-        } catch (ApplicationException e) {
+        } catch (EntityNotFoundException e) {
             return ApiResponseUtils.badRequest("Error al obtener asistencias: " + e.getMessage());
         }
     }
