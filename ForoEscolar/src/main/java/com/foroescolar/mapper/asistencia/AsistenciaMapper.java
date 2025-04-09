@@ -26,6 +26,7 @@ public abstract class AsistenciaMapper {
     @Mapping(source = "estudiante", target = "estudiante", qualifiedByName = "longToEstudiante")
     @Mapping(source = "grado", target = "grado", qualifiedByName = "longToGrado")
     @Mapping(source = "justificativos", target = "observaciones")
+    @Mapping(target = "fecha", ignore = true)
     public abstract Asistencia toEntity(AsistenciaRequestDto asistenciaRquestDto);
 
 

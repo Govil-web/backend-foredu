@@ -32,7 +32,11 @@ public class User implements UserDetails {
     private String contrasena;
     @Enumerated(EnumType.STRING)
     private RoleEnum rol;
-    private String institucion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "institucion_id")
+    private Institucion institucion;
+
     private boolean activo;
 
     @Override

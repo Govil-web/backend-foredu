@@ -35,6 +35,10 @@ public class Grado {
     @JoinColumn(name="profesor_id")
     private Profesor profesor;
 
+    @ManyToOne
+    @JoinColumn(name="institucion_id")
+    private Institucion institucion;
+
     @OneToMany(mappedBy = "grado",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Estudiante> estudiantes;
 

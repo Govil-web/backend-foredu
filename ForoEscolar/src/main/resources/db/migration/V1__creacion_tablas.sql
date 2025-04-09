@@ -1,3 +1,18 @@
+-- Tabla base para institucion (incluyendo usuarios)
+
+CREATE TABLE institucion (
+						id BIGINT PRIMARY KEY AUTO_INCREMENT,
+						nombre VARCHAR(100),
+                        direccion VARCHAR(255),
+                        telefono VARCHAR(20),
+                        email VARCHAR(100),
+                        logo VARCHAR(255),
+                        identificacion VARCHAR(50) UNIQUE,
+                        nivel_educativo ENUM('PRIMARIA','SECUNDARIA','TERCIARIA','POSTGRADO','UNIVERSITARIA','DIPLOMATURA','CURSOS')
+					
+);
+
+
 -- Tabla base para usuarios (incluyendo profesores, tutores legales y administradores)
 CREATE TABLE users (
                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -8,10 +23,11 @@ CREATE TABLE users (
                        apellido VARCHAR(100),
                        contraseña VARCHAR(255),
                        email VARCHAR(255) UNIQUE,
-                       institucion VARCHAR(255),
                        telefono VARCHAR(20),
                        rol ENUM('ROLE_ADMINISTRADOR', 'ROLE_PROFESOR', 'ROLE_TUTOR'),
-                       user_type VARCHAR(50)
+                       user_type VARCHAR(50),
+					   institucion_id BIGINT,
+                       FOREIGN KEY (institucion_id) REFERENCES institucion(id)
 );
 
 -- Tabla para profesores (hereda de users)
@@ -40,7 +56,9 @@ CREATE TABLE grado (
                        materia ENUM('MATEMATICAS', 'CIENCIAS', 'LENGUAJE', 'HISTORIA'),
                        contador int,
                        profesor_id BIGINT,
-                       FOREIGN KEY (profesor_id) REFERENCES profesores(user_id) ON DELETE SET NULL
+                       institucion_id BIGINT,
+                       FOREIGN KEY (profesor_id) REFERENCES profesores(user_id) ON DELETE SET NULL,
+                       FOREIGN KEY (institucion_id) REFERENCES institucion(id)
 );
 -- Tabla para estudiantes (no hereda de users)
 CREATE TABLE estudiantes (

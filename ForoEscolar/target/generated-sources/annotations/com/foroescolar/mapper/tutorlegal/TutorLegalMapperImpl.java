@@ -3,6 +3,7 @@ package com.foroescolar.mapper.tutorlegal;
 import com.foroescolar.dtos.tutorlegal.TutorLegalRequestDTO;
 import com.foroescolar.dtos.tutorlegal.TutorLegalResponseDTO;
 import com.foroescolar.enums.TipoDocumentoEnum;
+import com.foroescolar.model.Institucion;
 import com.foroescolar.model.TutorLegal;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-05T20:12:16-0300",
+    date = "2025-04-08T21:13:46-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -35,7 +36,6 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         tutorLegal.setEmail( tutorLegalRequestDTO.email() );
         tutorLegal.setTelefono( tutorLegalRequestDTO.telefono() );
         tutorLegal.setContrasena( tutorLegalRequestDTO.contrasena() );
-        tutorLegal.setInstitucion( tutorLegalRequestDTO.institucion() );
 
         return tutorLegal;
     }
@@ -47,6 +47,7 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         }
 
         List<Long> estudiante = null;
+        Long institucionId = null;
         Long id = null;
         String email = null;
         String nombre = null;
@@ -54,11 +55,11 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         String dni = null;
         String apellido = null;
         String telefono = null;
-        String institucion = null;
         String rol = null;
         boolean activo = false;
 
         estudiante = estudianteToLongList( tutorLegal.getEstudiante() );
+        institucionId = tutorLegalInstitucionId( tutorLegal );
         id = tutorLegal.getId();
         email = tutorLegal.getEmail();
         nombre = tutorLegal.getNombre();
@@ -68,14 +69,28 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         dni = tutorLegal.getDni();
         apellido = tutorLegal.getApellido();
         telefono = tutorLegal.getTelefono();
-        institucion = tutorLegal.getInstitucion();
         if ( tutorLegal.getRol() != null ) {
             rol = tutorLegal.getRol().name();
         }
         activo = tutorLegal.isActivo();
 
-        TutorLegalResponseDTO tutorLegalResponseDTO = new TutorLegalResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucion, rol, activo, estudiante );
+        TutorLegalResponseDTO tutorLegalResponseDTO = new TutorLegalResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucionId, rol, activo, estudiante );
 
         return tutorLegalResponseDTO;
+    }
+
+    private Long tutorLegalInstitucionId(TutorLegal tutorLegal) {
+        if ( tutorLegal == null ) {
+            return null;
+        }
+        Institucion institucion = tutorLegal.getInstitucion();
+        if ( institucion == null ) {
+            return null;
+        }
+        Long id = institucion.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
     }
 }

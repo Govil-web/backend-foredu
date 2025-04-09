@@ -1,10 +1,15 @@
+-- Insertar en Institucion
+
+INSERT INTO institucion (nombre, direccion, telefono, email, logo, identificacion, nivel_educativo)
+VALUES ('ForEdu', 'Latam', '1254785', 'foredu_educacion@gmail.com', 'www.foredulogo.com','20-884588-65', 'PRIMARIA');
+
 -- Insertar usuarios
-INSERT INTO users (dni, tipo_documento, activo, nombre, apellido, contraseña, email, institucion, telefono, rol, user_type)
-VALUES ('12345678A', 'DNI', 1, 'Juan', 'Pérez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor@gmail.com', 'Instituto ABC', '123456789', 'ROLE_PROFESOR', 'PROFESOR'),
-       ('12345678D', 'DNI', 1, 'Juan2', 'Pérez2', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor2@gmail.com', 'Instituto ABC', '123456789', 'ROLE_PROFESOR', 'PROFESOR'),
-       ('12345678E', 'DNI', 1, 'Juan3', 'Pérez3', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor3@gmail.com', 'Instituto ABC', '123456789', 'ROLE_PROFESOR', 'PROFESOR'),
-       ('23456789B', 'DNI', 1, 'Ana', 'Gómez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'tutor@gmail.com', 'Instituto ABC', '987654321', 'ROLE_TUTOR', 'TUTOR_LEGAL'),
-       ('34567890C', 'DNI', 1, 'Luis', 'Martínez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'admin@gmail.com', 'Instituto XYZ', '456789123', 'ROLE_ADMINISTRADOR', 'User');
+INSERT INTO users (dni, tipo_documento, activo, nombre, apellido, contraseña, email, telefono, rol, user_type, institucion_id )
+VALUES ('12345678A', 'DNI', 1, 'Juan', 'Pérez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor@gmail.com', '123456789', 'ROLE_PROFESOR', 'PROFESOR', 1),
+       ('12345678D', 'DNI', 1, 'Juan2', 'Pérez2', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor2@gmail.com', '123456789', 'ROLE_PROFESOR', 'PROFESOR', 1),
+       ('12345678E', 'DNI', 1, 'Juan3', 'Pérez3', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'profesor3@gmail.com', '123456789', 'ROLE_PROFESOR', 'PROFESOR', 1),
+       ('23456789B', 'DNI', 1, 'Ana', 'Gómez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'tutor@gmail.com', '987654321', 'ROLE_TUTOR', 'TUTOR_LEGAL', 1),
+       ('34567890C', 'DNI', 1, 'Luis', 'Martínez', '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6', 'admin@gmail.com', '456789123', 'ROLE_ADMINISTRADOR', 'User', 1);
 
 -- Insertar profesores
 INSERT INTO profesores (user_id, materia)

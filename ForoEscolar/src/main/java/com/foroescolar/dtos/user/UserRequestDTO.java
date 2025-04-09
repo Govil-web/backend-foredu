@@ -26,8 +26,9 @@ public record UserRequestDTO(
         @NotNull(message = "La contraseña no puede estar vacía")
         @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
         String contrasena,
-        @NotBlank(message = "Debe ingresar el nombre de la institucion educativa")
-        String institucion
+//        @NotBlank(message = "Debe ingresar el nombre de la institucion educativa")
+//        String institucion
+        Long institucionId
 
 ) {
 }

@@ -10,7 +10,7 @@ public record UserResponseDTO(
         String dni,
         String apellido,
         String telefono,
-        String institucion,
+        Long institucionId,
         String rol,
         boolean activo
 ) implements Serializable {

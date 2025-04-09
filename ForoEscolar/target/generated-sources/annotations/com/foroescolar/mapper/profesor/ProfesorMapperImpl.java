@@ -4,6 +4,7 @@ import com.foroescolar.dtos.profesor.ProfesorRequestDTO;
 import com.foroescolar.dtos.profesor.ProfesorResponseDTO;
 import com.foroescolar.enums.MateriaEnum;
 import com.foroescolar.enums.TipoDocumentoEnum;
+import com.foroescolar.model.Institucion;
 import com.foroescolar.model.Profesor;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-05T20:12:16-0300",
+    date = "2025-04-08T22:10:48-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -28,6 +29,7 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         List<Long> tareaIds = null;
         List<Long> calificacionIds = null;
         List<Long> gradoIds = null;
+        String institucion = null;
         Long id = null;
         String email = null;
         String nombre = null;
@@ -35,7 +37,6 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         String dni = null;
         String apellido = null;
         String telefono = null;
-        String institucion = null;
         String rol = null;
         boolean activo = false;
         String materia = null;
@@ -45,6 +46,7 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         tareaIds = tareasToLongList( profesor.getTarea() );
         calificacionIds = calificacionesToLongList( profesor.getCalificaciones() );
         gradoIds = gradosToLongList( profesor.getGrado() );
+        institucion = profesorInstitucionNombre( profesor );
         id = profesor.getId();
         email = profesor.getEmail();
         nombre = profesor.getNombre();
@@ -54,7 +56,6 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         dni = profesor.getDni();
         apellido = profesor.getApellido();
         telefono = profesor.getTelefono();
-        institucion = profesor.getInstitucion();
         if ( profesor.getRol() != null ) {
             rol = profesor.getRol().name();
         }
@@ -82,6 +83,7 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         profesor.setTarea( longListToTareas( profesorRequestDTO.tareaIds() ) );
         profesor.setCalificaciones( longListToCalificaciones( profesorRequestDTO.calificacionIds() ) );
         profesor.setGrado( longListToGrados( profesorRequestDTO.gradoIds() ) );
+        profesor.setInstitucion( longToInstitucion( profesorRequestDTO.institucionId() ) );
         profesor.setNombre( profesorRequestDTO.nombre() );
         profesor.setApellido( profesorRequestDTO.apellido() );
         profesor.setDni( profesorRequestDTO.dni() );
@@ -91,11 +93,25 @@ public class ProfesorMapperImpl extends ProfesorMapper {
         profesor.setEmail( profesorRequestDTO.email() );
         profesor.setTelefono( profesorRequestDTO.telefono() );
         profesor.setContrasena( profesorRequestDTO.contrasena() );
-        profesor.setInstitucion( profesorRequestDTO.institucion() );
         if ( profesorRequestDTO.materia() != null ) {
             profesor.setMateria( Enum.valueOf( MateriaEnum.class, profesorRequestDTO.materia() ) );
         }
 
         return profesor;
+    }
+
+    private String profesorInstitucionNombre(Profesor profesor) {
+        if ( profesor == null ) {
+            return null;
+        }
+        Institucion institucion = profesor.getInstitucion();
+        if ( institucion == null ) {
+            return null;
+        }
+        String nombre = institucion.getNombre();
+        if ( nombre == null ) {
+            return null;
+        }
+        return nombre;
     }
 }

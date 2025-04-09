@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
-@Mapper(componentModel = "spring", uses = {EstudianteRepository.class, BoletinRepository.class, AsistenciaRepository.class, TareaRepository.class, CalificacionRepository.class, GradoRepository.class})
+@Mapper(componentModel = "spring", uses = {InstitucionRepository.class,EstudianteRepository.class, BoletinRepository.class, AsistenciaRepository.class, TareaRepository.class, CalificacionRepository.class, GradoRepository.class})
 public abstract class ProfesorMapper {
 
     @Autowired
@@ -29,11 +29,15 @@ public abstract class ProfesorMapper {
     @Autowired
     private GradoRepository gradoRepository;
 
+    @Autowired
+    private InstitucionRepository institucionRepository;
+
     @Mapping(source = "estudiantes", target = "estudianteIds", qualifiedByName = "estudiantesToLongList")
     @Mapping(source = "boletin", target = "boletinIds", qualifiedByName = "boletinesToLongList")
     @Mapping(source = "tarea", target = "tareaIds", qualifiedByName = "tareasToLongList")
     @Mapping(source = "calificaciones", target = "calificacionIds", qualifiedByName = "calificacionesToLongList")
     @Mapping(source = "grado", target = "gradoIds", qualifiedByName = "gradosToLongList")
+    @Mapping(source="institucion.nombre", target = "institucion")
     public abstract ProfesorResponseDTO toResponseDTO(Profesor profesor);
 
     @Mapping(target = "id", source = "id")
@@ -42,6 +46,7 @@ public abstract class ProfesorMapper {
     @Mapping(source = "tareaIds", target = "tarea", qualifiedByName = "longListToTareas")
     @Mapping(source = "calificacionIds", target = "calificaciones", qualifiedByName = "longListToCalificaciones")
     @Mapping(source = "gradoIds", target = "grado", qualifiedByName = "longListToGrados")
+    @Mapping(source = "institucionId", target = "institucion", qualifiedByName = "longToInstitucion")
     public abstract Profesor toEntity(ProfesorRequestDTO profesorRequestDTO);
 
     @Named("estudiantesToLongList")
@@ -59,6 +64,11 @@ public abstract class ProfesorMapper {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+    @Named("longToInstitucion")
+    protected Institucion longToInstitucion(Long institucionId) {
+        return institucionRepository.findById(institucionId).orElse(null);
+    }
+
 
     @Named("longListToEstudiantes")
     protected List<Estudiante> longListToEstudiantes(List<Long> ids) {

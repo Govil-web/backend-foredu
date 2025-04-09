@@ -3,13 +3,14 @@ package com.foroescolar.mapper.user;
 import com.foroescolar.dtos.user.UserRequestDTO;
 import com.foroescolar.dtos.user.UserResponseDTO;
 import com.foroescolar.enums.TipoDocumentoEnum;
+import com.foroescolar.model.Institucion;
 import com.foroescolar.model.User;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-05T20:12:16-0300",
+    date = "2025-04-08T21:13:46-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -21,6 +22,7 @@ public class UserMapperImpl implements UserMapper {
             return null;
         }
 
+        Long institucionId = null;
         Long id = null;
         String email = null;
         String nombre = null;
@@ -28,10 +30,10 @@ public class UserMapperImpl implements UserMapper {
         String dni = null;
         String apellido = null;
         String telefono = null;
-        String institucion = null;
         String rol = null;
         boolean activo = false;
 
+        institucionId = userInstitucionId( user );
         id = user.getId();
         email = user.getEmail();
         nombre = user.getNombre();
@@ -41,13 +43,12 @@ public class UserMapperImpl implements UserMapper {
         dni = user.getDni();
         apellido = user.getApellido();
         telefono = user.getTelefono();
-        institucion = user.getInstitucion();
         if ( user.getRol() != null ) {
             rol = user.getRol().name();
         }
         activo = user.isActivo();
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucion, rol, activo );
+        UserResponseDTO userResponseDTO = new UserResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucionId, rol, activo );
 
         return userResponseDTO;
     }
@@ -69,8 +70,22 @@ public class UserMapperImpl implements UserMapper {
         user.setEmail( userRequestDTO.email() );
         user.setTelefono( userRequestDTO.telefono() );
         user.setContrasena( userRequestDTO.contrasena() );
-        user.setInstitucion( userRequestDTO.institucion() );
 
         return user;
+    }
+
+    private Long userInstitucionId(User user) {
+        if ( user == null ) {
+            return null;
+        }
+        Institucion institucion = user.getInstitucion();
+        if ( institucion == null ) {
+            return null;
+        }
+        Long id = institucion.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
     }
 }
