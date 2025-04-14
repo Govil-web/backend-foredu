@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-08T21:13:46-0300",
+    date = "2025-04-13T21:17:04-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22 (Oracle Corporation)"
 )
 @Component
@@ -26,6 +26,7 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         TutorLegal tutorLegal = new TutorLegal();
 
         tutorLegal.setEstudiante( longListToEstudiante( tutorLegalRequestDTO.estudiante() ) );
+        tutorLegal.setInstitucion( longToInstitucion( tutorLegalRequestDTO.institucionId() ) );
         tutorLegal.setId( tutorLegalRequestDTO.id() );
         tutorLegal.setNombre( tutorLegalRequestDTO.nombre() );
         tutorLegal.setApellido( tutorLegalRequestDTO.apellido() );
@@ -47,7 +48,7 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         }
 
         List<Long> estudiante = null;
-        Long institucionId = null;
+        String institucion = null;
         Long id = null;
         String email = null;
         String nombre = null;
@@ -59,7 +60,7 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         boolean activo = false;
 
         estudiante = estudianteToLongList( tutorLegal.getEstudiante() );
-        institucionId = tutorLegalInstitucionId( tutorLegal );
+        institucion = tutorLegalInstitucionNombre( tutorLegal );
         id = tutorLegal.getId();
         email = tutorLegal.getEmail();
         nombre = tutorLegal.getNombre();
@@ -74,12 +75,12 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         }
         activo = tutorLegal.isActivo();
 
-        TutorLegalResponseDTO tutorLegalResponseDTO = new TutorLegalResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucionId, rol, activo, estudiante );
+        TutorLegalResponseDTO tutorLegalResponseDTO = new TutorLegalResponseDTO( id, email, nombre, tipoDocumento, dni, apellido, telefono, institucion, rol, activo, estudiante );
 
         return tutorLegalResponseDTO;
     }
 
-    private Long tutorLegalInstitucionId(TutorLegal tutorLegal) {
+    private String tutorLegalInstitucionNombre(TutorLegal tutorLegal) {
         if ( tutorLegal == null ) {
             return null;
         }
@@ -87,10 +88,10 @@ public class TutorLegalMapperImpl extends TutorLegalMapper {
         if ( institucion == null ) {
             return null;
         }
-        Long id = institucion.getId();
-        if ( id == null ) {
+        String nombre = institucion.getNombre();
+        if ( nombre == null ) {
             return null;
         }
-        return id;
+        return nombre;
     }
 }

@@ -31,8 +31,8 @@ public class Institucion {
     private NivelEducativo nivelEducativo;
 
 
-    @OneToMany( cascade = CascadeType.ALL, mappedBy = "institucion")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "institucion", orphanRemoval = true)
     private List<Grado> grados;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "institucion")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "institucion" , orphanRemoval = true)
     private List<User> users;
 }

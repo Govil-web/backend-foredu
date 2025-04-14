@@ -1,6 +1,9 @@
 package com.foroescolar.dtos.institucion;
 
+import com.foroescolar.enums.NivelEducativo;
 import jakarta.validation.constraints.NotBlank;
+
+import java.io.Serializable;
 
 public record InstitucionRequestDto(
 
@@ -18,7 +21,7 @@ public record InstitucionRequestDto(
         String nivelEducativo
 
 
-) {
+) implements Serializable {
 
 
 }

@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private RoleEnum rol;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "institucion_id")
+    @JoinColumn(name = "institucion_id" , nullable = false)
     private Institucion institucion;
 
     private boolean activo;

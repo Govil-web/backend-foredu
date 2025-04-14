@@ -36,7 +36,7 @@ public class Grado {
     private Profesor profesor;
 
     @ManyToOne
-    @JoinColumn(name="institucion_id")
+    @JoinColumn(name="institucion_id", nullable = false)
     private Institucion institucion;
 
     @OneToMany(mappedBy = "grado",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)

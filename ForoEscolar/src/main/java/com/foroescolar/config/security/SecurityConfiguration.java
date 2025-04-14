@@ -90,10 +90,9 @@ public class SecurityConfiguration {
         addPatternRoles("/api/estudiante/update", new String[]{ROLE_ADMIN});
         addPatternRoles("/api/profesor/update", new String[]{ROLE_ADMIN});
         addPatternRoles("/api/tutorlegal/update", new String[]{ROLE_ADMIN});
+        addPatternRoles("/api/institucion/**", new String[]{ROLE_ADMIN});
 
         // Patrones para profesores
-        addPatternRoles("/api/asistencia/add", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
-        addPatternRoles("/api/asistencia/update/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
         addPatternRoles("/api/asistencia/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
         addPatternRoles("/api/profesor/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
         addPatternRoles("/api/tutorlegal/**", new String[]{ROLE_ADMIN, ROLE_PROFESOR});
@@ -156,7 +155,7 @@ public class SecurityConfiguration {
 
     private RequestMatcher[] getPublicEndpoints() {
         // Optimización: crear matchers una sola vez y reutilizarlos
-        return new RequestMatcher[] {
+        return new RequestMatcher[]{
                 new AntPathRequestMatcher("/api/auth/login", HttpMethod.POST.name()),
                 new AntPathRequestMatcher("/swagger-ui.html"),
                 new AntPathRequestMatcher("/v3/api-docs/**"),
@@ -167,7 +166,7 @@ public class SecurityConfiguration {
     }
 
     private RequestMatcher[] getSelfAccessEndpoints() {
-        return new RequestMatcher[] {
+        return new RequestMatcher[]{
                 new AntPathRequestMatcher("/api/user/{id}", HttpMethod.GET.name()),
                 new AntPathRequestMatcher("/api/profesor/{id}", HttpMethod.GET.name()),
                 new AntPathRequestMatcher("/api/tutorlegal/{id}", HttpMethod.GET.name())
@@ -175,7 +174,7 @@ public class SecurityConfiguration {
     }
 
     private RequestMatcher[] getAdministratorEndpoints() {
-        return new RequestMatcher[] {
+        return new RequestMatcher[]{
                 new AntPathRequestMatcher("/api/user/getAll", HttpMethod.GET.name()),
                 new AntPathRequestMatcher("/api/estudiante/getAll", HttpMethod.GET.name()),
                 new AntPathRequestMatcher("/api/profesor/add", HttpMethod.POST.name()),
@@ -186,27 +185,32 @@ public class SecurityConfiguration {
                 new AntPathRequestMatcher("/api/estudiante/update", HttpMethod.PUT.name()),
                 new AntPathRequestMatcher("/api/profesor/update", HttpMethod.PUT.name()),
                 new AntPathRequestMatcher("/api/tutorlegal/update", HttpMethod.PUT.name()),
-                new AntPathRequestMatcher("/api/asistencia/add", HttpMethod.POST.name()),
-                new AntPathRequestMatcher("/api/asistencia/update/**", HttpMethod.PATCH.name()),
+               // new AntPathRequestMatcher("/api/asistencia/**", HttpMethod.POST.name()),
+               // new AntPathRequestMatcher("/api/asistencia/**", HttpMethod.PATCH.name()),
                 new AntPathRequestMatcher("/api/grado/**", HttpMethod.POST.name()),
                 new AntPathRequestMatcher("/api/grado/**", HttpMethod.GET.name()),
                 new AntPathRequestMatcher("/api/grado/**", HttpMethod.DELETE.name()),
-                new AntPathRequestMatcher("/api/grado/**", HttpMethod.PATCH.name())
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.PATCH.name()),
+                new AntPathRequestMatcher("/api/institucion/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/institucion/**", HttpMethod.POST.name())
+
         };
     }
 
     private RequestMatcher[] getTeacherEndpoints() {
-        return new RequestMatcher[] {
-                new AntPathRequestMatcher("/api/asistencia/add", HttpMethod.POST.name()),
-                new AntPathRequestMatcher("/api/asistencia/update/**", HttpMethod.PUT.name()),
-                new AntPathRequestMatcher("/api/asistencia/**", HttpMethod.GET.name()),
+        return new RequestMatcher[]{
                 new AntPathRequestMatcher("/api/profesor/**", HttpMethod.GET.name()),
-                new AntPathRequestMatcher("/api/tutorlegal/**", HttpMethod.GET.name())
+                new AntPathRequestMatcher("/api/tutorlegal/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/grado/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/asistencia/add", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/asistencia/update", HttpMethod.PATCH.name()),
+                new AntPathRequestMatcher("/api/asistencia/**", HttpMethod.GET.name())
+
         };
     }
 
     private RequestMatcher[] getTutorEndpoints() {
-        return new RequestMatcher[] {
+        return new RequestMatcher[]{
                 new AntPathRequestMatcher("/api/estudiante/{id}", HttpMethod.GET.name()),
                 new AntPathRequestMatcher("/api/estudiante/{id}/asistencias", HttpMethod.GET.name()),
                 new AntPathRequestMatcher("/api/estudiante/filterGrado", HttpMethod.GET.name()),

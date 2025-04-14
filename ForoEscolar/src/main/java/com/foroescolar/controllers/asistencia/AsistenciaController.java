@@ -43,16 +43,17 @@ public class AsistenciaController {
     @PostMapping("/add")
     @Operation(summary = "Register a new asistencia")
     public ResponseEntity<ApiResponseDto<String>> addAsistencia(@RequestBody AsistenciaRequest asistenciaRequest) {
-
+        System.out.println("entro al registrar asistencia");
             try {
-                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
+                System.out.println("entro al add");
+              UserPrincipal user = securityService.getCurrentUser();
 
                 // Verificar si el profesor tiene permiso para registrar asistencia en este grado
                 if (!securityService.canManageGradeAttendance(user.id(), asistenciaRequest.getGradoId())) {
+                    System.out.println("No tienes permiso para registrar asistencia en este grado");
                     return ApiResponseUtils.forbidden("No tienes permiso para registrar asistencia en este grado");
                 }
-
+                System.out.println("paso");
                 asistenciaService.asistenciaDelDia(asistenciaRequest);
                 return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
 //return new ResponseEntity<>(new ApiResponseDto<>(true,"exito", null), HttpStatus.OK);
@@ -109,7 +110,7 @@ public class AsistenciaController {
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
             // Solo administradores pueden ver todas las asistencias
-            if (securityService.isAdmin(user.id())) {
+            if (!securityService.isAdmin(user.id())) {
                 return ApiResponseUtils.forbidden("No tienes permiso para ver todas las asistencias");
             }
 
@@ -141,13 +142,11 @@ public class AsistenciaController {
     }
 
     @PatchMapping("/update")
-    @Operation(summary = "Update asistencia", description = "Solo se necesita ID de la asistencia,justificativo y estado")
+    @Operation(summary = "Update asistencia", description = "Solo se necesita ID de la asistencia,justificativo, estado y grado= gradoID")
     public ResponseEntity<ApiResponseDto<AsistenciaDTO>> updateAsistencia(
             @RequestBody AsistenciaRequestDto asistenciaDTO) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
-
+          UserPrincipal user= securityService.getCurrentUser();
 //            // Verificar si tiene permiso para actualizar esta asistencia
             if (!securityService.canUpdateAttendance(user.id(), asistenciaDTO.getGrado())) {
                 return ApiResponseUtils.forbidden("No tienes permiso para actualizar esta asistencia");
@@ -168,7 +167,7 @@ public class AsistenciaController {
             Optional<DetalleAsistenciaByAlumno> response= asistenciaService.getDetailsByStudent(id);
             return response.map(detalleAsistenciaByAlumno ->
                     ApiResponseUtils.success(detalleAsistenciaByAlumno, "Busqueda exitosa"))
-                    .orElseGet(() -> ApiResponseUtils.forbidden("No tienes permiso para actualizar esta asistencia"));
+                    .orElseGet(() -> ApiResponseUtils.forbidden("No existe un estudiante con ese id"));
 
         }catch (Exception e){
 
