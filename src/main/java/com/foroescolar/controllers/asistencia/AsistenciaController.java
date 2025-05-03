@@ -47,14 +47,12 @@ public class AsistenciaController {
                 UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
-                // Verificar si el profesor tiene permiso para registrar asistencia en este grado
                 if (!securityService.canManageGradeAttendance(user.id(), asistenciaRequest.getGradoId())) {
                     return ApiResponseUtils.forbidden("No tienes permiso para registrar asistencia en este grado");
                 }
 
                 asistenciaService.asistenciaDelDia(asistenciaRequest);
                 return ApiResponseUtils.success("Success", "Asistencia guardada exitosamente");
-//return new ResponseEntity<>(new ApiResponseDto<>(true,"exito", null), HttpStatus.OK);
             } catch (EntityNotFoundException e) {
                 return ApiResponseUtils.error("Error al registrar asistencia: " + e.getMessage());
             }
@@ -67,7 +65,6 @@ public class AsistenciaController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
-           //  Verificar si tiene permiso para ver esta asistencia específica
             if (!securityService.canViewAttendance(user.id(), id)) {
                 return ApiResponseUtils.forbidden("No tienes permiso para ver esta asistencia");
             }
@@ -87,7 +84,6 @@ public class AsistenciaController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
-            // Verificar si tiene permiso para ver asistencias del grado
             if (!securityService.canViewGradeAttendance(user.id(), id)) {
                 return ApiResponseUtils.forbidden("No tienes permiso para ver las asistencias de este grado");
             }
@@ -107,7 +103,6 @@ public class AsistenciaController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
-            // Solo administradores pueden ver todas las asistencias
             if (securityService.isAdmin(user.id())) {
                 return ApiResponseUtils.forbidden("No tienes permiso para ver todas las asistencias");
             }
@@ -149,7 +144,6 @@ public class AsistenciaController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
-//            // Verificar si tiene permiso para actualizar esta asistencia
             if (!securityService.canUpdateAttendance(user.id(), asistenciaDTO.getGrado())) {
                 return ApiResponseUtils.forbidden("No tienes permiso para actualizar esta asistencia");
             }

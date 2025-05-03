@@ -46,10 +46,8 @@ public class SecurityConfiguration {
     private static final String ROLE_TUTOR = "TUTOR";
     private static final String ROLE_ESTUDIANTE = "ESTUDIANTE";
 
-    // Caché de decisiones de acceso (por URI y método)
     private final Map<String, Boolean> accessDecisionCache = new ConcurrentHashMap<>();
 
-    // Mapa optimizado de patrones URL y roles permitidos
     private final Map<String, Set<String>> patternRoleMap = new HashMap<>();
 
     public SecurityConfiguration(
@@ -66,12 +64,10 @@ public class SecurityConfiguration {
         this.securityExceptionHandler = securityExceptionHandler;
         this.meterRegistry = meterRegistry;
 
-        // Inicializar mapa de patrones/roles
         initializePatternRoleMap();
     }
 
     private void initializePatternRoleMap() {
-        // Patrones públicos (sin autenticación)
         addPatternRoles("/api/auth/login", new String[]{});
         addPatternRoles("/swagger-ui.html", new String[]{});
         addPatternRoles("/v3/api-docs/**", new String[]{});
@@ -118,7 +114,6 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        // Iniciar timer para medir tiempo de configuración
         Timer.Sample configTimer = Timer.start(meterRegistry);
 
         SecurityFilterChain chain = httpSecurity
@@ -130,16 +125,13 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos con matcher optimizado
                         .requestMatchers(getPublicEndpoints()).permitAll()
 
-                        // Endpoints que requieren autenticación específica
                         .requestMatchers(getSelfAccessEndpoints()).authenticated()
                         .requestMatchers(getAdministratorEndpoints()).hasRole(ROLE_ADMIN)
                         .requestMatchers(getTeacherEndpoints()).hasAnyRole(ROLE_ADMIN, ROLE_PROFESOR)
                         .requestMatchers(getTutorEndpoints()).hasAnyRole(ROLE_ADMIN, ROLE_PROFESOR, ROLE_TUTOR)
 
-                        // Por defecto requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
@@ -148,14 +140,12 @@ public class SecurityConfiguration {
                 .userDetailsService(userDetailsService)
                 .build();
 
-        // Registrar métrica de tiempo de configuración
         configTimer.stop(meterRegistry.timer("security.config.initialization"));
 
         return chain;
     }
 
     private RequestMatcher[] getPublicEndpoints() {
-        // Optimización: crear matchers una sola vez y reutilizarlos
         return new RequestMatcher[] {
                 new AntPathRequestMatcher("/api/auth/login", HttpMethod.POST.name()),
                 new AntPathRequestMatcher("/swagger-ui.html"),
@@ -241,14 +231,11 @@ public class SecurityConfiguration {
     public static class SecurityMetricsService {
         private final MeterRegistry meterRegistry;
 
-        // Contadores para decisiones de acceso
         private final Counter accessGrantedCounter;
         private final Counter accessDeniedCounter;
 
-        // Timer para decisiones de acceso
         private final Timer accessDecisionTimer;
 
-        // Estadísticas por endpoint
         private final Map<String, Counter> endpointAccessMap = new ConcurrentHashMap<>();
 
         public SecurityMetricsService(MeterRegistry meterRegistry) {

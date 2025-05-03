@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
     private final TokenService tokenService;
     private final UserDetailsService userDetailsService;
 
-    // Caché para tokens validados (LRU - máximo 1000 entradas)
     private final Map<String, UserDetails> tokenCache = new LinkedHashMap<>(1000, 0.75f, true) {
         @Override
         protected boolean removeEldestEntry(Map.Entry<String, UserDetails> eldest) {
@@ -38,7 +37,6 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
         }
     };
 
-    // Caché para tokens inválidos (para rechazar rápidamente)
     private final Map<String, Long> invalidTokenCache = new ConcurrentHashMap<>();
 
     public JwtAuthenticationFilter(
@@ -52,7 +50,6 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
 
     @Override
     protected void doFilterInternal(SecurityFilterContext context) throws ServletException, IOException {
-        // Verificar si la autenticación ya existe
         if (SecurityContextHolder.getContext().getAuthentication() != null &&
                 SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
             context.filterChain().doFilter(context.request(), context.response());
@@ -65,7 +62,6 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
             if (tokenOpt.isPresent()) {
                 String token = tokenOpt.get();
 
-                // Verificar si el token está en caché de inválidos
                 if (invalidTokenCache.containsKey(token)) {
                     log.debug("Token previamente identificado como inválido");
                     context.filterChain().doFilter(context.request(), context.response());
@@ -86,7 +82,6 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
 
     private void processToken(String token, SecurityFilterContext context) {
         try {
-            // Verificar si el token está en caché
             synchronized (tokenCache) {
                 UserDetails cachedUserDetails = tokenCache.get(token);
                 if (cachedUserDetails != null) {
@@ -96,12 +91,10 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
                 }
             }
 
-            // No está en caché, procesar normalmente
             String username = tokenService.getUsernameFromToken(token);
             if (username != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // Guardar en caché
                 synchronized (tokenCache) {
                     tokenCache.put(token, userDetails);
                 }
@@ -110,11 +103,9 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
                 log.info("Usuario autenticado correctamente: {}", username);
             }
         } catch (TokenExpiredException ex) {
-            // Guardar en caché de inválidos con timestamp
             invalidTokenCache.put(token, System.currentTimeMillis());
             throw ex;
         } catch (Exception ex) {
-            // Guardar en caché de inválidos con timestamp
             invalidTokenCache.put(token, System.currentTimeMillis());
             log.error("Error procesando el token JWT", ex);
             throw new JwtAuthenticationException("Error al procesar el token de autenticación: " + ex.getMessage());
@@ -133,7 +124,6 @@ public class JwtAuthenticationFilter extends BaseSecurityFilter {
         log.debug("Usuario autenticado: {}", userDetails.getAuthorities());
     }
 
-    // Limpiar caché de tokens inválidos cada hora (tokens que tienen más de 30 minutos)
     @Scheduled(fixedRate = 3600000)
     public void cleanInvalidTokenCache() {
         long currentTime = System.currentTimeMillis();

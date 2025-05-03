@@ -11,6 +11,7 @@ public record TutorLegalResponseDTO(
         String dni,
         String apellido,
         String telefono,
+
         String institucion,
         String rol,
         boolean activo,
