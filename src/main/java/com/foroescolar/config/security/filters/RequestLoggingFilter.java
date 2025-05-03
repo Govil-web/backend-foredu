@@ -32,7 +32,6 @@ public class RequestLoggingFilter extends BaseSecurityFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        // No filtrar recursos estáticos
         if (staticResourcePattern.matcher(path).matches()) {
             return true;
         }
@@ -42,7 +41,6 @@ public class RequestLoggingFilter extends BaseSecurityFilter {
 
     @Override
     protected void doFilterInternal(SecurityFilterContext context) throws ServletException, IOException {
-        // Muestreo para reducir volumen de logs en entornos de alta carga
         boolean shouldLog = random.nextDouble() < loggingSampleRate;
 
         if (shouldLog) {
@@ -53,7 +51,6 @@ public class RequestLoggingFilter extends BaseSecurityFilter {
             String method = context.request().getMethod();
             String uri = context.request().getRequestURI();
 
-            // Diferenciar nivel de logging según tipo de petición
             if (method.equals("GET") && isLowValueEndpoint(uri)) {
                 log.debug("Request: {} {} - ID: {} - UA: {}",
                         method, uri, requestId, abbreviateUserAgent(userAgent));
@@ -62,13 +59,11 @@ public class RequestLoggingFilter extends BaseSecurityFilter {
                         method, uri, requestId, getClientIp(context.request()));
             }
 
-            // Registrar tiempo de inicio
             long startTime = System.currentTimeMillis();
 
             try {
                 context.filterChain().doFilter(context.request(), context.response());
             } finally {
-                // Calcular duración y registrar
                 long duration = System.currentTimeMillis() - startTime;
                 int status = context.response().getStatus();
 
@@ -82,7 +77,6 @@ public class RequestLoggingFilter extends BaseSecurityFilter {
                 MDC.clear();
             }
         } else {
-            // No logging para esta solicitud (muestreo)
             context.filterChain().doFilter(context.request(), context.response());
         }
     }

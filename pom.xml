@@ -156,11 +156,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Micrometer core for metrics collection -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-        </dependency>
 
         <!-- Micrometer registry for Prometheus (optional, for exporting metrics) -->
         <dependency>

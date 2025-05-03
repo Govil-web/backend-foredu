@@ -5,7 +5,6 @@ import com.foroescolar.controllers.ApiResponse;
 import com.foroescolar.dtos.ApiResponseDto;
 import com.foroescolar.dtos.asistencia.AsistenciaDTO;
 import com.foroescolar.dtos.estudiante.*;
-import com.foroescolar.dtos.user.UserPrincipal;
 import com.foroescolar.exceptions.model.ForbiddenException;
 import com.foroescolar.services.EstudianteService;
 import com.foroescolar.services.UserService;
@@ -76,7 +75,7 @@ public class EstudianteController {
     public ResponseEntity<ApiResponseDto<EstudianteDetalleDTO>> actualizar(
             @Valid @RequestBody EstudianteActualizacionDTO dto) {
         // Si es admin, permitir actualizar cualquier estudiante
-        if (!securityService.isCurrentUserAdmin()) {
+        if (securityService.isCurrentUserAdmin()) {
             validarAcceso(dto.id());
         }
 
@@ -129,7 +128,7 @@ public class EstudianteController {
     @Operation(summary = "Obtiene las asistencias de un estudiante")
     public ResponseEntity<ApiResponseDto<List<AsistenciaDTO>>> obtenerAsistencias(@PathVariable Long id) {
         // Si es administrador, permitir acceder a cualquier asistencia
-        if (!securityService.isCurrentUserAdmin()) {
+        if (securityService.isCurrentUserAdmin()) {
             validarAcceso(id);
         }
 
@@ -166,7 +165,7 @@ public class EstudianteController {
     }
 
     private void validarAccesoAdmin() {
-        if (!securityService.isCurrentUserAdmin()) {
+        if (securityService.isCurrentUserAdmin()) {
             throw new ForbiddenException("Solo los administradores pueden realizar esta operación");
         }
     }
