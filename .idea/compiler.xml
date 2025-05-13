@@ -13,11 +13,9 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
         </processorPath>
         <module name="ForoEscolar (1)" />
+        <module name="ForoEscolar" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="ForoEscolar" target="21" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
