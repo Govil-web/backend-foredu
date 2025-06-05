@@ -125,7 +125,7 @@ public class AsistenciaController {
             UserResponseDTO user = userService.findByEmail(userDetails.getUsername());
 
 
-            if (securityService.canViewGradeAttendance(user.id(), id)) {
+            if (!securityService.canViewGradeAttendance(user.id(), id)) {
                 return ApiResponseUtils.forbidden("No tienes permiso para ver las asistencias de este grado");
             }
 

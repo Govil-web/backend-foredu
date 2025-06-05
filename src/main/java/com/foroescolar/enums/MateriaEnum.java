@@ -4,5 +4,14 @@ public enum MateriaEnum {
     MATEMATICAS,
     CIENCIAS,
     LENGUAJE,
-    HISTORIA
+    HISTORIA,
+    GEOGRAFIA,
+    ARTE,
+    EDUCACION_FISICA,
+    MUSICA,
+    QUIMICA,
+    BIOLOGIA,
+    FISICA,
+    FILOSOFIA,
+    ECONOMIA,
 }
