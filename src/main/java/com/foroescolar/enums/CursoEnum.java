@@ -6,5 +6,10 @@ public enum CursoEnum {
     TERCERO,
     CUARTO,
     QUINTO,
-    SEXTO
+    SEXTO,
+    SEPTIMO,
+    OCTAVO,
+    NOVENO,
+    DECIMO,
+
 }
