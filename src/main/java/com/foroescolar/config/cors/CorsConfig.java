@@ -18,6 +18,7 @@ public class CorsConfig {
         corsConfiguration.addAllowedOriginPattern("https://foredu.globalia-tech.com/");
         corsConfiguration.addAllowedOriginPattern("http://localhost:5173");
         corsConfiguration.addAllowedOriginPattern("http://localhost:10000");
+        corsConfiguration.addAllowedOriginPattern("https://icy-river-01633c80f.6.azurestaticapps.net");
 
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         corsConfiguration.setAllowCredentials(true);
