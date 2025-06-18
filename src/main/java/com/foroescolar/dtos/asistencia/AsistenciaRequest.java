@@ -11,5 +11,6 @@ public class AsistenciaRequest {
 
     Map<Long, String> asistencia;
     Long gradoId;
+    String observaciones;
 
 }

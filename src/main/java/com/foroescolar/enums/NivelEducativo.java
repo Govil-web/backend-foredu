@@ -7,7 +7,7 @@ public enum NivelEducativo {
 
     POSTGRADO,
 
-    TERCIARIO,
+    TERCIARIA,
     UNIVERSITARIA,
     DIPLOMATURA,
     CURSOS
